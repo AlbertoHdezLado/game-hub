@@ -1,0 +1,94 @@
+.github/workflows/bump-version.yml
+  h_fed6a40af368f7 19,24-25,32
+patata-caliente.html
+  h_fed6a40af368f7 199
+public/legacy/patata-caliente.html
+  h_fed6a40af368f7 199
+public/legacy/version.json
+  h_fed6a40af368f7 1
+public/version.json
+  h_fed6a40af368f7 1
+src/App.tsx
+  h_fed6a40af368f7 1,5-6,12,19-31
+src/components/GameCard.tsx
+  h_fed6a40af368f7 12,14,18-23
+src/components/GameThemeProvider.tsx
+  h_fed6a40af368f7 2,6,9-10,13-15
+src/components/game/ActionGrid.tsx
+  h_fed6a40af368f7 1-9
+src/components/game/BalanceTrack.tsx
+  h_fed6a40af368f7 1-9
+src/components/game/RevealCard.tsx
+  h_fed6a40af368f7 1-23
+src/components/game/RolePickerGrid.tsx
+  h_fed6a40af368f7 1-25
+src/components/game/ScoreRow.tsx
+  h_fed6a40af368f7 1-10
+src/components/game/SecretBoard.tsx
+  h_fed6a40af368f7 1-18
+src/components/game/TeamTurnBadge.tsx
+  h_fed6a40af368f7 1-8
+src/components/ui/Card.tsx
+  h_fed6a40af368f7 1-9
+src/components/ui/ChipList.tsx
+  h_fed6a40af368f7 1-27
+src/components/ui/LandscapePrompt.tsx
+  h_fed6a40af368f7 1-11
+src/components/ui/MainButton.tsx
+  h_fed6a40af368f7 1-9
+src/components/ui/PackSelector.tsx
+  h_fed6a40af368f7 1-22
+src/components/ui/PlayerInput.tsx
+  h_fed6a40af368f7 1-123
+src/components/ui/PlayerRows.tsx
+  h_fed6a40af368f7 1-2
+src/components/ui/Stepper.tsx
+  h_fed6a40af368f7 1-18
+src/data/games.ts
+  h_fed6a40af368f7 19
+src/data/themes.ts
+  h_fed6a40af368f7 3,11-18
+src/features/CodigoSecretoPage.tsx
+  h_fed6a40af368f7 6,12-13,17-18,21,24-25,27,30,32,36-48,52
+src/features/DetectiveClubPage.tsx
+  h_fed6a40af368f7 4-6,13,77,83
+src/features/HombresLoboPage.tsx
+  h_fed6a40af368f7 4,7-8,11,16-20,25-26,29-30,42-47,52,54,56-79,108-114
+src/features/ImpostorPage.tsx
+  h_fed6a40af368f7 4-5,8-9,17,42,81,85
+src/features/InfiniteCardPage.tsx
+  h_fed6a40af368f7 4,77
+src/features/PatataCalientePage.tsx
+  h_fed6a40af368f7 1-341
+src/features/PicoloPage.tsx
+  h_fed6a40af368f7 1-32
+src/features/SimpleRevealPage.tsx
+  h_fed6a40af368f7 4-6,21,23-28,30-34,36,39-40,51-54,59-63,66-79,85-90,93-96
+src/features/TimedRoundPage.tsx
+  h_fed6a40af368f7 4-7,9,13,15,26,38-40,46,60-62,88-100,103,108,110,125-137,149,183,187-209,212-235,239-249
+src/hooks/useLandscapePrompt.ts
+  h_fed6a40af368f7 1-15
+src/hooks/usePersistentNames.ts
+  h_fed6a40af368f7 1-17
+src/lib/content.ts
+  h_fed6a40af368f7 2
+src/lib/random.ts
+  h_fed6a40af368f7 1-29
+src/styles/index.css
+  h_fed6a40af368f7 8-9,13-19,22-25,44,47,49,52,54,56-59,61,66-69,76,85,92,94,100-105,107-109,113-114,117,119,122-125,127-169,171-183,187-188,200,203-208,212-223,231,234-235,241-279,289-298,303,322-329,333-476
+src/types/game.ts
+  h_fed6a40af368f7 16-17,19,29
+vercel.json
+  h_fed6a40af368f7 3-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b24962bcf1e9b491cc56b052710806de00e44a5a",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
