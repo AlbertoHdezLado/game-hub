@@ -1,0 +1,221 @@
+package-lock.json
+  s_b4a33caf785fdb::t_bb1c192f98bc9f 1-6850
+public/data/codigo-secreto-words.json
+  s_b4a33caf785fdb::t_0b475403da3954 1-58
+public/data/impostor-words.json
+  s_b4a33caf785fdb::t_90ee0dee2313a1 1-2018
+public/data/music-timeline.json
+  s_b4a33caf785fdb::t_bfa65dd60343ae 1-58
+public/data/packages.json
+  s_b4a33caf785fdb::t_42d099a51e36be 1-5326
+public/data/patata-caliente.json
+  s_b4a33caf785fdb::t_aa2f341db6d70a 1-95
+public/data/picolo.json
+  s_b4a33caf785fdb::t_5d5568f84e0b78 1-182
+public/data/que-harias-si.json
+  s_b4a33caf785fdb::t_ed1e0334b6c9d0 1-832
+public/data/que-preferirias.json
+  s_b4a33caf785fdb::t_9b2bd48bf58e03 1-152
+public/data/quien-es-mas-probable.json
+  s_b4a33caf785fdb::t_594f1e63fb4154 1-832
+public/data/tabu.json
+  s_b4a33caf785fdb::t_c2aa596c606806 1-939
+public/data/trivial.json
+  s_b4a33caf785fdb::t_ef43920f53b0cd 1-946
+public/data/truth-or-dare.json
+  s_b4a33caf785fdb::t_4d8438b49725db 1-1051
+public/data/version.json
+  s_b4a33caf785fdb::t_3146578b31fd00 1
+public/data/werewolf-roles.json
+  s_b4a33caf785fdb::t_a3712b7794f08b 1-38
+public/data/yo-nunca.json
+  s_b4a33caf785fdb::t_da0c79ee9ca7da 1-529
+public/legacy/analytics.js
+  s_b4a33caf785fdb::t_2f0e243cbd0ab9 1-14
+public/legacy/codigo-secreto-words.json
+  s_b4a33caf785fdb::t_57ea30e577c4dc 1-58
+public/legacy/codigo-secreto.html
+  s_b4a33caf785fdb::t_e52538a4f7f5ee 1-740
+public/legacy/detective-club.html
+  s_b4a33caf785fdb::t_82a43a0bc175d4 1-812
+public/legacy/hitster.html
+  s_b4a33caf785fdb::t_1be18b69112f98 1-826
+public/legacy/hombres-lobo.html
+  s_b4a33caf785fdb::t_59e2c031fa4d64 1-3451
+public/legacy/impostor-words.json
+  s_b4a33caf785fdb::t_16556bb69685a5 1-2018
+public/legacy/impostor.html
+  s_b4a33caf785fdb::t_2a7107e0203c84 1-1215
+public/legacy/index.html
+  s_b4a33caf785fdb::t_605664c8904fb2 1-504
+public/legacy/mimica.html
+  s_b4a33caf785fdb::t_47cfe96fec436c 1-1301
+public/legacy/music-timeline.json
+  s_b4a33caf785fdb::t_42cb237ce99160 1-58
+public/legacy/package-lock.json
+  s_b4a33caf785fdb::t_63d3c0351d7ae6 1-6850
+public/legacy/package.json
+  s_b4a33caf785fdb::t_d97b4d3449baef 1-28
+public/legacy/packages.json
+  s_b4a33caf785fdb::t_3756ee35e99d08 1-5326
+public/legacy/patata-caliente.html
+  s_b4a33caf785fdb::t_c7fa0bfaf92cdc 1-494
+public/legacy/patata-caliente.json
+  s_b4a33caf785fdb::t_275220dae18a97 1-95
+public/legacy/picolo.html
+  s_b4a33caf785fdb::t_77e1c576b0f3c6 1-421
+public/legacy/picolo.json
+  s_b4a33caf785fdb::t_4ca0c8295c71e6 1-182
+public/legacy/que-harias-si.html
+  s_b4a33caf785fdb::t_01b51ebe9b1adc 1-286
+public/legacy/que-harias-si.json
+  s_b4a33caf785fdb::t_74c5220f52fd6c 1-832
+public/legacy/que-preferirias.html
+  s_b4a33caf785fdb::t_487f96c5d491bd 1-196
+public/legacy/que-preferirias.json
+  s_b4a33caf785fdb::t_5fae1ed236adbc 1-152
+public/legacy/quien-es-mas-probable.html
+  s_b4a33caf785fdb::t_79d0f307033277 1-279
+public/legacy/quien-es-mas-probable.json
+  s_b4a33caf785fdb::t_2eebc31796bcc0 1-832
+public/legacy/resources/images/common/check.svg
+  s_b4a33caf785fdb::t_6486464d85893b 1-13
+public/legacy/resources/images/common/error.svg
+  s_b4a33caf785fdb::t_30357c32deae05 1-14
+public/legacy/resources/images/common/next.svg
+  s_b4a33caf785fdb::t_e91b192a0b9058 1-13
+public/legacy/resources/images/common/rotate.svg
+  s_b4a33caf785fdb::t_3d9a249eb00449 1-4
+public/legacy/resources/images/hub/codigo-secreto-logo.svg
+  s_b4a33caf785fdb::t_3b87f3068180fa 1-107
+public/legacy/resources/images/hub/detective-club-logo.svg
+  s_b4a33caf785fdb::t_f0d6b827e484d5 1-117
+public/legacy/resources/images/hub/hitster-logo.svg
+  s_b4a33caf785fdb::t_c8a52afbbab105 1-74
+public/legacy/resources/images/hub/hombres-lobo-logo.svg
+  s_b4a33caf785fdb::t_f109ce330779d9 1-160
+public/legacy/resources/images/hub/impostor-logo.svg
+  s_b4a33caf785fdb::t_7f7366c38a70b8 1-43
+public/legacy/resources/images/hub/logo-logo.svg
+  s_b4a33caf785fdb::t_5d98db9c5995ea 1-91
+public/legacy/resources/images/hub/mimica-logo-old.svg
+  s_b4a33caf785fdb::t_7f4be15e200cf4 1-92
+public/legacy/resources/images/hub/mimica-logo.svg
+  s_b4a33caf785fdb::t_34ac5888d8c949 1
+public/legacy/resources/images/hub/patata-caliente-logo.svg
+  s_b4a33caf785fdb::t_25442c5a90438d 1-306
+public/legacy/resources/images/hub/picolo-logo.svg
+  s_b4a33caf785fdb::t_822a1909cd2d32 1-94
+public/legacy/resources/images/hub/que-harias-si-logo.svg
+  s_b4a33caf785fdb::t_2b8f1e0ba07251 1-290
+public/legacy/resources/images/hub/que-preferirias-logo.svg
+  s_b4a33caf785fdb::t_feaa8b73c3b7d5 1-191
+public/legacy/resources/images/hub/quien-es-mas-probable-que-logo.svg
+  s_b4a33caf785fdb::t_4f60974edcc67f 1-348
+public/legacy/resources/images/hub/taboo-logo.svg
+  s_b4a33caf785fdb::t_ffcc253b65a939 1-43
+public/legacy/resources/images/hub/times-up-logo.svg
+  s_b4a33caf785fdb::t_fca5b0ef1a75e1 1-200
+public/legacy/resources/images/hub/trivial-logo-old.svg
+  s_b4a33caf785fdb::t_9fe08a19995190 1-71
+public/legacy/resources/images/hub/trivial-logo.svg
+  s_b4a33caf785fdb::t_0fc58697d2af1c 1-26
+public/legacy/resources/images/hub/verdad-o-reto-logo.svg
+  s_b4a33caf785fdb::t_59dc4a815850ef 1-15
+public/legacy/resources/images/hub/yo-nunca-logo.svg
+  s_b4a33caf785fdb::t_ba261fc0b07cac 1-53
+public/legacy/shared.css
+  s_b4a33caf785fdb::t_94d28bbc82963e 1-1177
+public/legacy/shared.js
+  s_b4a33caf785fdb::t_b6a1b63bde8a2f 1-328
+public/legacy/tabu.html
+  s_b4a33caf785fdb::t_02ec4d07780c1e 1-1202
+public/legacy/tabu.json
+  s_b4a33caf785fdb::t_acd827244244d3 1-939
+public/legacy/times-up.html
+  s_b4a33caf785fdb::t_c2739613fea682 1-1316
+public/legacy/trivial.html
+  s_b4a33caf785fdb::t_2a8e4a3d9ad5f9 1-1200
+public/legacy/trivial.json
+  s_b4a33caf785fdb::t_56ed1dae76e985 1-946
+public/legacy/truth-or-dare.json
+  s_b4a33caf785fdb::t_a9602f07e72e1a 1-1051
+public/legacy/tsconfig.json
+  s_b4a33caf785fdb::t_f72aa2d19f9404 1-21
+public/legacy/tsconfig.node.json
+  s_b4a33caf785fdb::t_d02e4f6ae92606 1-4
+public/legacy/vercel.json
+  s_b4a33caf785fdb::t_9652f9fcb04472 1-4
+public/legacy/verdad-o-reto.html
+  s_b4a33caf785fdb::t_6f20058ee06079 1-545
+public/legacy/version.json
+  s_b4a33caf785fdb::t_c9fb9df1d8bd34 1
+public/legacy/werewolf-roles.json
+  s_b4a33caf785fdb::t_73f087e1adda4c 1-38
+public/legacy/yo-nunca.html
+  s_b4a33caf785fdb::t_f3bef2af5ab94c 1-289
+public/legacy/yo-nunca.json
+  s_b4a33caf785fdb::t_339fe847c0c839 1-529
+public/resources/images/common/check.svg
+  s_b4a33caf785fdb::t_ab4f9f6941d2d5 1-13
+public/resources/images/common/error.svg
+  s_b4a33caf785fdb::t_b1a4ad9437782e 1-14
+public/resources/images/common/next.svg
+  s_b4a33caf785fdb::t_ab7016d591a0fa 1-13
+public/resources/images/common/rotate.svg
+  s_b4a33caf785fdb::t_6cadd90d0256cf 1-4
+public/resources/images/hub/codigo-secreto-logo.svg
+  s_b4a33caf785fdb::t_31df30a2edaa13 1-107
+public/resources/images/hub/detective-club-logo.svg
+  s_b4a33caf785fdb::t_e56698c0931909 1-117
+public/resources/images/hub/hitster-logo.svg
+  s_b4a33caf785fdb::t_c1e07dcdafb870 1-74
+public/resources/images/hub/hombres-lobo-logo.svg
+  s_b4a33caf785fdb::t_c85282731923ce 1-160
+public/resources/images/hub/impostor-logo.svg
+  s_b4a33caf785fdb::t_6057aa5834d1b3 1-43
+public/resources/images/hub/logo-logo.svg
+  s_b4a33caf785fdb::t_71f1fd7ae288c0 1-91
+public/resources/images/hub/mimica-logo-old.svg
+  s_b4a33caf785fdb::t_1b035effe7536f 1-92
+public/resources/images/hub/mimica-logo.svg
+  s_b4a33caf785fdb::t_45db0cda8d188f 1
+public/resources/images/hub/patata-caliente-logo.svg
+  s_b4a33caf785fdb::t_a2814a9777e0d0 1-306
+public/resources/images/hub/picolo-logo.svg
+  s_b4a33caf785fdb::t_db86f28a57296c 1-94
+public/resources/images/hub/que-harias-si-logo.svg
+  s_b4a33caf785fdb::t_fc0345f105a935 1-290
+public/resources/images/hub/que-preferirias-logo.svg
+  s_b4a33caf785fdb::t_263bd44ded4a56 1-191
+public/resources/images/hub/quien-es-mas-probable-que-logo.svg
+  s_b4a33caf785fdb::t_8efdc556da5967 1-348
+public/resources/images/hub/taboo-logo.svg
+  s_b4a33caf785fdb::t_ff44361bb7d723 1-43
+public/resources/images/hub/times-up-logo.svg
+  s_b4a33caf785fdb::t_cf51e20d519799 1-200
+public/resources/images/hub/trivial-logo-old.svg
+  s_b4a33caf785fdb::t_0fc9a7a501fb24 1-71
+public/resources/images/hub/trivial-logo.svg
+  s_b4a33caf785fdb::t_052fc82258d63b 1-26
+public/resources/images/hub/verdad-o-reto-logo.svg
+  s_b4a33caf785fdb::t_255821add383db 1-15
+public/resources/images/hub/yo-nunca-logo.svg
+  s_b4a33caf785fdb::t_a5b88a5bfa2c4c 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9d4c154a7896998d99f1366664b478fb95e6ea7c",
+  "prompts": {},
+  "sessions": {
+    "s_b4a33caf785fdb": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "6ae2cba1-5cd1-416c-a435-9c228c5075b1",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
