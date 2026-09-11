@@ -1,4 +1,5 @@
 const contentCache = new Map<string, unknown>();
+export { pickRandom } from '@/lib/random';
 
 export async function loadContent<T>(fileName: string): Promise<T> {
   const cached = contentCache.get(fileName);
@@ -8,9 +9,4 @@ export async function loadContent<T>(fileName: string): Promise<T> {
   const content = (await response.json()) as T;
   contentCache.set(fileName, content);
   return content;
-}
-
-export function pickRandom<T>(items: readonly T[]): T {
-  if (!items.length) throw new Error('No hay contenido disponible');
-  return items[Math.floor(Math.random() * items.length)];
 }

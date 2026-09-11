@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
+import { PlayerInput } from '@/components/ui/PlayerInput';
 import { getGame } from '@/data/games';
 import { loadContent, pickRandom } from '@/lib/content';
 import type { GameSlug } from '@/types/game';
@@ -73,7 +74,7 @@ export function InfiniteCardPage() {
     <section className="game-panel infinite-panel">
       <span className="eyebrow">{isHot ? 'Ronda rápida' : 'Carta nueva'}</span>
       <h1>{game.title}</h1>
-      {!isHot && <label className="names-field">Jugadores<input value={names.join(', ')} onChange={(event) => setNames(event.target.value.split(',').map((name) => name.trim()).filter(Boolean))} placeholder="Ana, Luis, Marta" /></label>}
+      {!isHot && <PlayerInput label="Jugadores" names={names} onChange={setNames} min={2} />}
       {isHot && <div className={`hot-theme ${exploded ? 'has-exploded' : ''}`}><strong>{typeof content === 'string' ? content : content.texto}</strong>{running && <span>00:{seconds.toString().padStart(2, '0')}</span>}{exploded && <b>¡EXPLOTA!</b>}</div>}
       {!isHot && <div className="infinite-card"><span className="card-type">{typeof content === 'string' ? '' : content.tipo}</span><strong>{typeof content === 'string' ? content : renderPicoloText(content)}</strong></div>}
       {error && <p className="form-message">{error}</p>}

@@ -16,6 +16,7 @@ export const games: GameDefinition[] = [
   { slug: 'que-harias-si', title: '¿Qué Harías Si...?', description: 'Escenarios imposibles para debatir entre risas.', icon: 'que-harias-si-logo.svg', theme: 'indigo', players: '2+ jugadores', kind: 'reveal' },
   { slug: 'que-preferirias', title: '¿Qué Preferirías?', description: 'Dos opciones al azar para elegir y debatir.', icon: 'que-preferirias-logo.svg', theme: 'cyan', players: '2+ jugadores', kind: 'reveal' },
   { slug: 'detective-club', title: 'Detective Club', description: 'Un jugador no conoce la palabra secreta y debe disimular.', icon: 'detective-club-logo.svg', theme: 'blue', players: '4+ jugadores', kind: 'roles' },
+  { slug: 'hitster', title: 'Hitster', description: 'Construye una línea temporal musical y adivina los años.', icon: 'hitster-logo.svg', theme: 'rose', players: '2+ jugadores', kind: 'special', disabled: true },
 ];
 
 export function getGame(slug: string) {

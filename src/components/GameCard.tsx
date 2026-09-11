@@ -9,13 +9,18 @@ interface GameCardProps {
 
 export function GameCard({ game, onInfo }: GameCardProps) {
   return (
-    <article className="game-card" style={{ '--card-accent': `var(--theme-${game.theme})` } as CSSProperties}>
+    <article className={`game-card ${game.disabled ? 'disabled' : ''}`} style={{ '--card-accent': `var(--theme-${game.theme})` } as CSSProperties}>
       <button className="info-button" type="button" aria-label={`Descripción de ${game.title}`} onClick={() => onInfo(game)}>i</button>
-      <Link className="game-card-link" to={`/juegos/${game.slug}`}>
+      {game.disabled ? <div className="game-card-link" aria-label={`${game.title}, próximamente`}>
         <span className="game-icon" style={{ maskImage: `url(/resources/images/hub/${game.icon})`, WebkitMaskImage: `url(/resources/images/hub/${game.icon})` }} aria-hidden="true" />
         <strong>{game.title}</strong>
         <span className="game-players">{game.players}</span>
-      </Link>
+        <span className="coming-soon-badge">Próximamente</span>
+      </div> : <Link className="game-card-link" to={`/juegos/${game.slug}`}>
+        <span className="game-icon" style={{ maskImage: `url(/resources/images/hub/${game.icon})`, WebkitMaskImage: `url(/resources/images/hub/${game.icon})` }} aria-hidden="true" />
+        <strong>{game.title}</strong>
+        <span className="game-players">{game.players}</span>
+      </Link>}
     </article>
   );
 }

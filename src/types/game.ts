@@ -13,9 +13,10 @@ export type GameSlug =
   | 'quien-es-mas-probable'
   | 'que-harias-si'
   | 'que-preferirias'
-  | 'detective-club';
+  | 'detective-club'
+  | 'hitster';
 
-export type ThemeName = 'red' | 'violet' | 'steel' | 'green' | 'teal' | 'amber' | 'flame' | 'gold' | 'orange' | 'lime' | 'purple' | 'yellow' | 'indigo' | 'cyan' | 'blue';
+export type ThemeName = 'red' | 'violet' | 'steel' | 'green' | 'teal' | 'amber' | 'flame' | 'gold' | 'orange' | 'lime' | 'purple' | 'yellow' | 'indigo' | 'cyan' | 'blue' | 'rose';
 
 export interface GameDefinition {
   slug: GameSlug;
@@ -25,6 +26,7 @@ export interface GameDefinition {
   theme: ThemeName;
   players: string;
   kind: 'reveal' | 'timed' | 'teams' | 'roles' | 'special';
+  disabled?: boolean;
 }
 
 export interface Category<T> {
