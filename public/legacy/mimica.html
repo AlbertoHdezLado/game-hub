@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="analytics.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Mímica · Game Hub</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="78" font-size="72" text-anchor="middle">%F0%9F%8E%AC</text></svg>'>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root{
+    --accent:#d9974f;
+    --accent2:#f0c896;
+    --reveal-b:#f0c896;
+  }
+  html,body{
+    /* flat solid fill — a multi-layer gradient here used to leave gaps of
+       the raw background color showing on some viewports/scroll ranges */
+    background-color:var(--bg2);
+  }
+
+  .team-color-0{background:#5b8fe0;}
+  .team-color-1{background:#c9525c;}
+  .team-color-2{background:#4fbf7a;}
+  .team-color-3{background:#f2c94c;}
+
+  /* ---- team boxes: one box per team, tap a player's chip to cycle them
+     to the next team. A dedicated screen (separate from name entry) so
+     moving people between teams reads as "boxes", not a buried toggle. ---- */
+  .team-boxes-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:10px 0 14px;
+  }
+  .team-box{
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  .team-box-header{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:0.85rem;
+    margin-bottom:8px;
+  }
+  .team-box-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .team-box-chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .team-box-chip{
+    padding:6px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid var(--glass-border);
+    color:var(--text);
+    font-size:0.85rem;
+    font-weight:600;
+    cursor:grab;
+    touch-action:none;
+  }
+  .team-box-chip:active{transform:scale(0.94);}
+  .team-box-chip.dragging{
+    position:fixed;
+    z-index:999;
+    box-shadow:0 8px 20px rgba(0,0,0,0.45);
+    cursor:grabbing;
+    pointer-events:none;
+  }
+  .team-box.team-color-0{border-color:rgba(91,143,224,0.5); background:rgba(91,143,224,0.14);}
+  .team-box.team-color-1{border-color:rgba(201,82,92,0.5); background:rgba(201,82,92,0.14);}
+  .team-box.team-color-2{border-color:rgba(79,191,122,0.5); background:rgba(79,191,122,0.14);}
+  .team-box.team-color-3{border-color:rgba(242,201,76,0.5); background:rgba(242,201,76,0.14);}
+  .team-box-chip.team-color-0{background:#5b8fe0; border-color:#5b8fe0; color:#fff;}
+  .team-box-chip.team-color-1{background:#c9525c; border-color:#c9525c; color:#fff;}
+  .team-box-chip.team-color-2{background:#4fbf7a; border-color:#4fbf7a; color:#fff;}
+  .team-box-chip.team-color-3{background:#f2c94c; border-color:#f2c94c; color:#333;}
+  .mini-score-pill.team-color-3, .team-turn-badge.team-color-3, .mimica-word-pill.team-color-3{color:#3a2f00;}
+  .team-box.drag-over{
+    border-color:var(--accent);
+    background:rgba(255,255,255,0.1);
+  }
+  .team-box-empty{color:var(--text-dim); font-size:0.8rem; font-style:italic;}
+
+  .mini-score-pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:22px;
+    height:22px;
+    padding:0 6px;
+    border-radius:999px;
+    color:#fff;
+    font-weight:800;
+    font-size:0.72rem;
+  }
+
+  #turn-intro, #turn-play, #turn-end{text-align:center;}
+  /* bigger, matching Time's Up — easier to hit mid-turn without looking */
+  #turn-play .icon-action-icon{width:70px; height:70px;}
+  .team-turn-badge{
+    display:inline-block;
+    margin:0 0 10px;
+    padding:6px 16px;
+    border-radius:999px;
+    color:#fff;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:0.9rem;
+    letter-spacing:0.5px;
+  }
+  .mimica-timer-wrap{margin-bottom:2px;}
+  .mimica-timer{
+    font-family:var(--font-display);
+    font-size:2.6rem;
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+  }
+  @keyframes mimicaTimerBlink{
+    0%, 100%{ color:var(--danger); opacity:1; }
+    50%{ color:var(--danger); opacity:0.25; }
+  }
+  .mimica-timer-wrap.time-up .mimica-timer{
+    animation:mimicaTimerBlink 0.5s steps(1) infinite;
+  }
+  @keyframes mimicaSkipPulse{
+    0%{ color:var(--danger); transform:scale(1.15); }
+    100%{ color:inherit; transform:scale(1); }
+  }
+  .mimica-timer.skip-pulse{
+    animation:mimicaSkipPulse 0.4s ease-out;
+  }
+  .mimica-word{
+    font-family:var(--font-display);
+    font-size:1.9rem;
+    font-weight:800;
+    margin:10px 0 6px;
+    min-height:2.4em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    word-break:break-word;
+  }
+  .mimica-turn-tally{
+    color:var(--text-dim);
+    font-size:0.85rem;
+    margin-bottom:16px;
+  }
+  .mimica-scoreboard-mini{
+    display:flex;
+    gap:6px;
+  }
+  .team-score-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+    margin-bottom:8px;
+    text-align:left;
+  }
+  .team-score-row.winner{
+    border-color:var(--accent);
+    background:rgba(255,255,255,0.1);
+  }
+  .team-score-name{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+  }
+  .team-score-value{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:1.1rem;
+  }
+  .packages-dropdown-btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    font-size:0.88rem;
+    font-weight:600;
+    cursor:pointer;
+    text-align:left;
+  }
+  .packages-dropdown-btn:active{transform:scale(0.98);}
+  .packages-dropdown-summary{
+    color:var(--text-dim);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .packages-dropdown-chevron{
+    flex-shrink:0;
+    color:var(--text-dim);
+    transition:transform .2s;
+  }
+  .packages-dropdown-btn[aria-expanded="true"] .packages-dropdown-chevron{
+    transform:rotate(180deg);
+  }
+  .packages-dropdown-panel{
+    margin-top:10px;
+  }
+  .mimica-word-pill-wrap{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    justify-content:center;
+    margin:12px 0 18px;
+  }
+  .mimica-word-pill{
+    display:inline-flex;
+    padding:6px 10px;
+    border-radius:999px;
+    color:#fff;
+    font-size:0.78rem;
+    font-weight:700;
+  }
+  .mimica-word-pill.turn-missed{background:var(--danger); opacity:.72; text-decoration:line-through;}
+  button.mimica-word-pill{border:0; cursor:pointer; font:inherit;}
+  .end-player-extreme{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+    margin-bottom:8px;
+    text-align:left;
+  }
+  .end-player-extreme-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+  }
+  .end-player-extreme-value{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:1rem;
+    color:var(--text-dim);
+  }
+</style>
+</head>
+<body data-landscape-recommended>
+<div id="app">
+
+  <!-- SETUP -->
+  <div class="screen" id="screen-setup">
+    <div class="card">
+      <div class="setup-header">
+        <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <h1>MÍMICA</h1>
+
+      <div id="setup-step-players">
+        <label><span class="label-icon">👥</span>Jugadores</label>
+        <div id="mimica-players-list"></div>
+        <div class="error-msg" id="players-error"></div>
+      </div>
+
+      <div id="setup-step-teams" class="hidden">
+        <label><span class="label-icon">🎯</span>Equipos</label>
+        <div class="stepper">
+          <button type="button" id="team-count-minus">−</button>
+          <div class="value" id="team-count-value">2</div>
+          <button type="button" id="team-count-plus">+</button>
+        </div>
+        <div class="team-boxes-header">
+          <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
+        </div>
+        <div id="team-boxes"></div>
+        <div class="error-msg" id="teams-error"></div>
+      </div>
+
+      <div class="night-nav" id="setup-nav">
+        <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+        <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
+      </div>
+
+      <div id="setup-step-settings" class="hidden">
+        <details class="setup-optional">
+          <summary>Ajustes adicionales</summary>
+          <div class="setup-optional-content">
+            <label><span class="label-icon">🏷️</span>Categorías</label>
+            <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
+              <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
+              <span class="packages-dropdown-chevron">▾</span>
+            </button>
+            <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
+              <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
+              <div class="chip-list" id="package-list"></div>
+            </div>
+
+            <label><span class="label-icon">🔁</span>Rondas por equipo</label>
+            <div class="stepper">
+              <button type="button" id="rounds-minus">−</button>
+              <div class="value" id="rounds-value">3</div>
+              <button type="button" id="rounds-plus">+</button>
+            </div>
+
+            <label><span class="label-icon">⏱️</span>Tiempo por turno</label>
+            <div class="stepper">
+              <button type="button" id="turn-seconds-minus">−</button>
+              <div class="value" id="turn-seconds-value">1:00</div>
+              <button type="button" id="turn-seconds-plus">+</button>
+            </div>
+
+            <label><span class="label-icon">⏭️</span>Segundos que resta saltar palabra</label>
+            <div class="stepper">
+              <button type="button" id="skip-seconds-minus">−</button>
+              <div class="value" id="skip-seconds-value">5</div>
+              <button type="button" id="skip-seconds-plus">+</button>
+            </div>
+          </div>
+        </details>
+
+        <div class="error-msg" id="setup-error"></div>
+
+        <div class="final-nav">
+          <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button class="btn-main" id="start-btn">Iniciar partida</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY GUIDE -->
+  <div class="guide-modal-backdrop hidden" id="guide-modal-backdrop">
+    <div class="guide-modal">
+      <button type="button" class="guide-modal-close" id="guide-modal-close">✕</button>
+      <h2>Cómo se juega</h2>
+
+      <h3>Objetivo</h3>
+      <p>Cada equipo se turna para actuar. Quien tiene el turno ve una palabra y debe representarla sin hablar, sin hacer sonidos y sin deletrearla, mientras su equipo intenta adivinarla en voz alta. ¡Tenéis un tiempo limitado para acertar tantas palabras como podáis!</p>
+
+      <h3>Usar la app</h3>
+      <ol>
+        <li>Añade a los jugadores por su nombre. Después, en "Equipos", arrástralos a la caja de cada equipo (hasta 4 equipos) o usa el dado 🎲 para repartirlos al azar.</li>
+        <li>Elige las categorías, cuántas rondas jugará cada equipo, cuánto dura cada turno y cuántos segundos resta pasar una palabra.</li>
+        <li>Pasa el dispositivo a quien le toca actuar y pulsa "Empezar mi minuto".</li>
+        <li>Cada palabra acertada suma un punto para el equipo y se guarda en la lista de aciertos del turno. Si os atascáis, saltadla: pasar palabra resta algunos segundos al cronómetro (configurable).</li>
+        <li>Al acabar el tiempo, pasa el turno al siguiente equipo. Gana quien más puntos tenga al terminar todos los turnos; al final verás también quién acertó más y menos palabras.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN: team turn, 60s, unlimited words, correct/skip -->
+  <div class="screen hidden" id="screen-game">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+
+      <!-- TURN INTRO: gate before the minute starts -->
+      <div id="turn-intro">
+        <div class="team-turn-badge" id="turn-team-badge">ROJO</div>
+        <div class="player-name" id="turn-player-name">Nombre</div>
+        <p class="pass-hint">Pasa el dispositivo a esta persona. Que actúe sin hablar mientras su equipo adivina.</p>
+        <button class="btn-main" id="turn-start-btn">Empezar mi minuto ▶</button>
+      </div>
+
+      <!-- ACTIVE PLAY: word + timer + correct/skip -->
+      <div id="turn-play" class="hidden">
+        <div class="mimica-timer-wrap" id="mimica-timer-wrap">
+          <div class="mimica-timer" id="mimica-timer">1:00</div>
+        </div>
+        <div class="mimica-word" id="mimica-word">Palabra</div>
+        <div class="icon-action-row">
+          <button type="button" class="icon-action-btn icon-action-skip" id="mimica-skip-btn" aria-label="Saltar"><span class="icon-action-icon"></span></button>
+          <button type="button" class="icon-action-btn icon-action-correct" id="mimica-correct-btn" aria-label="Acierto"><span class="icon-action-icon"></span></button>
+        </div>
+      </div>
+
+      <!-- TURN END: summary before moving on -->
+      <div id="turn-end" class="hidden">
+        <div class="end-icon">⏱️</div>
+        <h1 style="font-size:1.4rem;" id="turn-end-title">¡Tiempo!</h1>
+        <p class="subtitle" id="turn-end-subtitle"></p>
+        <div class="mimica-word-pill-wrap" id="turn-end-words"></div>
+        <div id="turn-end-scoreboard"></div>
+        <button class="btn-main" id="turn-continue-btn">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- END SCREEN: final results -->
+  <div class="screen hidden" id="screen-end">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <div class="end-icon">🏆</div>
+      <h1 style="font-size:1.6rem;" id="end-title">RESULTADOS</h1>
+      <p class="subtitle" id="end-subtitle"></p>
+      <div id="end-scoreboard"></div>
+      <div id="end-player-extremes"></div>
+      <button class="btn-main" id="new-round-btn">Nueva partida</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="shared.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var MIN_PLAYERS = 2, MAX_PLAYERS = 30;
+  var MIN_TEAMS = 2, MAX_TEAMS = 4;
+  var MAX_ROUNDS = 10; // "turns per team" — kept the old name/config.rounds field, just reinterpreted
+  var MIN_TURN_SECONDS = 15, MAX_TURN_SECONDS = 300, TURN_SECONDS_STEP = 15;
+  var MIN_SKIP_SECONDS = 0, MAX_SKIP_SECONDS = 30, SKIP_SECONDS_STEP = 1;
+  var TEAM_NAMES = ['Azul', 'Rojo', 'Verde', 'Amarillo'];
+
+  var config = {
+    selectedPackages: [],
+    numTeams: 2,
+    rounds: 3,
+    turnSeconds: 60,
+    skipPenaltySeconds: 5,
+    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n, team: 0 }; })
+  };
+
+  function formatMMSS(totalSeconds){
+    var m = Math.floor(totalSeconds / 60), s = totalSeconds % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function persistPlayers(){
+    savePlayerNames(config.rows.map(function(r){ return r.name.trim(); }).filter(function(n){ return n !== ""; }));
+  }
+
+  var PACKAGES = null;
+  var PACKAGES_FALLBACK = [
+    { "id": "animales_y_naturaleza", "nombre": "Animales y naturaleza", "icono": "🦁", "palabras": ["Elefante", "León", "Jirafa", "Delfín", "Águila", "Tortuga", "Canguro", "Pingüino", "Tigre", "Oso", "Cebra", "Koala", "Búho", "Cocodrilo", "Serpiente", "Mono", "Lobo", "Zorro", "Ballena", "Pulpo", "Camaleón", "Murciélago", "Flamenco", "Erizo", "Panda", "Rinoceronte", "Hipopótamo", "Avestruz", "Camello", "Foca", "Nutria", "Mapache", "Puma", "Gorila", "Loro", "Medusa", "Tucán", "Escorpión", "Volcán", "Cascada", "Huracán", "Arcoíris", "Terremoto", "Nieve", "Tormenta", "Desierto", "Glaciar", "Océano", "Bosque", "Río", "Estrella", "Luna", "Eclipse", "Niebla", "Marea", "Duna", "Cueva", "Géiser", "Iceberg", "Relámpago", "Bahía", "Meseta", "Acantilado", "Pantano", "Manantial", "Cordillera", "Tundra", "Jaguar", "Leopardo", "Hiena", "Chimpancé", "Orangután", "Armadillo", "Perezoso", "Cangrejo", "Estrella de mar", "Anguila", "Piraña", "Buitre", "Halcón", "Colibrí", "Cisne", "Pavo real", "Ardilla", "Castor", "Alce", "Jabalí"] },
+    { "id": "vida_cotidiana", "nombre": "Vida cotidiana", "icono": "🏠", "palabras": ["Paraguas", "Mochila", "Teléfono", "Bicicleta", "Espejo", "Reloj", "Llave", "Silla", "Almohada", "Tijeras", "Cepillo", "Maleta", "Lámpara", "Cartera", "Gafas", "Guitarra", "Mapa", "Vela", "Escalera", "Cámara", "Sombrilla", "Termo", "Brújula", "Cargador", "Auriculares", "Mando a distancia", "Bombilla", "Cubo de basura", "Percha", "Toalla", "Cepillo de dientes", "Peine", "Encendedor", "Botella", "Sartén", "Despertador", "Ducha", "Desayuno", "Fregadero", "Lavadora", "Nevera", "Aspiradora", "Cesta de la compra", "Plancha", "Microondas", "Batidora", "Tostadora", "Cortinas", "Alfombra", "Colchón", "Sábanas", "Manta", "Jabón", "Champú", "Detergente", "Fregona", "Escoba", "Recogedor"] },
+    { "id": "anime", "nombre": "Anime", "icono": "🎌", "palabras": ["Naruto", "One Piece", "Dragon Ball", "Shin Chan", "Doraemon", "Ataque a los Titanes", "Death Note", "My Hero Academia", "Demon Slayer", "Sailor Moon", "Fullmetal Alchemist", "Evangelion", "Detective Conan", "Digimon", "Bleach", "Jujutsu Kaisen", "InuYasha", "Pokémon", "Dragon Ball Z", "Sakura Card Captor", "Spy x Family", "Chainsaw Man", "Hunter x Hunter", "Cowboy Bebop", "Vinland Saga", "Tokyo Ghoul", "Fruits Basket", "Ranma ½", "Slam Dunk", "Yu-Gi-Oh!", "Gintama", "Black Clover", "One Punch Man", "Dr. Slump", "City Hunter"] },
+    { "id": "cine_y_television", "nombre": "Cine y televisión", "icono": "🎬", "palabras": ["Friends", "Stranger Things", "Breaking Bad", "Juego de Tronos", "Titanic", "Star Wars", "Harry Potter", "El Padrino", "Matrix", "Los Simpson", "La Casa de Papel", "Vengadores", "Jurassic Park", "El Señor de los Anillos", "Black Mirror", "Big Bang Theory", "Peaky Blinders", "El Ministerio del Tiempo", "Élite", "Narcos", "Gladiator", "Forrest Gump", "Grease", "Rocky", "El Resplandor", "Cadena Perpetua", "Pulp Fiction", "Regreso al Futuro", "Los Goonies", "La Vida es Bella", "Cuéntame", "Merlí", "El Silencio de los Corderos", "Origen", "El Club de la Lucha", "Interstellar", "Whiplash", "La La Land", "Parásitos", "Joker", "Avatar", "El Exorcista", "Psicosis", "Tiburón", "Karate Kid", "Los Otros", "El Sexto Sentido"] },
+    { "id": "cuerpo_y_salud", "nombre": "Cuerpo y salud", "icono": "🩺", "palabras": ["Corazón", "Pulmón", "Cerebro", "Estómago", "Hígado", "Riñón", "Esqueleto", "Músculo", "Vacuna", "Termómetro", "Fiebre", "Resfriado", "Alergia", "Vitamina", "Dieta", "Ejercicio", "Estetoscopio", "Radiografía", "Tirita", "Jeringuilla", "Silla de ruedas", "Muleta", "Mascarilla", "Análisis de sangre", "Piel", "Sangre", "Hueso", "Tendón", "Nervio", "Pupila", "Retina", "Cadera", "Rodilla", "Codo", "Muñeca", "Tobillo"] },
+    { "id": "deportes", "nombre": "Deportes", "icono": "🏅", "palabras": ["Fútbol", "Baloncesto", "Tenis", "Natación", "Ciclismo", "Boxeo", "Voleibol", "Atletismo", "Golf", "Surf", "Esquí", "Rugby", "Béisbol", "Kárate", "Ajedrez", "Patinaje", "Escalada", "Bádminton", "Waterpolo", "Gimnasia", "Remo", "Esgrima", "Hockey", "Vela", "Snowboard", "Triatlón", "Halterofilia", "Tiro con arco", "Motociclismo", "Automovilismo", "Skate", "Pádel", "Squash", "Curling", "Lucha libre", "Ciclismo BMX", "Piragüismo", "Petanca", "Bolos", "Billar", "Dardos", "Paracaidismo", "Puenting", "Parapente", "Buceo", "Snorkel"] },
+    { "id": "escuela", "nombre": "Escuela", "icono": "🎒", "palabras": ["Pizarra", "Lápiz", "Goma de borrar", "Examen", "Recreo", "Pupitre", "Tiza", "Libro de texto", "Deberes", "Regla", "Sacapuntas", "Uniforme escolar", "Notas", "Bedel", "Comedor escolar", "Excursión escolar", "Cuaderno", "Mapa mundi", "Profesor", "Biblioteca", "Aula", "Timbre", "Director", "Matrícula", "Nota media", "Beca", "Selectividad", "Suspenso", "Aprobado", "Pizarra digital", "Carpeta", "Estuche"] },
+    { "id": "fantasia", "nombre": "Fantasía", "icono": "🐉", "palabras": ["Zeus", "Dragón", "Unicornio", "Sirena", "Fantasma", "Vampiro", "Hada", "Duende", "Bruja", "Hombre lobo", "Caperucita Roja", "Minotauro", "Centauro", "Fénix", "Genio de la lámpara", "Excálibur", "Pegaso", "Cíclope", "Elfo", "Enano", "Ogro", "Troll", "Hipogrifo", "Basilisco", "Quimera", "Grifo", "Nigromante", "Hechizo", "Varita mágica", "Poción"] },
+    { "id": "futbol", "nombre": "Fútbol", "icono": "⚽", "palabras": ["Balón", "Portería", "Árbitro", "Tarjeta roja", "Penalti", "Fuera de juego", "Delantero", "Portero", "Entrenador", "Afición", "Mundial", "Champions League", "Falta", "Córner", "Fichaje", "Vestuario", "Bota de fútbol", "Chilena", "Derbi", "Prórroga", "Balón de oro", "Titular", "Suplente", "Lateral", "Central", "Extremo", "Pivote", "Regate", "Remate", "Saque de esquina", "Tanda de penaltis", "Descenso"] },
+    { "id": "gente_famosa", "nombre": "Gente famosa", "icono": "🌟", "palabras": ["Albert Einstein", "Leonardo da Vinci", "Cristiano Ronaldo", "Lionel Messi", "Michael Jackson", "Freddie Mercury", "Marilyn Monroe", "Charles Chaplin", "Pablo Picasso", "Frida Kahlo", "Elvis Presley", "Walt Disney", "Steve Jobs", "Beyoncé", "Shakira", "Rafael Nadal", "Usain Bolt", "Mahatma Gandhi", "William Shakespeare", "Cleopatra", "Isaac Newton", "Charles Darwin", "Nelson Mandela", "Martin Luther King", "Napoleón Bonaparte", "Julio César", "Vincent van Gogh", "Wolfgang Amadeus Mozart", "Ludwig van Beethoven", "Stephen Hawking", "Marie Curie", "Serena Williams", "Michael Jordan", "LeBron James", "Bob Marley"] },
+    { "id": "juegos", "nombre": "Juegos", "icono": "🎮", "palabras": ["Minecraft", "Fortnite", "Among Us", "FIFA", "Mario Kart", "The Legend of Zelda", "Pokémon", "Grand Theft Auto", "Call of Duty", "Roblox", "League of Legends", "Animal Crossing", "Candy Crush", "Tetris", "Sonic", "Fall Guys", "Overwatch", "Clash Royale", "The Sims", "Super Mario Bros", "Halo", "God of War", "Resident Evil", "Street Fighter", "Uncharted", "Assassin's Creed", "Red Dead Redemption", "Pac-Man", "Brawl Stars", "Genshin Impact", "Valorant", "Parchís", "Monopoly", "Uno", "Twister", "Escondite", "Dominó", "Cartas", "Bingo", "Stardew Valley", "Terraria", "Portal", "Cuphead", "Hollow Knight", "Hades", "Rocket League", "Just Dance", "Wii Sports", "Piedra papel o tijera"] },
+    { "id": "marcas", "nombre": "Marcas", "icono": "🏷️", "palabras": ["Nike", "Adidas", "Coca-Cola", "Apple", "Samsung", "McDonald's", "Google", "Netflix", "Amazon", "Zara", "IKEA", "Pepsi", "Ferrari", "BMW", "Lego", "Gucci", "Puma", "Levi's", "Spotify", "Danone", "Starbucks", "Burger King", "KFC", "H&M", "Bershka", "Chanel", "Rolex", "Sony", "Microsoft", "PlayStation", "Xbox", "Red Bull"] },
+    { "id": "moda_y_ropa", "nombre": "Moda y ropa", "icono": "👗", "palabras": ["Vaquero", "Camiseta", "Vestido", "Zapatillas", "Bufanda", "Abrigo", "Sombrero", "Corbata", "Falda", "Traje", "Cinturón", "Bikini", "Chándal", "Botas", "Guantes", "Pijama", "Gorra", "Calcetines", "Pasarela", "Desfile de moda", "Camisa", "Blazer", "Mono", "Kimono", "Poncho", "Turbante", "Diadema", "Pendientes", "Collar", "Pulsera", "Reloj de pulsera", "Tacones"] },
+    { "id": "mundo_y_lugares", "nombre": "Mundo y lugares", "icono": "🌍", "palabras": ["Playa", "Montaña", "Biblioteca", "Aeropuerto", "Hospital", "Escuela", "Supermercado", "Cine", "Parque", "Museo", "Restaurante", "Castillo", "Desierto", "Bosque", "Isla", "Cárcel", "Iglesia", "Estadio", "Granja", "Volcán", "Faro", "Circo", "Mercado", "Puerto", "Universidad", "Ayuntamiento", "Cementerio", "Fábrica", "Oficina", "Gimnasio", "Piscina", "Selva", "Sabana", "Iglú", "Palacio", "Francia", "Japón", "Egipto", "Torre Eiffel", "Gran Muralla China", "Pirámides de Guiza", "Machu Picchu", "Nueva York", "Coliseo Romano", "Taj Mahal", "Roma", "Londres", "Río de Janeiro", "Sídney", "Venecia", "Amazonas", "Sahara", "Himalaya", "Polo Norte", "Polo Sur", "Gran Cañón", "Stonehenge"] },
+    { "id": "musica", "nombre": "Música", "icono": "🎵", "palabras": ["Shape of You", "Blinding Lights", "Happy", "Roar", "Firework", "Uptown Funk", "Someone Like You", "Bad Guy", "Levitating", "Watermelon Sugar", "As It Was", "Anti-Hero", "Flowers", "Dance Monkey", "Old Town Road", "Hello", "Shake It Off", "Rolling in the Deep", "Radioactive", "Perfect", "Counting Stars", "Chandelier", "Wrecking Ball", "Despacito", "Gasolina", "Vivir Mi Vida", "La Bicicleta", "Danza Kuduro", "Con Calma", "Ay Vamos", "Mi Gente", "Bailando", "La Bamba", "Waka Waka", "Chantaje", "Felices los 4", "Tusa", "Amorfoda", "Ella Baila Sola", "TQG", "Provenza", "La Tortura", "Suavemente", "El Perdón", "Loba", "Perro Fiel", "Bohemian Rhapsody", "Highway to Hell", "Smoke on the Water", "Hotel California", "Sweet Child O' Mine", "Livin' on a Prayer", "Enter Sandman", "Stairway to Heaven", "Back in Black", "Comfortably Numb", "Nothing Else Matters", "We Will Rock You", "Should I Stay or Should I Go", "Paranoid", "Under Pressure", "Wonderwall", "Numb", "In the End", "Africa", "Eye of the Tiger", "Immigrant Song", "Money", "Sweet Home Alabama", "Yesterday", "Imagine", "Billie Jean", "Thriller", "My Heart Will Go On", "I Will Always Love You", "Shallow", "Viva la Vida", "Clocks", "Havana", "Señorita", "All of Me"] },
+    { "id": "para_adultos", "nombre": "Para adultos (+18)", "icono": "🔞", "palabras": ["Resaca", "Tinder", "Despedida de soltero", "Ligar", "Botellón", "Chupito", "Afterwork", "Barra libre", "Karaoke", "Reguetón", "Cubata", "Tequila", "Verdad o reto", "Beso francés", "Cita a ciegas", "Piropo", "Lencería", "Striptease", "Cuernos", "Amante", "Coqueteo", "Ex", "Soltería", "Amor de verano", "Rollo de una noche", "Vermú", "Terraza", "Fiesta de la espuma", "Discoteca", "Reservado", "Copa", "Barra"] },
+    { "id": "personajes", "nombre": "Personajes", "icono": "👤", "palabras": ["Sherlock Holmes", "James Bond", "Indiana Jones", "Robin Hood", "Drácula", "Frankenstein", "El Zorro", "Alicia en el País de las Maravillas", "Willy Wonka", "Jack Sparrow", "Hannibal Lecter", "Gandalf", "Legolas", "Shrek", "Yoda", "Darth Vader", "Homer Simpson", "Pikachu", "Mario Bros", "Sonic", "Merlín", "Capitán Garfio", "El Gato con Botas", "Pulgarcito", "El Grinch", "Scrooge", "Blancanieves", "Rapunzel", "Pinocho", "Aladino", "Peter Pan", "Doctor Jekyll y Mr. Hyde"] },
+    { "id": "tecnologia", "nombre": "Tecnología", "icono": "💻", "palabras": ["Instagram", "TikTok", "YouTube", "WhatsApp", "Meme", "Influencer", "Selfie", "Emoji", "Viral", "Streaming", "Podcast", "Reels", "Twitter", "Snapchat", "Hashtag", "Story", "Seguidores", "Me gusta", "Tendencia", "Directo", "Robot", "Internet", "Inteligencia artificial", "Wifi", "Dron", "Realidad virtual", "Ordenador", "Impresora 3D", "Ciberseguridad", "Código QR", "Bluetooth", "USB", "Contraseña", "Servidor", "Nube", "Antivirus", "Firewall", "Navegador", "Buscador", "Algoritmo"] },
+    { "id": "trabajos", "nombre": "Trabajos", "icono": "💼", "palabras": ["Médico", "Bombero", "Profesor", "Piloto", "Cocinero", "Policía", "Abogado", "Peluquero", "Arquitecto", "Fontanero", "Astronauta", "Cantante", "Actor", "Periodista", "Electricista", "Enfermero", "Veterinario", "Panadero", "Jardinero", "Camarero", "Mecánico", "Notario", "Traductor", "Pescador", "Diseñador", "Programador", "Escritor", "Guía turístico", "Repartidor", "Modisto", "Florista", "Carpintero", "Minero", "Buzo", "Sastre", "Auxiliar de vuelo", "Ingeniero", "Psicólogo", "Dentista", "Cirujano", "Bibliotecario", "Recepcionista", "Contable", "Comercial", "Fisioterapeuta", "Analista"] },
+    { "id": "transportes", "nombre": "Transportes", "icono": "🚗", "palabras": ["Avión", "Barco", "Tren", "Coche", "Autobús", "Moto", "Helicóptero", "Submarino", "Camión", "Tranvía", "Globo aerostático", "Cohete", "Patinete", "Ambulancia", "Furgoneta", "Metro", "Taxi", "Carreta", "Yate", "Teleférico", "Monopatín", "Carro de golf", "Monociclo", "Kayak", "Velero", "Zepelín", "Trineo", "Góndola", "Autocaravana", "Todoterreno", "Tuk-tuk", "Segway", "Hidroavión", "Planeador", "Funicular", "Camioneta", "Quad", "Barco de vela", "Crucero", "Coche de carreras"] },
+    { "id": "verano", "nombre": "Verano", "icono": "☀️", "palabras": ["Bañador", "Bronceado", "Protector solar", "Chanclas", "Vacaciones", "Camping", "Barbacoa", "Ventilador", "Helado", "Sandía", "Piscina", "Playa", "Ola de calor", "Festival de música", "Gafas de sol", "Toalla de playa", "Sombrilla", "Siesta", "Feria", "Flotador", "Cubo y pala", "Colchoneta", "Nevera portátil", "Chiringuito", "Sandalias", "Abanico", "Sombrero de paja", "Crema after-sun", "Piragua", "Sombra"] },
+    { "id": "comida", "nombre": "Comida", "icono": "🍕", "palabras": ["Pizza", "Paella", "Hamburguesa", "Sushi", "Tacos", "Helado", "Chocolate", "Ensalada", "Espagueti", "Croquetas", "Tortilla", "Churros", "Palomitas", "Sandía", "Queso", "Pan", "Sopa", "Empanada", "Guacamole", "Flan", "Gazpacho", "Lasaña", "Bocadillo", "Crepe", "Nachos", "Ramen", "Curry", "Fajitas", "Ceviche", "Risotto", "Gofre", "Bizcocho", "Mazapán", "Cocido", "Fabada", "Salmorejo", "Migas", "Kebab", "Perrito caliente", "Burrito", "Quesadilla", "Dim sum", "Poke", "Falafel", "Hummus", "Tarta de queso", "Brownie", "Macaron", "Tiramisú"] },
+    { "id": "disney", "nombre": "Disney", "icono": "🏰", "palabras": ["La Sirenita", "El Rey León", "Frozen", "Aladdín", "Blancanieves", "Mulan", "Toy Story", "Cenicienta", "Coco", "Encanto", "Moana", "Enredados", "Los Increíbles", "Buscando a Nemo", "Zootrópolis", "Peter Pan", "La Bella y la Bestia", "Hércules", "Lilo y Stitch", "Vaiana", "Bambi", "Pinocho", "Wall-E", "Ratatouille", "Up", "Valiente", "Tarzán", "Pocahontas", "Dumbo", "Luca", "Soul", "Pesadilla antes de Navidad", "Fantasía", "Los Aristogatos", "La Dama y el Vagabundo", "El Libro de la Selva", "Cars", "Monstruos S.A.", "Del Revés", "Onward", "Elemental"] },
+    { "id": "espana", "nombre": "España", "icono": "🇪🇸", "palabras": ["Flamenco", "Paella", "Sagrada Familia", "Real Madrid", "La Alhambra", "Camino de Santiago", "Siesta", "Feria de Abril", "Sanfermines", "Tortilla de patatas", "Movida Madrileña", "Semana Santa", "Costa del Sol", "Ibiza", "Rioja", "Museo del Prado", "La Tomatina", "Gaudí", "Las Meninas", "El Rocío", "Toledo", "Sevilla", "San Sebastián", "Jamón ibérico", "Sangría", "Bota de vino", "Castañuelas", "Torero", "Fallas de Valencia", "Rastro de Madrid", "Madrid", "Granada", "Bilbao", "Valencia", "Málaga", "Canarias", "Baleares", "Guardia Civil", "Correfoc", "Botijo"] },
+    { "id": "dibujos_animados", "nombre": "Dibujos animados", "icono": "🖍️", "palabras": ["Bob Esponja", "Los Picapiedra", "Tom y Jerry", "Scooby-Doo", "Peppa Pig", "Bugs Bunny", "Popeye", "El Coyote y el Correcaminos", "Hora de Aventuras", "Los Padrinos Mágicos", "Ben 10", "El Pájaro Loco", "Los Pitufos", "Heidi", "David el Gnomo", "Inspector Gadget", "Los Autos Locos", "Hey Arnold", "Tortugas Ninja", "He-Man", "Thundercats", "Cazafantasmas", "Animaniacs", "Looney Tunes", "Daffy Duck", "Piolín", "Bob Patiño", "Doraemon"] },
+    { "id": "superheroes", "nombre": "Superhéroes", "icono": "🦸", "palabras": ["Superman", "Batman", "Spiderman", "Iron Man", "Wonder Woman", "Hulk", "Thor", "Flash", "Aquaman", "Capitán América", "Deadpool", "Joker", "Wolverine", "Linterna Verde", "Viuda Negra", "Doctor Strange", "Black Panther", "Capitana Marvel", "Robin", "Catwoman", "Los 4 Fantásticos", "Duende Verde", "Green Arrow", "Hawkeye", "Ant-Man", "Star-Lord", "Groot", "Rocket Raccoon", "Nightwing", "Shazam", "Cyborg", "Vision"] },
+    { "id": "celebraciones", "nombre": "Fiestas y celebraciones", "icono": "🎉", "palabras": ["Navidad", "Halloween", "Cumpleaños", "Boda", "San Valentín", "Año Nuevo", "Carnaval", "Comunión", "Graduación", "Baby shower", "Despedida de soltera", "Jubilación", "Aniversario", "Fin de curso", "Reyes Magos", "Nochevieja", "Día de la Madre", "Día del Padre", "Bautizo", "Inauguración", "Festival", "Feria", "Procesión", "Vigilia", "Brindis", "Sorpresa"] },
+    { "id": "emociones", "nombre": "Emociones", "icono": "😊", "palabras": ["Felicidad", "Tristeza", "Sorpresa", "Miedo", "Amor", "Celos", "Nostalgia", "Vergüenza", "Orgullo", "Ansiedad", "Euforia", "Ternura", "Rabia", "Culpa", "Esperanza", "Soledad", "Empatía", "Curiosidad", "Alivio", "Frustración", "Confianza", "Decepción", "Gratitud", "Compasión", "Asombro", "Aburrimiento", "Pánico", "Serenidad"] }
+  ];
+
+  function loadPackages(){
+    return fetch('packages.json')
+      .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
+      .then(function(data){ PACKAGES = data.paquetes; })
+      .catch(function(){ PACKAGES = PACKAGES_FALLBACK; })
+      .then(function(){
+        if (config.selectedPackages.length === 0){
+          // +18 packages start unselected — picking one goes through the confirm modal
+          config.selectedPackages = PACKAGES.filter(function(p){ return !isAdultContent(p); }).map(function(p){ return p.id; });
+        }
+        renderPackageList();
+        validateSetup();
+      });
+  }
+
+  var state = {
+    playerNames: [], // flat, index-aligned with playerTeams
+    playerTeams: [], // team index per player
+    playerScores: [], // correct-word count per player, index-aligned with playerNames
+    teams: [], // { score, memberIdxs, nextMemberPointer }
+    turnOrder: [], // one team index per turn, for the whole game
+    turnIdx: 0,
+    currentActorIdx: null,
+    turnCorrect: 0,
+    turnWords: [], // words guessed correctly during the current turn
+    turnResults: [],
+    wordDeck: [],
+    wordDeckIdx: 0,
+    timeRemaining: 60,
+    timerInterval: null,
+    audioCtx: null
+  };
+
+  var screenSetup = document.getElementById('screen-setup');
+  var screenGame = document.getElementById('screen-game');
+  var screenEnd = document.getElementById('screen-end');
+  var ALL_SCREENS = [screenSetup, screenGame, screenEnd];
+
+  function switchScreen(target){
+    ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
+    target.classList.remove('hidden');
+  }
+
+  // ---------- packages ----------
+  var packageListEl = document.getElementById('package-list');
+  var packageToggleAllBtn = document.getElementById('package-toggle-all-btn');
+  var packagesDropdownBtn = document.getElementById('packages-dropdown-btn');
+  var packagesDropdownPanel = document.getElementById('packages-dropdown-panel');
+  var packagesDropdownSummary = document.getElementById('packages-dropdown-summary');
+  var setupError = document.getElementById('setup-error');
+  var playersErrorEl = document.getElementById('players-error');
+  var teamsErrorEl = document.getElementById('teams-error');
+  var startBtn = document.getElementById('start-btn');
+  var setupStepPlayersEl = document.getElementById('setup-step-players');
+  var setupStepTeamsEl = document.getElementById('setup-step-teams');
+  var setupStepSettingsEl = document.getElementById('setup-step-settings');
+  var setupNavEl = document.getElementById('setup-nav');
+  var setupPrevBtn = document.getElementById('setup-prev-btn');
+  var setupNextBtn = document.getElementById('setup-next-btn');
+  var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
+
+  // 0 = jugadores, 1 = equipos, 2 = resto de ajustes — separate steps with
+  // explicit forward/back navigation instead of one long scrolling form
+  var setupStep = 0;
+  function renderSetupStep(){
+    setupStepPlayersEl.classList.toggle('hidden', setupStep !== 0);
+    setupStepTeamsEl.classList.toggle('hidden', setupStep !== 1);
+    setupStepSettingsEl.classList.toggle('hidden', setupStep !== 2);
+    setupNavEl.classList.toggle('hidden', setupStep === 2);
+    setupPrevBtn.classList.toggle('hidden', setupStep === 0);
+    if (setupStep === 1) renderTeamBoxes();
+  }
+  setupPrevBtn.addEventListener('click', function(){
+    if (setupStep > 0){ setupStep--; renderSetupStep(); validateSetup(); }
+  });
+  setupNextBtn.addEventListener('click', function(){
+    if (setupStep < 2 && !setupNextBtn.disabled){ setupStep++; renderSetupStep(); validateSetup(); }
+  });
+  setupFinalBackBtn.addEventListener('click', function(){
+    setupStep = 1;
+    renderSetupStep();
+    validateSetup();
+  });
+  renderSetupStep(); // sync nav buttons to setupStep's initial value on page load
+
+  function renderToggleAllLabel(){
+    if (!PACKAGES){ packageToggleAllBtn.textContent = 'Seleccionar todas'; return; }
+    packageToggleAllBtn.textContent = config.selectedPackages.length === PACKAGES.length ? 'Quitar todas' : 'Seleccionar todas';
+  }
+
+  function renderPackagesSummary(){
+    if (!PACKAGES){ packagesDropdownSummary.textContent = 'Cargando categorías…'; return; }
+    var total = PACKAGES.length;
+    var selected = config.selectedPackages.length;
+    if (selected === 0) packagesDropdownSummary.textContent = 'Ninguna categoría seleccionada';
+    else if (selected === total) packagesDropdownSummary.textContent = 'Todas las categorías (' + total + ')';
+    else packagesDropdownSummary.textContent = selected + ' de ' + total + ' categorías';
+  }
+
+  function renderPackageList(){
+    renderPackagesSummary();
+    if (!PACKAGES || PACKAGES.length === 0){
+      packageListEl.innerHTML = '<p class="chip-loading">Cargando categorías…</p>';
+      renderToggleAllLabel();
+      return;
+    }
+    packageListEl.innerHTML = PACKAGES.map(function(p){
+      var selected = config.selectedPackages.indexOf(p.id) !== -1;
+      return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-package-id="' + p.id + '">' +
+        '<span class="chip-icon">' + escapeHtml(p.icono || '📦') + '</span>' +
+        '<span class="chip-name">' + escapeHtml(p.nombre) + '</span>' +
+      '</button>';
+    }).join('');
+    renderToggleAllLabel();
+  }
+
+  function addPackage(id){
+    config.selectedPackages.push(id);
+    renderPackageList();
+    validateSetup();
+  }
+
+  packageListEl.addEventListener('click', function(e){
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    var id = chip.getAttribute('data-package-id');
+    var idx = config.selectedPackages.indexOf(id);
+    if (idx !== -1){
+      config.selectedPackages.splice(idx, 1);
+      renderPackageList();
+      validateSetup();
+      return;
+    }
+    var pkg = PACKAGES.filter(function(p){ return p.id === id; })[0];
+    if (isAdultContent(pkg)) confirmAdultContent(function(){ addPackage(id); });
+    else addPackage(id);
+  });
+
+  packageToggleAllBtn.addEventListener('click', function(){
+    if (!PACKAGES) return;
+    if (config.selectedPackages.length === PACKAGES.length){
+      config.selectedPackages = [];
+      renderPackageList();
+      validateSetup();
+      return;
+    }
+    function selectAll(){
+      config.selectedPackages = PACKAGES.map(function(p){ return p.id; });
+      renderPackageList();
+      validateSetup();
+    }
+    var hasUnselectedAdult = PACKAGES.some(function(p){
+      return isAdultContent(p) && config.selectedPackages.indexOf(p.id) === -1;
+    });
+    if (hasUnselectedAdult) confirmAdultContent(selectAll);
+    else selectAll();
+  });
+
+  packagesDropdownBtn.addEventListener('click', function(){
+    var isOpen = !packagesDropdownPanel.classList.contains('hidden');
+    packagesDropdownPanel.classList.toggle('hidden', isOpen);
+    packagesDropdownBtn.setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  // ---------- teams ----------
+  // Name entry (setup-step-players) and team assignment (setup-step-teams)
+  // are separate screens. Team membership is still a per-row property on
+  // config.rows; the "teams" step renders it as boxes (see renderTeamBoxes)
+  // instead of the flat name list.
+  var teamCountValueEl = document.getElementById('team-count-value');
+  var teamCountMinusBtn = document.getElementById('team-count-minus');
+  var teamCountPlusBtn = document.getElementById('team-count-plus');
+  var playersListEl = document.getElementById('mimica-players-list');
+  var randomizeTeamsBtn = document.getElementById('randomize-teams-btn');
+
+  function renderTeamCount(){
+    teamCountValueEl.textContent = config.numTeams;
+  }
+
+  function realPlayerCount(){
+    return config.rows.filter(function(r){ return r.name.trim(); }).length;
+  }
+
+  function leastPopulatedTeam(){
+    var counts = [];
+    for (var t = 0; t < config.numTeams; t++) counts.push(0);
+    config.rows.forEach(function(r){
+      if (r.name.trim()) counts[clamp(r.team || 0, 0, config.numTeams - 1)]++;
+    });
+    var minIdx = 0;
+    for (var t = 1; t < config.numTeams; t++){
+      if (counts[t] < counts[minIdx]) minIdx = t;
+    }
+    return minIdx;
+  }
+
+  // keeps exactly one empty row at the end, ready for the next player —
+  // its default team is whichever team currently has the fewest players
+  function normalizeTrailingSlot(){
+    var rows = config.rows;
+    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
+      rows.pop();
+    }
+    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
+      rows.push({ name: "", team: leastPopulatedTeam() });
+    }
+  }
+
+  // even round-robin split across every real player — used whenever the
+  // team count changes, since existing per-player picks don't carry over
+  // cleanly to a different number of teams
+  function autoBalanceAllTeams(){
+    var rows = config.rows;
+    var players = [];
+    rows.forEach(function(r, idx){
+      if (!r.name.trim()) return;
+      players.push(idx);
+    });
+    players.forEach(function(idx, i){
+      rows[idx].team = i % config.numTeams;
+    });
+  }
+
+  // shuffles every real player, then redistributes round-robin — random
+  // AND balanced, for the "🎲 Aleatorio" button
+  function randomizeAllTeams(){
+    var rows = config.rows;
+    var realIdxs = [];
+    rows.forEach(function(r, idx){ if (r.name.trim()) realIdxs.push(idx); });
+    shuffle(realIdxs);
+    realIdxs.forEach(function(idx, i){ rows[idx].team = i % config.numTeams; });
+    renderTeamBoxes();
+    persistPlayers();
+    validateSetup();
+  }
+  randomizeTeamsBtn.addEventListener('click', randomizeAllTeams);
+
+  function rowHtml(row, idx, rows){
+    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
+    if (isTrailingSlot){
+      return (
+        '<div class="player-row">' +
+          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
+            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="">' +
+        '</div>'
+      );
+    }
+    return (
+      '<div class="player-row">' +
+        '<input type="text" class="player-name-input" data-index="' + idx + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
+        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
+          (realPlayerCount() <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+      '</div>'
+    );
+  }
+
+  function renderPlayerRows(){
+    var rows = config.rows;
+    playersListEl.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
+  }
+
+  playersListEl.addEventListener('input', function(e){
+    var input = e.target.closest('.player-name-input');
+    if (!input) return;
+    var idx = parseInt(input.getAttribute('data-index'), 10);
+    config.rows[idx].name = input.value;
+    normalizeTrailingSlot();
+    persistPlayers();
+
+    var selStart = input.selectionStart, selEnd = input.selectionEnd;
+    renderPlayerRows();
+    var restored = playersListEl.querySelector('.player-name-input[data-index="' + idx + '"]');
+    if (restored){
+      restored.focus();
+      restored.setSelectionRange(selStart, selEnd);
+    }
+    validateSetup();
+  });
+
+  playersListEl.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.row-remove-btn');
+    if (removeBtn && !removeBtn.disabled){
+      var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
+      config.rows.splice(rIdx, 1);
+      normalizeTrailingSlot();
+      renderPlayerRows();
+      persistPlayers();
+      validateSetup();
+    }
+  });
+
+  // ---------- team boxes: drag a player's chip into another team's box ----------
+  var teamBoxesEl = document.getElementById('team-boxes');
+
+  function renderTeamBoxes(){
+    var rows = config.rows;
+    var boxesHtml = '';
+    for (var t = 0; t < config.numTeams; t++){
+      var members = [];
+      rows.forEach(function(r, idx){
+        if (r.name.trim() && clamp(r.team || 0, 0, config.numTeams - 1) === t) members.push({ idx: idx, name: r.name });
+      });
+      boxesHtml +=
+        '<div class="team-box team-color-' + t + '" data-team="' + t + '">' +
+          '<div class="team-box-header"><span class="team-box-dot team-color-' + t + '"></span>' + escapeHtml(TEAM_NAMES[t]) + '</div>' +
+          '<div class="team-box-chips">' +
+            (members.length ?
+              members.map(function(m){ return '<button type="button" class="team-box-chip team-color-' + t + '" data-index="' + m.idx + '">' + escapeHtml(m.name) + '</button>'; }).join('') :
+              '<span class="team-box-empty">Sin jugadores</span>') +
+          '</div>' +
+        '</div>';
+    }
+    teamBoxesEl.innerHTML = boxesHtml;
+  }
+
+  // move/up listeners are attached to window only while a drag is active,
+  // same idiom as the player-row reorder gesture used elsewhere in the app
+  var teamDragState = null;
+
+  function onTeamDragMove(e){
+    if (!teamDragState) return;
+    e.preventDefault();
+    var s = teamDragState;
+    s.chip.style.left = (e.clientX - s.offsetX) + 'px';
+    s.chip.style.top = (e.clientY - s.offsetY) + 'px';
+
+    var elUnder = document.elementFromPoint(e.clientX, e.clientY);
+    var box = elUnder ? elUnder.closest('.team-box') : null;
+    if (s.hoverBox && s.hoverBox !== box) s.hoverBox.classList.remove('drag-over');
+    if (box) box.classList.add('drag-over');
+    s.hoverBox = box;
+  }
+
+  function onTeamDragEnd(){
+    if (!teamDragState) return;
+    var s = teamDragState;
+    window.removeEventListener('pointermove', onTeamDragMove);
+    window.removeEventListener('pointerup', onTeamDragEnd);
+    window.removeEventListener('pointercancel', onTeamDragEnd);
+
+    if (s.hoverBox){
+      s.hoverBox.classList.remove('drag-over');
+      config.rows[s.idx].team = parseInt(s.hoverBox.getAttribute('data-team'), 10);
+      persistPlayers();
+    }
+    teamDragState = null;
+    renderTeamBoxes();
+    validateSetup();
+  }
+
+  teamBoxesEl.addEventListener('pointerdown', function(e){
+    var chip = e.target.closest('.team-box-chip');
+    if (!chip) return;
+    e.preventDefault();
+    var rect = chip.getBoundingClientRect();
+    teamDragState = {
+      idx: parseInt(chip.getAttribute('data-index'), 10),
+      chip: chip,
+      offsetX: e.clientX - rect.left,
+      offsetY: e.clientY - rect.top,
+      hoverBox: null
+    };
+    chip.classList.add('dragging');
+    chip.style.width = rect.width + 'px';
+    chip.style.left = rect.left + 'px';
+    chip.style.top = rect.top + 'px';
+    window.addEventListener('pointermove', onTeamDragMove, { passive: false });
+    window.addEventListener('pointerup', onTeamDragEnd);
+    window.addEventListener('pointercancel', onTeamDragEnd);
+  });
+
+  function reassignTeamsAfterCountChange(){
+    autoBalanceAllTeams();
+    var rows = config.rows;
+    if (rows.length && !rows[rows.length - 1].name.trim()) rows[rows.length - 1].team = leastPopulatedTeam();
+    renderTeamBoxes();
+    persistPlayers();
+    validateSetup();
+  }
+  teamCountMinusBtn.addEventListener('click', function(){
+    config.numTeams = clamp(config.numTeams - 1, MIN_TEAMS, MAX_TEAMS);
+    renderTeamCount();
+    popValue(teamCountValueEl);
+    reassignTeamsAfterCountChange();
+  });
+  teamCountPlusBtn.addEventListener('click', function(){
+    config.numTeams = clamp(config.numTeams + 1, MIN_TEAMS, MAX_TEAMS);
+    renderTeamCount();
+    popValue(teamCountValueEl);
+    reassignTeamsAfterCountChange();
+  });
+
+  // ---------- rounds ----------
+  var roundsValueEl = document.getElementById('rounds-value');
+  var roundsMinusBtn = document.getElementById('rounds-minus');
+  var roundsPlusBtn = document.getElementById('rounds-plus');
+
+  roundsMinusBtn.addEventListener('click', function(){
+    config.rounds = clamp(config.rounds - 1, 1, MAX_ROUNDS);
+    roundsValueEl.textContent = config.rounds;
+    popValue(roundsValueEl);
+  });
+  roundsPlusBtn.addEventListener('click', function(){
+    config.rounds = clamp(config.rounds + 1, 1, MAX_ROUNDS);
+    roundsValueEl.textContent = config.rounds;
+    popValue(roundsValueEl);
+  });
+
+  // ---------- turn duration ----------
+  var turnSecondsValueEl = document.getElementById('turn-seconds-value');
+  var turnSecondsMinusBtn = document.getElementById('turn-seconds-minus');
+  var turnSecondsPlusBtn = document.getElementById('turn-seconds-plus');
+
+  function renderTurnSeconds(){
+    turnSecondsValueEl.textContent = formatMMSS(config.turnSeconds);
+  }
+  turnSecondsMinusBtn.addEventListener('click', function(){
+    config.turnSeconds = clamp(config.turnSeconds - TURN_SECONDS_STEP, MIN_TURN_SECONDS, MAX_TURN_SECONDS);
+    renderTurnSeconds();
+    popValue(turnSecondsValueEl);
+  });
+  turnSecondsPlusBtn.addEventListener('click', function(){
+    config.turnSeconds = clamp(config.turnSeconds + TURN_SECONDS_STEP, MIN_TURN_SECONDS, MAX_TURN_SECONDS);
+    renderTurnSeconds();
+    popValue(turnSecondsValueEl);
+  });
+
+  // ---------- skip penalty ----------
+  var skipSecondsValueEl = document.getElementById('skip-seconds-value');
+  var skipSecondsMinusBtn = document.getElementById('skip-seconds-minus');
+  var skipSecondsPlusBtn = document.getElementById('skip-seconds-plus');
+
+  function renderSkipSeconds(){
+    skipSecondsValueEl.textContent = config.skipPenaltySeconds;
+  }
+  skipSecondsMinusBtn.addEventListener('click', function(){
+    config.skipPenaltySeconds = clamp(config.skipPenaltySeconds - SKIP_SECONDS_STEP, MIN_SKIP_SECONDS, MAX_SKIP_SECONDS);
+    renderSkipSeconds();
+    popValue(skipSecondsValueEl);
+  });
+  skipSecondsPlusBtn.addEventListener('click', function(){
+    config.skipPenaltySeconds = clamp(config.skipPenaltySeconds + SKIP_SECONDS_STEP, MIN_SKIP_SECONDS, MAX_SKIP_SECONDS);
+    renderSkipSeconds();
+    popValue(skipSecondsValueEl);
+  });
+
+  function buildWordPool(){
+    var pool = [];
+    PACKAGES.forEach(function(p){
+      if (config.selectedPackages.indexOf(p.id) !== -1) pool = pool.concat(p.palabras);
+    });
+    return pool;
+  }
+
+  // the deck reshuffles and wraps once exhausted — skipped words stay in it,
+  // so they can resurface later rather than being discarded for the game
+  function drawNextWord(){
+    if (state.wordDeckIdx >= state.wordDeck.length){
+      shuffle(state.wordDeck);
+      state.wordDeckIdx = 0;
+    }
+    return state.wordDeck[state.wordDeckIdx++];
+  }
+
+  function validateSetup(){
+    var rows = config.rows;
+    var playerMsgs = [];
+    if (realPlayerCount() < MIN_PLAYERS) playerMsgs.push("Necesitas al menos " + MIN_PLAYERS + " jugadores.");
+    var playersValid = playerMsgs.length === 0;
+
+    var teamMsgs = [];
+    if (playersValid){
+      var teamCounts = [];
+      for (var t = 0; t < config.numTeams; t++) teamCounts.push(0);
+      rows.forEach(function(r){
+        if (!r.name.trim()) return;
+        teamCounts[clamp(r.team || 0, 0, config.numTeams - 1)]++;
+      });
+      var emptyTeamIdx = teamCounts.indexOf(0);
+      if (emptyTeamIdx !== -1) teamMsgs.push(TEAM_NAMES[emptyTeamIdx] + " no tiene jugadores.");
+    }
+    var teamsValid = playersValid && teamMsgs.length === 0;
+
+    var settingsMsgs = [];
+    if (!PACKAGES) settingsMsgs.push("Cargando categorías…");
+    else if (config.selectedPackages.length === 0) settingsMsgs.push("Selecciona al menos una categoría.");
+    var settingsValid = settingsMsgs.length === 0;
+
+    playersErrorEl.textContent = playerMsgs[0] || "";
+    teamsErrorEl.textContent = teamMsgs[0] || "";
+    setupError.textContent = settingsMsgs[0] || "";
+    setupNextBtn.disabled = (setupStep === 0 && !playersValid) || (setupStep === 1 && !teamsValid);
+    startBtn.disabled = !(playersValid && teamsValid && settingsValid);
+    if (setupStep === 1) renderTeamBoxes();
+    return playersValid && teamsValid && settingsValid;
+  }
+
+  function enterSetup(){
+    renderPackageList();
+    renderTeamCount();
+    renderPlayerRows();
+    renderTeamBoxes();
+    renderTurnSeconds();
+    renderSkipSeconds();
+    setupStep = 0;
+    renderSetupStep();
+    validateSetup();
+    switchScreen(screenSetup);
+  }
+
+  // ---------- game screen: 60s timed team turns ----------
+  var turnIntroEl = document.getElementById('turn-intro');
+  var turnTeamBadgeEl = document.getElementById('turn-team-badge');
+  var turnPlayerNameEl = document.getElementById('turn-player-name');
+  var turnStartBtn = document.getElementById('turn-start-btn');
+  var turnPlayEl = document.getElementById('turn-play');
+  var mimicaTimerWrapEl = document.getElementById('mimica-timer-wrap');
+  var mimicaTimerEl = document.getElementById('mimica-timer');
+  var mimicaWordEl = document.getElementById('mimica-word');
+  var mimicaSkipBtn = document.getElementById('mimica-skip-btn');
+  var mimicaCorrectBtn = document.getElementById('mimica-correct-btn');
+  var turnEndEl = document.getElementById('turn-end');
+  var turnEndTitleEl = document.getElementById('turn-end-title');
+  var turnEndSubtitleEl = document.getElementById('turn-end-subtitle');
+  var turnEndScoreboardEl = document.getElementById('turn-end-scoreboard');
+  var turnEndWordsEl = document.getElementById('turn-end-words');
+  var turnContinueBtn = document.getElementById('turn-continue-btn');
+  var newRoundBtn = document.getElementById('new-round-btn');
+  var endTitleEl = document.getElementById('end-title');
+  var endSubtitleEl = document.getElementById('end-subtitle');
+  var endScoreboardEl = document.getElementById('end-scoreboard');
+  var endPlayerExtremesEl = document.getElementById('end-player-extremes');
+
+  function buildTurnOrder(){
+    var order = [];
+    for (var round = 0; round < config.rounds; round++){
+      for (var t = 0; t < config.numTeams; t++) order.push(t);
+    }
+    return order;
+  }
+
+  var TEAM_HEX = ['#5b8fe0', '#c9525c', '#4fbf7a', '#f2c94c'];
+
+  // ranks: equal scores share the same position (1º, 2º...); showRank swaps
+  // the mini pill from "team number" to "position" for the final results
+  function renderScoreboardRows(container, highlightWinner, showRank){
+    var scoresDesc = state.teams.map(function(t){ return t.score; }).sort(function(a, b){ return b - a; });
+    var maxScore = scoresDesc[0];
+    container.innerHTML = state.teams.map(function(team, t){
+      var isTop = highlightWinner && team.score === maxScore;
+      var pillLabel = showRank ? (scoresDesc.indexOf(team.score) + 1) + 'º' : (t + 1);
+      return '<div class="team-score-row' + (isTop ? ' winner' : '') + '">' +
+        '<span class="team-score-name"><span class="mini-score-pill team-color-' + t + '">' + pillLabel + '</span>' + escapeHtml(TEAM_NAMES[t]) + '</span>' +
+        '<span class="team-score-value">' + team.score + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  // who guessed the most / fewest words individually — ties list every name
+  function renderPlayerExtremes(container){
+    var scores = state.playerScores;
+    if (!scores.length){ container.innerHTML = ''; return; }
+    var maxScore = Math.max.apply(null, scores);
+    var minScore = Math.min.apply(null, scores);
+    if (maxScore === minScore){
+      container.innerHTML =
+        '<div class="end-player-extreme">' +
+          '<span class="end-player-extreme-label">🤝 Todos empatados</span>' +
+          '<span class="end-player-extreme-value">' + maxScore + (maxScore === 1 ? ' palabra' : ' palabras') + '</span>' +
+        '</div>';
+      return;
+    }
+    var topNames = state.playerNames.filter(function(n, i){ return scores[i] === maxScore; });
+    var lowNames = state.playerNames.filter(function(n, i){ return scores[i] === minScore; });
+    container.innerHTML =
+      '<div class="end-player-extreme">' +
+        '<span class="end-player-extreme-label">🏅 ' + escapeHtml(topNames.join(', ')) + '</span>' +
+        '<span class="end-player-extreme-value">' + maxScore + (maxScore === 1 ? ' palabra' : ' palabras') + '</span>' +
+      '</div>' +
+      '<div class="end-player-extreme">' +
+        '<span class="end-player-extreme-label">🥴 ' + escapeHtml(lowNames.join(', ')) + '</span>' +
+        '<span class="end-player-extreme-value">' + minScore + (minScore === 1 ? ' palabra' : ' palabras') + '</span>' +
+      '</div>';
+  }
+
+  function startTurn(){
+    var teamIdx = state.turnOrder[state.turnIdx];
+    var team = state.teams[teamIdx];
+    var actorIdx = team.memberIdxs[team.nextMemberPointer % team.memberIdxs.length];
+    team.nextMemberPointer++;
+    state.currentActorIdx = actorIdx;
+    state.turnCorrect = 0;
+    state.turnWords = [];
+    state.turnResults = [];
+    state.timeRemaining = config.turnSeconds;
+
+    turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
+    turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
+    turnPlayerNameEl.textContent = state.playerNames[actorIdx];
+
+    turnIntroEl.classList.remove('hidden');
+    turnPlayEl.classList.add('hidden');
+    turnEndEl.classList.add('hidden');
+  }
+
+  // ---------- countdown + alarm (same pattern as Impostor/Hombres Lobo) ----------
+  function updateTimerDisplay(totalSeconds){
+    mimicaTimerEl.textContent = formatMMSS(totalSeconds);
+  }
+  function stopTimer(){
+    if (state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
+  }
+  function unlockAlarmAudio(){
+    if (!state.audioCtx){
+      try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e){ state.audioCtx = null; }
+    } else if (state.audioCtx.state === 'suspended'){
+      state.audioCtx.resume();
+    }
+  }
+  function playAlarmSound(){
+    if (!state.audioCtx) return;
+    var now = state.audioCtx.currentTime;
+    [0, 0.3, 0.6].forEach(function(offset){
+      var osc = state.audioCtx.createOscillator();
+      var gain = state.audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.0001, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.25, now + offset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.25);
+      osc.connect(gain).connect(state.audioCtx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.3);
+    });
+  }
+  function playCorrectSound(){
+    if (!state.audioCtx) return;
+    var now = state.audioCtx.currentTime;
+    [{ t: 0, f: 880 }, { t: 0.09, f: 1320 }].forEach(function(n){
+      var osc = state.audioCtx.createOscillator();
+      var gain = state.audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = n.f;
+      gain.gain.setValueAtTime(0.0001, now + n.t);
+      gain.gain.exponentialRampToValueAtTime(0.3, now + n.t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + n.t + 0.18);
+      osc.connect(gain).connect(state.audioCtx.destination);
+      osc.start(now + n.t);
+      osc.stop(now + n.t + 0.2);
+    });
+  }
+  function playSkipSound(){
+    if (!state.audioCtx) return;
+    var now = state.audioCtx.currentTime;
+    var osc = state.audioCtx.createOscillator();
+    var gain = state.audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(420, now);
+    osc.frequency.exponentialRampToValueAtTime(220, now + 0.18);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.22, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    osc.connect(gain).connect(state.audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.22);
+  }
+
+  turnStartBtn.addEventListener('click', function(){
+    unlockAlarmAudio();
+    turnIntroEl.classList.add('hidden');
+    turnPlayEl.classList.remove('hidden');
+    mimicaTimerWrapEl.classList.remove('time-up');
+    mimicaWordEl.textContent = drawNextWord();
+    updateTimerDisplay(state.timeRemaining);
+    stopTimer();
+    state.timerInterval = setInterval(function(){
+      state.timeRemaining--;
+      updateTimerDisplay(state.timeRemaining);
+      if (state.timeRemaining <= 0) endTurn();
+    }, 1000);
+  });
+
+  mimicaCorrectBtn.addEventListener('click', function(){
+    playCorrectSound();
+    var teamIdx = state.turnOrder[state.turnIdx];
+    state.teams[teamIdx].score++;
+    state.playerScores[state.currentActorIdx]++;
+    state.turnCorrect++;
+    state.turnWords.push(mimicaWordEl.textContent);
+    state.turnResults.push({ word: mimicaWordEl.textContent, correct: true });
+    mimicaWordEl.textContent = drawNextWord();
+  });
+  mimicaSkipBtn.addEventListener('click', function(){
+    playSkipSound();
+    state.turnResults.push({ word: mimicaWordEl.textContent, correct: false });
+    state.timeRemaining = Math.max(0, state.timeRemaining - config.skipPenaltySeconds);
+    updateTimerDisplay(state.timeRemaining);
+    mimicaTimerEl.classList.remove('skip-pulse');
+    void mimicaTimerEl.offsetWidth;
+    mimicaTimerEl.classList.add('skip-pulse');
+    if (state.timeRemaining <= 0){ endTurn(false); return; }
+    mimicaWordEl.textContent = drawNextWord();
+  });
+
+  function endTurn(hasActiveWord){
+    stopTimer();
+    mimicaTimerWrapEl.classList.add('time-up');
+    playAlarmSound();
+    turnPlayEl.classList.add('hidden');
+    turnEndEl.classList.remove('hidden');
+
+    var teamIdx = state.turnOrder[state.turnIdx];
+    if (hasActiveWord !== false) state.turnResults.push({ word: mimicaWordEl.textContent, correct: false });
+    turnEndSubtitleEl.textContent = state.playerNames[state.currentActorIdx] + ' jugó para ' + TEAM_NAMES[teamIdx] +
+      ' y acertó ' + state.turnCorrect + (state.turnCorrect === 1 ? ' palabra.' : ' palabras.');
+    renderTurnResults();
+
+    var isLastTurn = state.turnIdx >= state.turnOrder.length - 1;
+    turnContinueBtn.textContent = isLastTurn ? 'Ver resultados' : 'Continuar';
+  }
+
+  function renderTurnResults(){
+    var teamIdx = state.turnOrder[state.turnIdx];
+    turnEndWordsEl.innerHTML = state.turnResults.map(function(result, index){
+      return '<button type="button" class="mimica-word-pill team-color-' + teamIdx + (result.correct ? '' : ' turn-missed') + '" data-index="' + index + '" aria-label="Marcar ' + escapeHtml(result.word) + (result.correct ? ' como no acertada' : ' como acertada') + '">' + escapeHtml(result.word) + '</button>';
+    }).join('');
+    renderScoreboardRows(turnEndScoreboardEl, false, false);
+  }
+
+  turnEndWordsEl.addEventListener('click', function(e){
+    var pill = e.target.closest('.mimica-word-pill');
+    if (!pill) return;
+    var result = state.turnResults[parseInt(pill.getAttribute('data-index'), 10)];
+    var scoreChange = result.correct ? -1 : 1;
+    result.correct = !result.correct;
+    var teamIdx = state.turnOrder[state.turnIdx];
+    state.teams[teamIdx].score += scoreChange;
+    state.playerScores[state.currentActorIdx] += scoreChange;
+    state.turnCorrect += scoreChange;
+    renderTurnResults();
+  });
+
+  turnContinueBtn.addEventListener('click', function(){
+    state.turnIdx++;
+    if (state.turnIdx >= state.turnOrder.length) showGameEnd();
+    else startTurn();
+  });
+
+  function showGameEnd(){
+    var maxScore = Math.max.apply(null, state.teams.map(function(t){ return t.score; }));
+    var winners = state.teams.map(function(t, i){ return i; }).filter(function(i){ return state.teams[i].score === maxScore; });
+    endTitleEl.textContent = winners.length > 1 ? '¡EMPATE!' : '¡' + TEAM_NAMES[winners[0]].toUpperCase() + ' GANA!';
+    endSubtitleEl.textContent = winners.length > 1 ?
+      'Varios equipos han empatado con ' + maxScore + (maxScore === 1 ? ' punto.' : ' puntos.') :
+      'Con ' + maxScore + (maxScore === 1 ? ' punto.' : ' puntos.');
+    renderScoreboardRows(endScoreboardEl, true, true);
+    renderPlayerExtremes(endPlayerExtremesEl);
+    switchScreen(screenEnd);
+  }
+
+  startBtn.addEventListener('click', function(){
+    if (!validateSetup()) return;
+    config.rows.forEach(function(r){ r.name = r.name.trim(); });
+
+    var realRows = config.rows.filter(function(r){ return r.name !== ""; });
+    state.playerNames = realRows.map(function(r){ return r.name; });
+    state.playerTeams = realRows.map(function(r){ return clamp(r.team || 0, 0, config.numTeams - 1); });
+    state.playerScores = realRows.map(function(){ return 0; });
+
+    state.teams = [];
+    for (var t = 0; t < config.numTeams; t++){
+      var memberIdxs = [];
+      state.playerTeams.forEach(function(teamIdx, idx){ if (teamIdx === t) memberIdxs.push(idx); });
+      state.teams.push({ score: 0, memberIdxs: memberIdxs, nextMemberPointer: 0 });
+    }
+
+    state.turnOrder = buildTurnOrder();
+    state.turnIdx = 0;
+    state.wordDeck = shuffle(buildWordPool());
+    state.wordDeckIdx = 0;
+
+    switchScreen(screenGame);
+    startTurn();
+  });
+
+  newRoundBtn.addEventListener('click', enterSetup);
+
+  // ---------- how-to-play guide ----------
+  setupModal(
+    document.querySelectorAll('.ayuda-trigger'),
+    document.getElementById('guide-modal-backdrop'),
+    document.getElementById('guide-modal-close')
+  );
+
+  // ---------- back to setup ----------
+  initBackToSetupConfirm(function(){ stopTimer(); enterSetup(); });
+
+  // ---------- init ----------
+  autoBalanceAllTeams();
+  normalizeTrailingSlot();
+  renderTeamCount();
+  renderPlayerRows();
+  renderTeamBoxes();
+  renderTurnSeconds();
+  renderSkipSeconds();
+  loadPackages();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="analytics.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Game Hub</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="78" font-size="72" text-anchor="middle">%F0%9F%8E%AE</text></svg>'>
+<link rel="stylesheet" href="shared.css">
+<style>
+  html,body{
+    /* flat solid fill — a multi-layer gradient here used to leave gaps of
+       the raw background color showing on some viewports/scroll ranges */
+    background-color:var(--bg2);
+  }
+  .mode-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:14px;
+  }
+  .mode-card{
+    position:relative;
+    aspect-ratio:1 / 1;
+    /* grid items default to min-width:auto (sized to fit content) — without
+       this, some mobile browsers let the card refuse to shrink to its 1fr
+       track and spill past the screen edge */
+    min-width:0;
+    padding:16px 12px;
+    border-radius:18px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    opacity:0;
+    transition:transform .15s, background .15s, border-color .15s;
+  }
+  /* cards stay invisible until every icon has preloaded (see the script at
+     the bottom) — otherwise they pop in one by one as each icon happens to
+     finish loading, instead of appearing together */
+  .mode-grid.ready .mode-card{animation:modeIn .5s ease forwards;}
+  .mode-grid .mode-card:nth-child(1){animation-delay:.05s;}
+  .mode-grid .mode-card:nth-child(2){animation-delay:.1s;}
+  .mode-grid .mode-card:nth-child(3){animation-delay:.15s;}
+  .mode-grid .mode-card:nth-child(4){animation-delay:.2s;}
+  .mode-grid .mode-card:nth-child(5){animation-delay:.25s;}
+  .mode-grid .mode-card:nth-child(6){animation-delay:.3s;}
+  .mode-grid .mode-card:nth-child(7){animation-delay:.35s;}
+  .mode-grid .mode-card:nth-child(8){animation-delay:.4s;}
+  .mode-grid .mode-card:nth-child(9){animation-delay:.45s;}
+  .mode-grid .mode-card:nth-child(10){animation-delay:.5s;}
+  .mode-grid .mode-card:nth-child(11){animation-delay:.55s;}
+  .mode-grid .mode-card:nth-child(12){animation-delay:.6s;}
+  .mode-grid .mode-card:nth-child(13){animation-delay:.65s;}
+  .mode-grid .mode-card:nth-child(14){animation-delay:.7s;}
+  .mode-grid .mode-card:nth-child(15){animation-delay:.75s;}
+  .mode-grid .mode-card:nth-child(16){animation-delay:.8s;}
+  @keyframes modeIn{
+    from{opacity:0; transform:translateY(10px) scale(0.98);}
+    to{opacity:1; transform:translateY(0) scale(1);}
+  }
+  .mode-card:active{transform:scale(0.97);}
+  .mode-card.theme-blue{border-color:rgba(91,143,224,0.4);}
+  .mode-card.theme-blue:active{background:rgba(91,143,224,0.12);}
+  .mode-card.theme-red{border-color:rgba(201,82,92,0.4);}
+  .mode-card.theme-red:active{background:rgba(201,82,92,0.12);}
+  .mode-card.theme-violet{border-color:rgba(139,109,214,0.4);}
+  .mode-card.theme-violet:active{background:rgba(139,109,214,0.12);}
+  .mode-card.theme-amber{border-color:rgba(217,151,79,0.4);}
+  .mode-card.theme-amber:active{background:rgba(217,151,79,0.12);}
+  .mode-card.theme-teal{border-color:rgba(63,168,156,0.4);}
+  .mode-card.theme-teal:active{background:rgba(63,168,156,0.12);}
+  .mode-card.theme-rose{border-color:rgba(201,81,143,0.4);}
+  .mode-card.theme-rose:active{background:rgba(201,81,143,0.12);}
+  .mode-card.theme-green{border-color:rgba(79,143,107,0.4);}
+  .mode-card.theme-green:active{background:rgba(79,143,107,0.12);}
+  .mode-card.theme-purple{border-color:rgba(169,112,224,0.4);}
+  .mode-card.theme-purple:active{background:rgba(169,112,224,0.12);}
+  .mode-card.theme-yellow{border-color:rgba(232,214,107,0.4);}
+  .mode-card.theme-yellow:active{background:rgba(232,214,107,0.12);}
+  .mode-card.theme-gold{border-color:rgba(242,201,76,0.4);}
+  .mode-card.theme-gold:active{background:rgba(242,201,76,0.12);}
+  .mode-card.theme-indigo{border-color:rgba(143,159,250,0.4);}
+  .mode-card.theme-indigo:active{background:rgba(143,159,250,0.12);}
+  .mode-card.theme-lime{border-color:rgba(168,217,106,0.4);}
+  .mode-card.theme-lime:active{background:rgba(168,217,106,0.12);}
+  .mode-card.theme-steel{border-color:rgba(125,148,171,0.4);}
+  .mode-card.theme-steel:active{background:rgba(125,148,171,0.12);}
+  .mode-card.theme-orange{border-color:rgba(240,149,79,0.4);}
+  .mode-card.theme-orange:active{background:rgba(240,149,79,0.12);}
+  .mode-card.theme-cyan{border-color:rgba(79,195,217,0.4);}
+  .mode-card.theme-cyan:active{background:rgba(79,195,217,0.12);}
+  .mode-card.theme-flame{border-color:rgba(217,80,47,0.4);}
+  .mode-card.theme-flame:active{background:rgba(217,80,47,0.12);}
+  .mode-card.disabled{cursor:default;}
+  .mode-card.disabled:active{transform:none;}
+  .mode-card.disabled.theme-rose:active{background:rgba(255,255,255,0.05);}
+  .mode-card.disabled .mode-icon-badge{opacity:0.55;}
+  .coming-soon-badge{
+    display:inline-block;
+    margin-top:6px;
+    padding:2px 8px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.12);
+    color:var(--text-dim);
+    font-size:0.58rem;
+    font-weight:700;
+    letter-spacing:0.3px;
+    text-transform:none;
+  }
+  .mode-icon-badge{
+    display:block;
+    flex:1;
+    min-height:0;
+    width:100%;
+    max-width:100%;
+    mask-repeat:no-repeat;
+    mask-position:center;
+    mask-size:contain;
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    -webkit-mask-size:contain;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+  }
+  /* placeholder for modes without a custom logo yet — swap for .mode-icon-badge once one exists */
+  .mode-icon-emoji{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:1;
+    min-height:0;
+    font-size:2.4rem;
+    line-height:1;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+  }
+  .mode-card.disabled .mode-icon-emoji{opacity:0.55;}
+  .mode-card-link{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    width:100%;
+    height:100%;
+    min-width:0;
+    color:inherit;
+    text-decoration:none;
+    text-align:center;
+  }
+  .theme-blue .mode-icon-badge{background-color:#9dc9ff;}
+  .theme-red .mode-icon-badge{background-color:#e8929c;}
+  .theme-violet .mode-icon-badge{background-color:#c3b1f0;}
+  .theme-amber .mode-icon-badge{background-color:#f0c896;}
+  .theme-teal .mode-icon-badge{background-color:#9ee0da;}
+  .theme-rose .mode-icon-badge{background-color:#eeaed0;}
+  .theme-green .mode-icon-badge{background-color:#8fd9ac;}
+  .theme-purple .mode-icon-badge{background-color:#a970e0;}
+  .theme-lime .mode-icon-badge{background-color:#a8d96a;}
+  .theme-steel .mode-icon-badge{background-color:#7d94ab;}
+  .theme-yellow .mode-icon-badge{background-color:#e8d66b;}
+  .theme-gold .mode-icon-badge{background-color:#f2c94c;}
+  .theme-indigo .mode-icon-badge{background-color:#8f9ffa;}
+  .theme-orange .mode-icon-badge{background-color:#f0954f;}
+  .theme-cyan .mode-icon-badge{background-color:#4fc3d9;}
+  .theme-flame .mode-icon-badge{background-color:#f5936a;}
+  .mode-info-btn{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:2;
+    flex-shrink:0;
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.08);
+    color:var(--text-dim);
+    font-size:1rem;
+    cursor:pointer;
+  }
+  .mode-info-btn:active{transform:scale(0.9);}
+
+  /* ---- game description overlay: near-opaque black over the page content ---- */
+  .desc-overlay-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.95);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px;
+    z-index:1000;
+    animation:fadeIn .2s ease;
+  }
+  .desc-overlay-close{
+    position:fixed;
+    top:20px;
+    right:20px;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.08);
+    color:#fff;
+    font-size:1.2rem;
+    cursor:pointer;
+    z-index:1001;
+  }
+  .desc-overlay-close:active{transform:scale(0.9);}
+  .desc-overlay{
+    max-width:380px;
+    text-align:center;
+  }
+  .desc-overlay-icon{
+    display:block;
+    width:64px;
+    height:64px;
+    margin:0 auto 16px;
+    mask-repeat:no-repeat;
+    mask-position:center;
+    mask-size:contain;
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    -webkit-mask-size:contain;
+  }
+  .desc-overlay-title{
+    font-family:var(--font-display);
+    font-size:1.5rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-bottom:14px;
+    color:#fff;
+  }
+  .desc-overlay-text{
+    font-size:1rem;
+    line-height:1.6;
+    color:rgba(244,242,255,0.85);
+  }
+
+  .hub-logo{
+    width:100%;
+    max-width:220px;
+    aspect-ratio:1408 / 768;
+    margin:4px auto 8px;
+    mask-image:url('resources/images/hub/logo-logo.svg');
+    -webkit-mask-image:url('resources/images/hub/logo-logo.svg');
+    mask-repeat:no-repeat;
+    -webkit-mask-repeat:no-repeat;
+    mask-position:center;
+    -webkit-mask-position:center;
+    mask-size:contain;
+    -webkit-mask-size:contain;
+    background:linear-gradient(90deg, #9dc9ff, #e8929c, #c3b1f0, #9ee0da, #9dc9ff);
+    background-size:250% auto;
+    animation:hubTitleShine 3.5s ease-in-out infinite;
+  }
+  @keyframes hubTitleShine{
+    0%, 100%{background-position:0% center;}
+    50%{background-position:100% center;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hub-logo{animation:none;}
+  }
+  .hub-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:18px;
+    color:var(--text-dim);
+    font-size:0.75rem;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="screen" id="screen-mode">
+    <div class="hub-logo" role="img" aria-label="Game Hub"></div>
+
+    <a href="https://forms.gle/ne3tXqPzfKN98PuK6" target="_blank" rel="noopener noreferrer" class="suggestion-link">💡 Enviar una sugerencia</a>
+
+    <div class="mode-grid">
+      <div class="card mode-card theme-red">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/impostor-logo.svg" data-color="#e8929c" data-title="Impostor" data-desc="Todos ven la misma palabra... menos el impostor. Tú decides quién miente, o lo dejas al azar con temáticas.">ⓘ</button>
+        <a href="impostor.html" class="mode-card-link" aria-label="Impostor">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/impostor-logo.svg');-webkit-mask-image:url('resources/images/hub/impostor-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-violet">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/hombres-lobo-logo.svg" data-color="#c3b1f0" data-title="Hombres Lobo" data-desc="Lobos contra aldeanos: de noche se caza, de día se vota. Roles y expansiones totalmente personalizables.">ⓘ</button>
+        <a href="hombres-lobo.html" class="mode-card-link" aria-label="Hombres Lobo">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/hombres-lobo-logo.svg');-webkit-mask-image:url('resources/images/hub/hombres-lobo-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-steel">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/codigo-secreto-logo.svg" data-color="#7d94ab" data-title="Código Secreto" data-desc="Dos equipos, un tablero de 25 palabras y una clave secreta. Da pistas de una palabra para que tu equipo adivine las suyas sin decir la del asesino.">ⓘ</button>
+        <a href="codigo-secreto.html" class="mode-card-link" aria-label="Código Secreto">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/codigo-secreto-logo.svg');-webkit-mask-image:url('resources/images/hub/codigo-secreto-logo.svg');"></span>
+        </a>
+      </div>
+
+      <div class="card mode-card theme-green">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/times-up-logo.svg" data-color="#8fd9ac" data-title="Time's Up" data-desc="Formad equipos y adivinad personajes en 3 fases: descripción libre, una sola palabra y solo mímica. Mismas 40 cartas en las 3 rondas.">ⓘ</button>
+        <a href="times-up.html" class="mode-card-link" aria-label="Time's Up">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/times-up-logo.svg');-webkit-mask-image:url('resources/images/hub/times-up-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-teal">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/verdad-o-reto-logo.svg" data-color="#9ee0da" data-title="Verdad o Reto" data-desc="Elige verdad o reto y que salga lo que tenga que salir. Con categorías suaves, de fiesta y +18.">ⓘ</button>
+        <a href="verdad-o-reto.html" class="mode-card-link" aria-label="Verdad o Reto">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/verdad-o-reto-logo.svg');-webkit-mask-image:url('resources/images/hub/verdad-o-reto-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-amber">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/mimica-logo.svg" data-color="#f0c896" data-title="Mímica" data-desc="Te toca actuar sin hablar y que los demás adivinen la palabra. Contrarreloj y por turnos.">ⓘ</button>
+        <a href="mimica.html" class="mode-card-link" aria-label="Mímica">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/mimica-logo.svg');-webkit-mask-image:url('resources/images/hub/mimica-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-flame">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/patata-caliente-logo.svg" data-color="#f5936a" data-title="Patata Caliente" data-desc="Aparece un tema y os pasáis el móvil diciendo palabras relacionadas mientras la mecha suena cada vez más rápido. Cuando explota, quien lo tenga en la mano pierde la ronda. Sin jugadores ni equipos que configurar.">ⓘ</button>
+        <a href="patata-caliente.html" class="mode-card-link" aria-label="Patata Caliente">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/patata-caliente-logo.svg');-webkit-mask-image:url('resources/images/hub/patata-caliente-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-gold">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/yo-nunca-logo.svg" data-color="#f2c94c" data-title="Yo Nunca" data-desc="El clásico de las confesiones. Si lo has hecho, pierdes una vida. El último con vidas gana.">ⓘ</button>
+        <a href="yo-nunca.html" class="mode-card-link" aria-label="Yo Nunca">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/yo-nunca-logo.svg');-webkit-mask-image:url('resources/images/hub/yo-nunca-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-orange">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/picolo-logo.svg" data-color="#f0954f" data-title="Picolo" data-desc="El clásico juego de beber: retos, preguntas, tragos que repartir e interacciones entre jugadores. Infinito, sin rondas — vosotros lleváis la cuenta.">ⓘ</button>
+        <a href="picolo.html" class="mode-card-link" aria-label="Picolo">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/picolo-logo.svg');-webkit-mask-image:url('resources/images/hub/picolo-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-lime">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/trivial-logo.svg" data-color="#a8d96a" data-title="Trivial Pursuit" data-desc="Preguntas de cultura general por equipos. Acierta y suma puntos, agota el mazo y gana quien más sepa.">ⓘ</button>
+        <a href="trivial.html" class="mode-card-link" aria-label="Trivial Pursuit">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/trivial-logo.svg');-webkit-mask-image:url('resources/images/hub/trivial-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-purple">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/taboo-logo.svg" data-color="#a970e0" data-title="Taboo" data-desc="Describe la palabra a tu equipo sin decir ninguna de las palabras prohibidas. El equipo contrario vigila y puede cantarte falta.">ⓘ</button>
+        <a href="tabu.html" class="mode-card-link" aria-label="Taboo">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/taboo-logo.svg');-webkit-mask-image:url('resources/images/hub/taboo-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-yellow">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/quien-es-mas-probable-que-logo.svg" data-color="#e8d66b" data-title="¿Quién es más probable?" data-desc="Una frase, un grupo, un dedo señalando. Vota quién de todos encaja mejor con cada situación.">ⓘ</button>
+        <a href="quien-es-mas-probable.html" class="mode-card-link" aria-label="¿Quién es más probable?">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/quien-es-mas-probable-que-logo.svg');-webkit-mask-image:url('resources/images/hub/quien-es-mas-probable-que-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-indigo">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/que-harias-si-logo.svg" data-color="#8f9ffa" data-title="¿Qué Harías Si...?" data-desc="Escenarios imposibles para debatir entre risas. Cada uno responde en su turno qué haría.">ⓘ</button>
+        <a href="que-harias-si.html" class="mode-card-link" aria-label="¿Qué Harías Si...?">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/que-harias-si-logo.svg');-webkit-mask-image:url('resources/images/hub/que-harias-si-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-cyan">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/que-preferirias-logo.svg" data-color="#4fc3d9" data-title="¿Qué Preferirías?" data-desc="Dos opciones al azar de una gran pila de posibilidades — casi nunca sale la misma pareja dos veces. Elige y debatid por qué.">ⓘ</button>
+        <a href="que-preferirias.html" class="mode-card-link" aria-label="¿Qué Preferirías?">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/que-preferirias-logo.svg');-webkit-mask-image:url('resources/images/hub/que-preferirias-logo.svg');"></span>
+        </a>
+      </div>
+
+      <div class="card mode-card theme-blue">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/detective-club-logo.svg" data-color="#8fc1f0" data-title="Detective Club" data-desc="Un jugador no conoce la palabra secreta y debe disimular. Pistas con cartas Dixit, votos en privado y puntos en cada ronda.">ⓘ</button>
+        <a href="detective-club.html" class="mode-card-link" aria-label="Detective Club">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/detective-club-logo.svg');-webkit-mask-image:url('resources/images/hub/detective-club-logo.svg');"></span>
+          </a>
+      </div>
+
+      <div class="card mode-card theme-rose disabled">
+        <button type="button" class="mode-info-btn" aria-label="Descripción" data-icon="resources/images/hub/hitster-logo.svg" data-color="#eeaed0" data-title="Hitster" data-desc="Un dispositivo por equipo: escuchad la canción y colocadla en vuestra línea de tiempo. Varias épocas y ediciones.">ⓘ</button>
+        <span class="mode-card-link" aria-label="Hitster">
+          <span class="mode-icon-badge" style="mask-image:url('resources/images/hub/hitster-logo.svg');-webkit-mask-image:url('resources/images/hub/hitster-logo.svg');"></span>
+          <span class="coming-soon-badge">Próximamente</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="hub-footer">
+      <span>Creado por Alberto Hernández</span>
+      <span>v<span id="hub-version">…</span></span>
+    </div>
+  </div>
+
+  <!-- GAME DESCRIPTION OVERLAY -->
+  <div class="desc-overlay-backdrop hidden" id="desc-overlay-backdrop">
+    <button type="button" class="desc-overlay-close" id="desc-overlay-close">✕</button>
+    <div class="desc-overlay">
+      <span class="desc-overlay-icon" id="desc-overlay-icon"></span>
+      <div class="desc-overlay-title" id="desc-overlay-title"></div>
+      <p class="desc-overlay-text" id="desc-overlay-text"></p>
+    </div>
+  </div>
+
+</div>
+<script>
+(function(){
+  "use strict";
+
+  // the mode cards stay hidden (see .mode-grid:not(.ready) .mode-card in the
+  // <style>) until every game icon has preloaded, so they all appear together
+  // instead of popping in one by one as each icon happens to finish loading
+  (function revealModeGridWhenReady(){
+    var grid = document.querySelector('.mode-grid');
+    if (!grid) return;
+    var urls = Array.prototype.map.call(
+      grid.querySelectorAll('.mode-info-btn'),
+      function(btn){ return btn.getAttribute('data-icon'); }
+    ).filter(Boolean);
+
+    function reveal(){ grid.classList.add('ready'); }
+
+    if (!urls.length){ reveal(); return; }
+    var settled = 0;
+    urls.forEach(function(url){
+      var img = new Image();
+      img.onload = img.onerror = function(){
+        settled++;
+        if (settled === urls.length) reveal();
+      };
+      img.src = url;
+    });
+    setTimeout(reveal, 1500); // safety net in case an icon never settles
+  })();
+
+  // ---------- version (build number bumped automatically on every commit, see .githooks/pre-commit) ----------
+  var hubVersionEl = document.getElementById('hub-version');
+  if (hubVersionEl){
+    fetch('version.json')
+      .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
+      .then(function(data){ hubVersionEl.textContent = '0.' + data.build; })
+      .catch(function(){ hubVersionEl.textContent = '?'; });
+  }
+
+  var backdrop = document.getElementById('desc-overlay-backdrop');
+  var iconEl = document.getElementById('desc-overlay-icon');
+  var titleEl = document.getElementById('desc-overlay-title');
+  var textEl = document.getElementById('desc-overlay-text');
+  var closeBtn = document.getElementById('desc-overlay-close');
+
+  function openDesc(btn){
+    var iconUrl = btn.getAttribute('data-icon') || '';
+    var emoji = btn.getAttribute('data-emoji') || '';
+    if (iconUrl){
+      iconEl.textContent = '';
+      iconEl.style.fontSize = '';
+      iconEl.style.maskImage = 'url(\'' + iconUrl + '\')';
+      iconEl.style.webkitMaskImage = iconEl.style.maskImage;
+      iconEl.style.backgroundColor = btn.getAttribute('data-color') || '#fff';
+    } else {
+      iconEl.style.maskImage = 'none';
+      iconEl.style.webkitMaskImage = 'none';
+      iconEl.style.backgroundColor = 'transparent';
+      iconEl.style.fontSize = '48px';
+      iconEl.textContent = emoji;
+    }
+    titleEl.textContent = btn.getAttribute('data-title') || '';
+    textEl.textContent = btn.getAttribute('data-desc') || '';
+    backdrop.classList.remove('hidden');
+  }
+  function closeDesc(){
+    backdrop.classList.add('hidden');
+  }
+
+  document.querySelectorAll('.mode-info-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      openDesc(btn);
+    });
+  });
+  closeBtn.addEventListener('click', closeDesc);
+  backdrop.addEventListener('click', function(e){
+    if (e.target === backdrop) closeDesc();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeDesc();
+  });
+})();
+</script>
+</body>
+</html>

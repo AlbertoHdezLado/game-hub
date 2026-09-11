@@ -1,0 +1,58 @@
+{
+  "ediciones": [
+    {
+      "id": "espana",
+      "nombre": "Éxitos en España",
+      "icono": "🇪🇸",
+      "canciones": [
+        { "titulo": "Libre", "artista": "Nino Bravo", "anio": 1972, "videoId": "TQkAIx4YjSo" },
+        { "titulo": "Mediterráneo", "artista": "Joan Manuel Serrat", "anio": 1971, "videoId": "sztUpIpZz8I" },
+        { "titulo": "Y Nos Dieron las Diez", "artista": "Joaquín Sabina", "anio": 1986, "videoId": "J3OtzDWBwOo" },
+        { "titulo": "Resistiré", "artista": "Dúo Dinámico", "anio": 1988, "videoId": "1P08l7iG1Kw" },
+        { "titulo": "Sobreviviré", "artista": "Mónica Naranjo", "anio": 1997, "videoId": "xErS7G3-tCQ" },
+        { "titulo": "Corazón Partío", "artista": "Alejandro Sanz", "anio": 1997, "videoId": "YxFUwGaxKTo" },
+        { "titulo": "La Flaca", "artista": "Jarabe de Palo", "anio": 1996, "videoId": "r2g0pM3PMNQ" },
+        { "titulo": "Fiesta Pagana", "artista": "Mägo de Oz", "anio": 1998, "videoId": "zZPvME8H2Oo" },
+        { "titulo": "19 Días y 500 Noches", "artista": "Joaquín Sabina", "anio": 1999, "videoId": "qahBeZB1g54" },
+        { "titulo": "Color Esperanza", "artista": "Diego Torres", "anio": 2001, "videoId": "Nb1VOQRs-Vs" },
+        { "titulo": "Aserejé", "artista": "Las Ketchup", "anio": 2002, "videoId": "V0PisGe66mY" },
+        { "titulo": "El Universo Sobre Mí", "artista": "Amaral", "anio": 2002, "videoId": "NFary9e9jo0" },
+        { "titulo": "Malo", "artista": "Bebe", "anio": 2004, "videoId": "90GqAf3zJ8s" },
+        { "titulo": "Waka Waka (Esto es África)", "artista": "Shakira", "anio": 2010, "videoId": "dzsuE5ugxf4" },
+        { "titulo": "Latinoamérica", "artista": "Calle 13", "anio": 2011, "videoId": "Jgq3DPuouJE" },
+        { "titulo": "Vivir Mi Vida", "artista": "Marc Anthony", "anio": 2013, "videoId": "YXnjy5YlDwk" },
+        { "titulo": "Bailando", "artista": "Enrique Iglesias", "anio": 2014, "videoId": "NUsoVlDFqZg" },
+        { "titulo": "Despacito", "artista": "Luis Fonsi ft. Daddy Yankee", "anio": 2017, "videoId": "kJQP7kiw5Fk" },
+        { "titulo": "Con Altura", "artista": "Rosalía ft. J Balvin", "anio": 2019, "videoId": "p7bfOZek9t4" },
+        { "titulo": "Envolver", "artista": "Anitta", "anio": 2022, "videoId": "hFCjGiawJi4" }
+      ]
+    },
+    {
+      "id": "internacional",
+      "nombre": "Éxitos Internacionales",
+      "icono": "🌍",
+      "canciones": [
+        { "titulo": "Rock Around the Clock", "artista": "Bill Haley & His Comets", "anio": 1954, "videoId": "hzYBEJgKjv0" },
+        { "titulo": "I Want to Hold Your Hand", "artista": "The Beatles", "anio": 1963, "videoId": "v1HDt1tknTc" },
+        { "titulo": "Respect", "artista": "Aretha Franklin", "anio": 1967, "videoId": "JzqGZjFnYnA" },
+        { "titulo": "Bohemian Rhapsody", "artista": "Queen", "anio": 1975, "videoId": "fJ9rUzIMcZQ" },
+        { "titulo": "Hotel California", "artista": "Eagles", "anio": 1976, "videoId": "dLl4PZtxia8" },
+        { "titulo": "Billie Jean", "artista": "Michael Jackson", "anio": 1983, "videoId": "Zi_XLOBDo_Y" },
+        { "titulo": "Like a Prayer", "artista": "Madonna", "anio": 1989, "videoId": "79fzeNUqQbQ" },
+        { "titulo": "Smells Like Teen Spirit", "artista": "Nirvana", "anio": 1991, "videoId": "hTWKbfoikeg" },
+        { "titulo": "...Baby One More Time", "artista": "Britney Spears", "anio": 1998, "videoId": "C-u5WLJ9Yk4" },
+        { "titulo": "Yellow", "artista": "Coldplay", "anio": 2000, "videoId": "yKNxeF4KMsY" },
+        { "titulo": "Hey Ya!", "artista": "OutKast", "anio": 2003, "videoId": "PWgvGjAhvIw" },
+        { "titulo": "Umbrella", "artista": "Rihanna ft. Jay-Z", "anio": 2007, "videoId": "CvBfHwUxHIk" },
+        { "titulo": "Poker Face", "artista": "Lady Gaga", "anio": 2008, "videoId": "bESGLojNYSo" },
+        { "titulo": "Rolling in the Deep", "artista": "Adele", "anio": 2010, "videoId": "rYEDA3JcQqw" },
+        { "titulo": "Get Lucky", "artista": "Daft Punk ft. Pharrell Williams", "anio": 2013, "videoId": "5NV6Rdv1a3I" },
+        { "titulo": "Uptown Funk", "artista": "Mark Ronson ft. Bruno Mars", "anio": 2014, "videoId": "OPf0YbXqDm0" },
+        { "titulo": "Shape of You", "artista": "Ed Sheeran", "anio": 2017, "videoId": "JGwWNGJdvx8" },
+        { "titulo": "Bad Guy", "artista": "Billie Eilish", "anio": 2019, "videoId": "DyDfgMOUjCI" },
+        { "titulo": "Blinding Lights", "artista": "The Weeknd", "anio": 2019, "videoId": "4NRXx6U8ABQ" },
+        { "titulo": "As It Was", "artista": "Harry Styles", "anio": 2022, "videoId": "H5v3kku4y6Q" }
+      ]
+    }
+  ]
+}

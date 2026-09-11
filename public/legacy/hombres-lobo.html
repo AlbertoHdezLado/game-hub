@@ -1,0 +1,3451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="analytics.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Hombres Lobo · Game Hub</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="78" font-size="72" text-anchor="middle">%F0%9F%90%BA</text></svg>'>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root{
+    --accent:#8b6dd6;
+    --accent2:#c3b1f0;
+    --reveal-b:#c3b1f0;
+  }
+  html,body{
+    /* flat solid fill — a multi-layer gradient here used to leave gaps of
+       the raw background color showing on some viewports/scroll ranges */
+    background-color:var(--bg2);
+  }
+
+  /* the role reveal card shows the portrait full-bleed; the name is a
+     caption below the card and the description stays hidden until tapped */
+  .reveal-wrap{
+    height:280px;
+  }
+  .reveal-icon{filter:grayscale(1);}
+  .reveal-text{font-size:1.15rem;}
+  .reveal-content{
+    padding:0;
+    cursor:pointer;
+  }
+  .reveal-content img.reveal-portrait{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    max-width:none;
+    max-height:none;
+    object-fit:cover;
+    border-radius:0;
+    filter:none;
+  }
+  .reveal-name-caption{
+    text-align:center;
+    font-family:var(--font-display);
+    font-size:1.15rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-top:14px;
+    opacity:0;
+    transition:opacity .3s ease .05s;
+  }
+  .reveal-name-caption.visible{opacity:1;}
+  .reveal-name-caption.danger{color:var(--danger);}
+  .reveal-name-caption.safe{color:var(--safe);}
+  .reveal-name-caption.wild{color:var(--wild);}
+  .reveal-name-caption .reveal-hint{
+    display:block;
+    margin-top:4px;
+    font-family:var(--font-body);
+    font-size:0.68rem;
+    font-weight:400;
+    text-transform:none;
+    letter-spacing:normal;
+    color:var(--text-dim);
+  }
+  .reveal-content .reveal-desc-overlay{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:rgba(5,7,13,0.92);
+    font-family:var(--font-body);
+    font-size:0.85rem;
+    font-weight:400;
+    text-transform:none;
+    letter-spacing:normal;
+    color:var(--text-dim);
+    line-height:1.5;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .2s, visibility .2s;
+  }
+  .reveal-content.desc-open .reveal-desc-overlay{
+    opacity:1;
+    visibility:visible;
+  }
+
+  #screen-setup .card{padding-bottom:24px;}
+  #screen-setup .card.balance-visible{padding-bottom:88px;}
+  .balance-bar-fixed{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:500;
+    padding:10px 20px max(10px, env(safe-area-inset-bottom));
+    background:rgba(10,14,26,0.82);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-top:1px solid var(--glass-border);
+  }
+  .balance-track{
+    max-width:420px;
+    margin:0 auto;
+    height:10px;
+    border-radius:6px;
+    overflow:hidden;
+    display:flex;
+    background:rgba(255,255,255,0.08);
+  }
+  .balance-fill-lobos{
+    height:100%;
+    background:var(--danger);
+    flex-basis:50%;
+    transition:flex-basis .3s ease;
+  }
+  .balance-fill-aldeanos{
+    height:100%;
+    background:var(--safe);
+    flex-basis:50%;
+    transition:flex-basis .3s ease;
+  }
+  .balance-legend{
+    max-width:420px;
+    margin:6px auto 0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:0.72rem;
+    color:var(--text-dim);
+  }
+  .balance-verdict{
+    font-size:0.75rem;
+    font-weight:700;
+    color:var(--text);
+  }
+
+  .roster-list, .guide-roles-catalog{
+    border:1px solid var(--glass-border);
+    border-radius:14px;
+    background:rgba(255,255,255,0.04);
+    padding:0 12px;
+  }
+  .roster-list{margin-bottom:20px;}
+  .roster-name{
+    font-size:0.85rem;
+    font-weight:700;
+    color:var(--text);
+  }
+  .role-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 0;
+    border-top:1px solid var(--glass-border);
+  }
+  .role-row:first-child{border-top:none;}
+  .role-thumb{
+    width:44px;
+    height:44px;
+    border-radius:10px;
+    object-fit:cover;
+    flex-shrink:0;
+    background:rgba(0,0,0,0.3);
+  }
+  .role-info{
+    flex:1;
+    min-width:0;
+  }
+  .role-name{
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--text);
+  }
+  .role-team-tag{
+    font-size:0.68rem;
+    color:var(--text-dim);
+  }
+  .roster-row{cursor:pointer;}
+  .roster-row:active{transform:scale(0.98);}
+  .roster-row.is-dead{opacity:0.5;}
+  .roster-row.is-dead .roster-name{text-decoration:line-through;}
+  .roster-status-icon{font-size:1.1rem; flex-shrink:0;}
+  .guide-role-desc{
+    font-size:0.72rem;
+    color:var(--text-dim);
+    line-height:1.4;
+    margin-top:2px;
+  }
+
+  /* ---- role picker: tap a card to add it, tap an included slot to remove it ---- */
+  .role-picker-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .role-picker-card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow:hidden;
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    cursor:pointer;
+    text-align:center;
+    transition:transform .1s, opacity .2s, border-color .2s, background .2s;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+  .role-picker-card:active{transform:scale(0.95);}
+  .role-picker-card img{
+    display:block;
+    width:100%;
+    aspect-ratio:1;
+    object-fit:cover;
+    background:rgba(0,0,0,0.3);
+    pointer-events:none;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-user-drag:none;
+  }
+  .role-picker-name{
+    font-size:0.66rem;
+    font-weight:600;
+    line-height:1.15;
+  }
+  .section-label-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:10px 0 6px;
+  }
+  .section-help-btn{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    border:1px solid var(--glass-border);
+    background:rgba(0,0,0,0.35);
+    color:var(--text-dim);
+    font-size:0.68rem;
+    font-weight:700;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .section-help-btn:active{transform:scale(0.9);}
+  .people-icon{
+    display:block;
+    width:16px;
+    height:16px;
+    background-color:currentColor;
+    mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>');
+    -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>');
+    mask-repeat:no-repeat;
+    mask-position:center;
+    mask-size:contain;
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    -webkit-mask-size:contain;
+  }
+  .role-slot{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    padding:6px;
+    border-radius:14px;
+    text-align:center;
+  }
+  .role-slot.filled{
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    cursor:pointer;
+  }
+  .role-slot.filled:active{transform:scale(0.95);}
+  .role-slot.filled img{
+    width:100%;
+    aspect-ratio:1;
+    border-radius:9px;
+    object-fit:cover;
+    pointer-events:none;
+  }
+  .role-slot.empty{
+    aspect-ratio:1;
+    justify-content:center;
+    border:1px dashed var(--glass-border);
+    background:rgba(0,0,0,0.28);
+    color:var(--text-dim);
+    font-size:1.3rem;
+  }
+
+  .card-modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(5,7,13,0.78);
+    backdrop-filter:blur(4px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    z-index:1000;
+    animation:fadeIn .2s ease;
+  }
+  .card-modal{
+    position:relative;
+    width:100%;
+    max-width:340px;
+    max-height:88vh;
+    overflow-y:auto;
+    text-align:center;
+  }
+  .card-modal-close{
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid var(--glass-border);
+    background:rgba(0,0,0,0.35);
+    color:var(--text);
+    font-size:1.1rem;
+    cursor:pointer;
+    z-index:1;
+  }
+  .card-modal-close:active{transform:scale(0.92);}
+  .card-modal img{
+    width:100%;
+    max-height:42vh;
+    object-fit:contain;
+    border-radius:16px;
+    background:rgba(0,0,0,0.3);
+    margin-bottom:14px;
+  }
+  .card-modal-name{
+    font-family:var(--font-display);
+    font-size:1.3rem;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .card-modal-team{
+    font-size:0.8rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-bottom:12px;
+  }
+  .card-modal-team.danger{color:var(--danger);}
+  .card-modal-team.safe{color:var(--safe);}
+  .card-modal-team.wild{color:var(--wild);}
+  .card-modal-desc{
+    font-size:0.9rem;
+    color:var(--text-dim);
+    line-height:1.5;
+  }
+
+  /* ---- narrator screen ---- */
+  .round-stepper{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.85rem;
+    color:var(--text-dim);
+    font-weight:700;
+    flex-shrink:0;
+  }
+
+  .narrator-balance-track{
+    height:6px;
+    border-radius:4px;
+    overflow:hidden;
+    display:flex;
+    background:rgba(255,255,255,0.08);
+    margin:10px 0 14px;
+  }
+  .narrator-balance-fill-lobos{
+    height:100%;
+    background:var(--danger);
+    flex-basis:50%;
+    transition:flex-basis .3s ease;
+  }
+  .narrator-balance-fill-aldeanos{
+    height:100%;
+    background:var(--safe);
+    flex-basis:50%;
+    transition:flex-basis .3s ease;
+  }
+  .narrator-cue{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:0.85rem;
+    font-style:italic;
+    margin:0 0 10px;
+  }
+  #panel-night .reveal-wrap{margin-bottom:0;}
+  #panel-night .reveal-name-caption{margin-top:14px; margin-bottom:6px;}
+  .night-empty{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:0.88rem;
+    padding:20px 0;
+  }
+
+  .role-widget{
+    margin-top:16px;
+    padding:14px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+  }
+  .role-widget label{margin:10px 0 6px;}
+  .role-widget label:first-child{margin-top:0;}
+  .role-widget-status{
+    margin-top:10px;
+    font-size:0.82rem;
+    color:var(--text-dim);
+    text-align:center;
+  }
+  .role-widget-reveal{
+    margin-top:12px;
+    padding:12px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.06);
+    text-align:center;
+    font-weight:700;
+  }
+  .role-widget-reveal.danger{color:var(--danger);}
+  .role-widget-reveal.safe{color:var(--safe);}
+  .role-widget-reveal.wild{color:var(--wild);}
+  .role-widget-checklist{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .role-widget-checklist .chip{width:auto;}
+
+  .vote-timer-wrap{margin-bottom:14px;}
+  .vote-timer{
+    display:flex;
+    justify-content:center;
+    align-items:baseline;
+    font-family:var(--font-display);
+    font-size:2.4rem;
+    font-weight:800;
+    margin:0 0 4px;
+    letter-spacing:1px;
+    font-variant-numeric:tabular-nums;
+  }
+  .vote-timer-part{
+    display:inline-block;
+    width:2ch;
+    text-align:center;
+  }
+  .vote-timer-colon{display:inline-block;}
+  @keyframes voteTimerBlink{
+    0%, 100%{ color:var(--danger); opacity:1; }
+    50%{ color:var(--danger); opacity:0.35; }
+  }
+  .vote-timer-wrap.time-up .vote-timer{
+    animation:voteTimerBlink 1.2s ease-in-out infinite;
+  }
+
+  .vote-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:12px 14px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+    margin-bottom:8px;
+    cursor:pointer;
+    font-weight:600;
+    transition:background .15s, border-color .15s, transform .1s;
+  }
+  .vote-row:active{transform:scale(0.98);}
+  .vote-row.selected{
+    background:linear-gradient(135deg, var(--accent), var(--accent2));
+    border-color:transparent;
+    color:#fff;
+  }
+  .vote-row.dead{opacity:0.55;}
+  /* Personajes is read-only: no tap-to-toggle affordance there */
+  #alive-list .vote-row, #dead-list .vote-row{cursor:default;}
+  #alive-list .vote-row:active, #dead-list .vote-row:active{transform:none;}
+  .death-left{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+    flex:1;
+  }
+  .death-cause-icon{
+    font-size:1rem;
+    flex-shrink:0;
+    line-height:1;
+  }
+  .death-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    min-width:0;
+  }
+  .death-role-tag{
+    font-size:0.72rem;
+    color:var(--text-dim);
+    font-weight:600;
+    flex-shrink:0;
+  }
+  .death-right{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    flex-shrink:0;
+  }
+  .death-cause-tag{
+    font-size:0.7rem;
+    color:var(--text-dim);
+    margin-top:2px;
+  }
+
+  .reminder-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(224,176,77,0.12);
+    border:1px solid rgba(224,176,77,0.35);
+    margin-bottom:8px;
+    font-size:0.8rem;
+    color:var(--text);
+  }
+  .reminder-dismiss{
+    background:none;
+    border:none;
+    color:var(--text-dim);
+    font-size:1rem;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+
+  .cause-chip-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:16px;
+  }
+  .cause-chip-list .chip{width:100%;}
+
+  #death-guidance p{
+    font-size:0.85rem;
+    color:var(--text-dim);
+    line-height:1.5;
+    margin:10px 0;
+    text-align:left;
+  }
+  .game-over-title{font-size:1.5rem; transition:color .2s;}
+  .game-over-title.winner-lobos{color:var(--danger);}
+  .game-over-title.winner-aldeanos{color:var(--safe);}
+  .game-over-summary{
+    margin-top:18px;
+    max-height:32vh;
+    overflow-y:auto;
+    text-align:left;
+    font-size:0.82rem;
+    color:var(--text-dim);
+    line-height:1.6;
+    border-top:1px solid var(--glass-border);
+    padding-top:14px;
+  }
+  .game-over-summary p{margin:4px 0;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SETUP -->
+  <div class="screen" id="screen-setup">
+    <div class="card">
+      <div class="setup-header">
+        <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <h1>HOMBRES LOBO</h1>
+
+      <div id="setup-step-players">
+        <label><span class="label-icon">👥</span>Jugadores</label>
+        <div id="players-list"></div>
+        <div class="error-msg" id="setup-error"></div>
+      </div>
+
+      <div id="setup-step-roles" class="hidden">
+        <label id="included-roles-label"><span class="label-icon">🎭</span>Roles incluidos</label>
+        <div class="role-picker-grid" id="included-roles-grid"></div>
+        <div class="error-msg" id="roles-setup-error"></div>
+
+        <div class="section-label-row">
+          <label style="margin:0;">Toca para añadir un rol</label>
+          <button type="button" class="section-help-btn" id="role-picker-tip-btn" aria-label="Ayuda">?</button>
+        </div>
+        <div class="role-picker-grid" id="available-roles-grid"></div>
+      </div>
+
+      <div class="night-nav" id="setup-nav">
+        <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+        <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
+      </div>
+
+      <div id="setup-step-final" class="hidden">
+        <details class="setup-optional">
+          <summary>Ajustes adicionales</summary>
+          <div class="setup-optional-content">
+            <label class="switch-toggle">
+              <input type="checkbox" id="unguided-mode-toggle">
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+              Modo no guiado
+            </label>
+
+            <label><span class="label-icon">⏱️</span>Tiempo para votar</label>
+            <div class="stepper">
+              <button type="button" id="vote-minutes-minus">−</button>
+              <div class="value" id="vote-minutes-value">Sin límite</div>
+              <button type="button" id="vote-minutes-plus">+</button>
+            </div>
+          </div>
+        </details>
+
+        <div class="final-nav">
+          <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button class="btn-main" id="start-btn">Iniciar partida</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="balance-bar-fixed hidden" id="balance-bar-fixed">
+      <div class="balance-track">
+        <div class="balance-fill-lobos" id="balance-fill-lobos"></div>
+        <div class="balance-fill-aldeanos" id="balance-fill-aldeanos"></div>
+      </div>
+      <div class="balance-legend">
+        <span>🐺 Lobos</span>
+        <span class="balance-verdict" id="balance-verdict"></span>
+        <span>Pueblo 🏘️</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY GUIDE -->
+  <div class="guide-modal-backdrop hidden" id="guide-modal-backdrop">
+    <div class="guide-modal">
+      <button type="button" class="guide-modal-close" id="guide-modal-close">✕</button>
+      <h2>Cómo se juega</h2>
+
+      <h3>Objetivo</h3>
+      <p>Los <strong>Lobos</strong> ganan si igualan o superan en número a los Aldeanos vivos. Los <strong>Aldeanos</strong> ganan si consiguen eliminar a todos los Lobos antes de que eso ocurra.</p>
+
+      <h3>Fases de la partida</h3>
+      <ul>
+        <li><strong>Noche:</strong> los lobos y los roles con poder nocturno actúan en secreto, fuera de la app — el narrador dirige esa parte en persona.</li>
+        <li><strong>Día:</strong> el pueblo debate en voz alta y vota a quién linchar.</li>
+      </ul>
+
+      <h3>Usar la app</h3>
+      <ol>
+        <li>Añade a los jugadores y toca las cartas de rol que quieras incluir, una a una, hasta completar tantas como jugadores haya. Necesitas al menos un Hombre Lobo y un Aldeano.</li>
+        <li>La barra inferior te avisa si el reparto favorece a los Lobos o al Pueblo.</li>
+        <li>Si quieres, fija un <strong>tiempo para votar</strong>: al llegar la votación del día se mostrará una cuenta atrás que avisa con una alarma al agotarse (podéis votar en cualquier momento, con o sin tiempo agotado).</li>
+        <li>Activa <strong>modo no guiado</strong> si prefieres dirigir la partida tú mismo: la app solo te enseñará la lista de jugadores con su rol, sin guía nocturna ni votación, pero podrás tocar a cada jugador para marcarlo como vivo o eliminado.</li>
+        <li>Pulsa "Iniciar partida" y pasa el dispositivo: cada jugador ve su carta en privado y la oculta antes de pasarlo.</li>
+      </ol>
+
+      <h3>Modos de juego sugeridos</h3>
+      <ul>
+        <li><strong>Clásico:</strong> solo roles base, ~1 lobo por cada 4 jugadores, con Vidente, Bruja y Cazador como únicos roles especiales.</li>
+        <li><strong>Con expansiones:</strong> mezcla roles de La Aldea y Luna Nueva para partidas más largas y variadas.</li>
+        <li><strong>Caótico:</strong> casi todos los jugadores con un rol especial distinto, para partidas cortas e impredecibles.</li>
+        <li><strong>Rápido / primeras partidas:</strong> pocos roles especiales, ideal para explicar las reglas rápido.</li>
+      </ul>
+
+      <h3>Roles disponibles</h3>
+      <div class="guide-roles-catalog" id="guide-roles-catalog"><p class="chip-loading">Cargando roles…</p></div>
+    </div>
+  </div>
+
+  <!-- ROLE INFO MODAL: opened from the "?" help icon on each available role card -->
+  <div class="card-modal-backdrop hidden" id="role-info-backdrop">
+    <div class="card-modal">
+      <button type="button" class="card-modal-close" id="role-info-close">✕</button>
+      <img id="role-info-img" alt="" draggable="false" oncontextmenu="return false">
+      <div class="card-modal-name" id="role-info-name"></div>
+      <div class="card-modal-team" id="role-info-team"></div>
+      <div class="card-modal-desc" id="role-info-desc"></div>
+    </div>
+  </div>
+
+  <!-- ROLE PICKER TIP: explains the long-press-for-details gesture -->
+  <div class="card-modal-backdrop hidden" id="role-tip-backdrop">
+    <div class="card-modal" style="text-align:center;">
+      <button type="button" class="card-modal-close" id="role-tip-close">✕</button>
+      <p style="margin:46px 0 6px;">Para ver el rol y la descripción de una carta, mantenla pulsada.</p>
+    </div>
+  </div>
+
+  <!-- ROLE REVEAL ROSTER: tap your own name to show your card in private -->
+  <div class="screen hidden" id="screen-game">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <p class="subtitle">Toca tu nombre para ver tu carta. Nadie más debe mirar.</p>
+
+      <div class="roster-list" id="reveal-roster"></div>
+
+      <button class="btn-main" id="reveal-continue-btn" disabled>Continuar</button>
+    </div>
+  </div>
+
+  <!-- role card modal, opened from the roster above -->
+  <div class="guide-modal-backdrop hidden" id="reveal-modal-backdrop">
+    <div class="guide-modal reveal-modal">
+      <button type="button" class="guide-modal-close" id="reveal-modal-close" disabled>✕</button>
+      <div class="pass-hint" style="margin-bottom:14px;">No se lo enseñes a nadie más.</div>
+
+      <div class="reveal-wrap" id="reveal-wrap">
+        <div class="reveal-content" id="reveal-content"></div>
+        <button type="button" class="reveal-btn" id="reveal-btn">
+          <span class="reveal-icon">👁️</span>
+          <span class="reveal-text">Revelar</span>
+        </button>
+      </div>
+      <div class="reveal-name-caption" id="reveal-name-caption"></div>
+    </div>
+  </div>
+
+  <!-- NARRATOR SCREEN (post-reveal: night guide + death resolution) -->
+  <div class="screen hidden" id="screen-narrator">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+          <span class="back-btn" style="cursor:default; margin-bottom:0;" id="day-night-status">🌙 Noche</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+          <div class="round-stepper">
+            <button type="button" class="guide-btn" id="tab-deaths-btn" aria-label="Personajes"><span class="people-icon"></span></button>
+          </div>
+        </div>
+      </div>
+      <div class="narrator-balance-track" id="narrator-balance-track">
+        <div class="narrator-balance-fill-lobos" id="narrator-balance-lobos"></div>
+        <div class="narrator-balance-fill-aldeanos" id="narrator-balance-aldeanos"></div>
+      </div>
+
+      <!-- NIGHT GUIDE PANEL -->
+      <div id="panel-night">
+        <p class="narrator-cue" id="night-wake-cue"></p>
+        <div class="reveal-wrap revealed" id="night-reveal-wrap">
+          <div class="reveal-content" id="night-reveal-content"></div>
+        </div>
+        <div class="reveal-name-caption visible" id="night-reveal-caption"></div>
+
+        <div class="role-widget hidden" id="role-widget"></div>
+
+        <div class="error-msg" id="night-nav-error"></div>
+        <div class="night-nav" id="night-nav">
+          <button type="button" class="night-nav-btn icon-only" id="night-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="night-next-btn">Siguiente</button>
+        </div>
+        <div class="progress-dots" id="night-progress-dots"></div>
+      </div>
+
+      <!-- END OF ROUND: DAY VOTE EVENT -->
+      <div id="panel-vote" class="hidden">
+        <p class="narrator-cue" id="narrator-wake-cue"></p>
+        <div id="vote-announce-view" class="hidden">
+          <p class="narrator-cue" id="vote-announce-cue"></p>
+          <div class="roster-list" id="vote-announce-list"></div>
+
+          <div id="announce-cazador-shoot" class="hidden">
+            <label>El Cazador ha muerto: ¿a quién dispara?</label>
+            <div class="role-widget-checklist" id="announce-cazador-shoot-list"></div>
+          </div>
+
+          <button class="btn-main" id="vote-announce-continue-btn">Continuar al debate ›</button>
+        </div>
+        <div id="vote-select-view" class="hidden">
+          <label>¿A quién ha votado el pueblo para linchar?</label>
+          <div class="vote-timer-wrap hidden" id="vote-timer-wrap">
+            <div class="vote-timer">
+              <span class="vote-timer-part" id="vote-timer-mm">00</span><span class="vote-timer-colon">:</span><span class="vote-timer-part" id="vote-timer-ss">00</span>
+            </div>
+          </div>
+          <div id="vote-players-list"></div>
+          <button class="btn-main" id="confirm-vote-btn" disabled>Confirmar votación</button>
+        </div>
+        <div id="judge-prompt-view" class="hidden">
+          <p class="narrator-cue" id="judge-prompt-cue"></p>
+          <label>¿Usa su poder para repetir la votación?</label>
+          <div class="night-nav">
+            <button type="button" class="night-nav-btn" id="judge-skip-btn">No</button>
+            <button type="button" class="night-nav-btn" id="judge-use-btn">Sí, repetir votación</button>
+          </div>
+        </div>
+        <div id="vote-continue-view" class="hidden">
+          <button class="btn-main" id="round-continue-btn">Siguiente ronda</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CHARACTERS OVERLAY: dims the background, closes with the top-right X -->
+  <div class="card-modal-backdrop hidden" id="deaths-modal-backdrop">
+    <div class="card-modal" style="text-align:left;">
+      <button type="button" class="card-modal-close" id="deaths-modal-close">✕</button>
+      <h2 style="margin:0 0 14px; text-align:center;">Personajes</h2>
+      <div id="reminders-list"></div>
+
+      <label>Vivos</label>
+      <div id="alive-list"></div>
+
+      <label>Eliminados</label>
+      <div id="dead-list"></div>
+    </div>
+  </div>
+
+  <!-- UNGUIDED NARRATOR SCREEN: just a players/roles reference -->
+  <div class="screen hidden" id="screen-roster">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+          <span class="back-btn" style="cursor:default;">📋 Sin guía</span>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <h1 style="font-size:1.5rem;">JUGADORES Y ROLES</h1>
+      <p class="subtitle" id="roster-subtitle">Modo no guiado: toca a un jugador para marcarlo como eliminado o revivirlo.</p>
+
+      <div class="roster-list" id="roster-list"></div>
+
+      <button class="btn-main" id="roster-new-round-btn">Iniciar nueva ronda</button>
+    </div>
+  </div>
+
+  <!-- START GAME CONFIRM -->
+  <div class="card-modal-backdrop hidden" id="start-confirm-backdrop">
+    <div class="card-modal">
+      <div class="card" style="text-align:center;">
+        <div class="end-icon">▶️</div>
+        <h2 style="margin-top:0;">¿Todo listo?</h2>
+        <p class="subtitle">Asegúrate de que el dispositivo ha vuelto al narrador y ningún jugador sigue mirando la pantalla de otro.</p>
+        <p class="narrator-cue">😴 Di en voz alta: «El pueblo se va a dormir» y continúa.</p>
+        <button class="btn-main" id="start-confirm-btn">Continuar ›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME OVER OVERLAY -->
+  <div class="card-modal-backdrop hidden" id="game-over-backdrop">
+    <div class="card-modal">
+      <div class="card" style="text-align:center;">
+        <div class="end-icon" id="game-over-icon">🎉</div>
+        <h1 class="game-over-title" id="game-over-title"></h1>
+        <p class="subtitle">La partida ha terminado.</p>
+        <div class="game-over-summary" id="game-over-summary"></div>
+        <button class="btn-main" id="game-over-new-round-btn">Iniciar nueva ronda</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEATH ACTION MODAL -->
+  <div class="card-modal-backdrop hidden" id="death-modal-backdrop">
+    <div class="card-modal">
+      <button type="button" class="card-modal-close" id="death-modal-close">✕</button>
+      <div class="card-modal-name" id="death-modal-name"></div>
+      <div class="card-modal-team" id="death-modal-role"></div>
+
+      <div class="cause-chip-list" id="death-cause-chips">
+        <button type="button" class="chip" data-cause="lobos">🐺 Devorado por los lobos</button>
+        <button type="button" class="chip" data-cause="votacion">🗳️ Linchado en la votación</button>
+        <button type="button" class="chip" data-cause="otro">☠️ Otra causa (veneno, disparo…)</button>
+      </div>
+      <div class="role-widget-status hidden" id="death-cause-assumed"></div>
+
+      <div id="death-guidance" class="hidden"></div>
+
+      <div id="death-chain-shoot" class="hidden">
+        <label>¿A quién dispara el Cazador?</label>
+        <div class="role-widget-checklist" id="death-chain-shoot-list"></div>
+      </div>
+
+      <button class="btn-main hidden" id="death-confirm-btn">Confirmar</button>
+    </div>
+  </div>
+
+  <!-- LYNCH REVEAL: shows the voted-out player's card to the table before continuing -->
+  <div class="card-modal-backdrop hidden" id="lynch-reveal-backdrop">
+    <div class="card-modal">
+      <div class="card" style="text-align:center;">
+        <div class="reveal-wrap revealed" id="lynch-reveal-wrap">
+          <div class="reveal-content" id="lynch-reveal-content"></div>
+        </div>
+        <div class="card-modal-name" id="lynch-reveal-name"></div>
+        <div class="card-modal-team" id="lynch-reveal-role"></div>
+        <button class="btn-main" id="lynch-reveal-continue-btn" style="margin-top:14px;">Continuar ›</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="shared.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var MIN_PLAYERS = 3, MAX_PLAYERS = 30;
+  var MAX_VOTE_SECONDS = 30 * 60;
+  var VOTE_SECONDS_STEP = 30;
+  function formatVoteTime(totalSeconds){
+    var m = Math.floor(totalSeconds / 60), s = totalSeconds % 60;
+    return m + ':' + (s < 10 ? '0' + s : s);
+  }
+
+  var TEAM_LABELS = { lobos: 'Lobos', aldeanos: 'Aldeanos', solitario: 'Solitario' };
+  var TEAM_CLASS = { lobos: 'danger', aldeanos: 'safe', solitario: 'wild' };
+
+  var ROLES = null;
+  var counts = {}; // roleId -> count
+  var ROLES_FALLBACK = [
+    {"id": "lobo_comun", "nombre": "Hombre Lobo Común", "equipo": "lobos", "expansion": "base", "imagen": "resources/images/hombres-lobo/lobo_comun.png", "descripcion": "Cada noche, junto a los demás lobos, elige a un aldeano para devorar. Los lobos ganan si igualan o superan en número a los aldeanos vivos.", "defaultCount": 0, "maxCount": 8, "poder": 3},
+    {"id": "lobo_feroz", "nombre": "Lobo Feroz", "equipo": "lobos", "expansion": "base", "imagen": "resources/images/hombres-lobo/lobo_feroz.png", "descripcion": "Devora cada noche junto a la manada. Si el pueblo no consigue matar a ningún lobo en una ronda, esa misma noche puede además eliminar a una segunda víctima.", "defaultCount": 0, "maxCount": 1, "poder": 4.5},
+    {"id": "infecto_padre", "nombre": "Infecto Padre de Todos los Lobos", "equipo": "lobos", "expansion": "base", "imagen": "resources/images/hombres-lobo/infecto_padre.png", "descripcion": "Devora cada noche con la manada. Una vez por partida, en vez de matar a la víctima, puede infectarla y convertirla en un nuevo Hombre Lobo.", "defaultCount": 0, "maxCount": 1, "poder": 4.2},
+    {"id": "lobo_albino", "nombre": "Hombre Lobo Albino", "equipo": "lobos", "expansion": "base", "imagen": "resources/images/hombres-lobo/lobo_albino.png", "descripcion": "Vota con los lobos pero duerme aparte. Una noche de cada dos puede despertar en solitario para eliminar a otro Hombre Lobo sin que nadie lo sepa.", "defaultCount": 0, "maxCount": 1, "poder": 3.6},
+    {"id": "aldeano_comun", "nombre": "Aldeano Común", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/aldeano_comun.png", "descripcion": "No tiene ninguna habilidad especial. Su única arma es la palabra: debate y vota durante el día para intentar descubrir a los lobos.", "defaultCount": 0, "maxCount": 20, "poder": 1},
+    {"id": "vidente", "nombre": "La Vidente", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/vidente.png", "descripcion": "Cada noche puede mirar en secreto la carta de rol de un jugador de su elección.", "defaultCount": 0, "maxCount": 1, "poder": 2},
+    {"id": "cupido", "nombre": "Cupido", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/cupido.png", "descripcion": "La primera noche, y solo esa noche, designa a dos jugadores que quedarán enamorados. Si uno muere, el otro muere de pena inmediatamente después.", "defaultCount": 0, "maxCount": 1, "poder": 1.1},
+    {"id": "bruja", "nombre": "La Bruja", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/bruja.png", "descripcion": "Dispone de dos pociones de un solo uso: una para resucitar a la víctima de los lobos, otra para envenenar a un jugador a su elección.", "defaultCount": 0, "maxCount": 1, "poder": 2.2},
+    {"id": "cazador", "nombre": "El Cazador", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/cazador.png", "descripcion": "En el momento en que muere, por la razón que sea, dispara y elimina inmediatamente a otro jugador de su elección.", "defaultCount": 0, "maxCount": 1, "poder": 1.5},
+    {"id": "nina_pequena", "nombre": "La Niña Pequeña", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/nina_pequena.png", "descripcion": "Puede espiar a los lobos durante la fase nocturna entreabriendo los ojos, con el riesgo de ser descubierta y devorada.", "defaultCount": 0, "maxCount": 1, "poder": 1},
+    {"id": "protector", "nombre": "El Protector", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/protector.png", "descripcion": "Cada noche protege a un jugador (no puede repetir a la misma persona dos noches seguidas) para que los lobos no puedan devorarlo esa noche.", "defaultCount": 0, "maxCount": 1, "poder": 1.7},
+    {"id": "anciano", "nombre": "El Anciano", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/anciano.png", "descripcion": "Resiste al primer ataque de los lobos sin morir. Si el pueblo lo lincha, todos los que tienen poder especial lo pierden.", "defaultCount": 0, "maxCount": 1, "poder": 1.1},
+    {"id": "cabeza_de_turco", "nombre": "El Cabeza de Turco", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/cabeza_de_turco.png", "descripcion": "Si la votación diurna acaba en empate, es él quien es linchado automáticamente en lugar de repetir la votación.", "defaultCount": 0, "maxCount": 1, "poder": 0.8},
+    {"id": "tonto_de_la_aldea", "nombre": "El Tonto de la Aldea", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/tonto_de_la_aldea.png", "descripcion": "Si el pueblo vota para lincharlo, se revela su carta y sobrevive, quedando sin derecho a voto el resto de la partida.", "defaultCount": 0, "maxCount": 1, "poder": 0.9},
+    {"id": "dos_hermanas", "nombre": "Las Dos Hermanas", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/dos_hermanas.png", "descripcion": "Al inicio de la partida se reconocen mutuamente en silencio, sabiendo así en quién pueden confiar.", "defaultCount": 0, "maxCount": 2, "poder": 1.1},
+    {"id": "tres_hermanos", "nombre": "Los Tres Hermanos", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/tres_hermanos.png", "descripcion": "Al inicio de la partida se reconocen mutuamente en silencio, sabiendo así en quién pueden confiar.", "defaultCount": 0, "maxCount": 3, "poder": 1.1},
+    {"id": "zorro", "nombre": "El Zorro", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/zorro.png", "descripcion": "Cada noche señala a tres jugadores vecinos; si al menos uno es lobo, se le informa. Si falla, pierde su poder el resto de la partida.", "defaultCount": 0, "maxCount": 1, "poder": 1.3},
+    {"id": "domador_de_osos", "nombre": "El Domador de Osos", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/domador_de_osos.png", "descripcion": "Cada mañana, si algún vecino suyo es Hombre Lobo, el narrador gruñe para indicarlo, sin decir cuál de los dos vecinos lo es.", "defaultCount": 0, "maxCount": 1, "poder": 1},
+    {"id": "juez_tartamudo", "nombre": "El Juez Tartamudo", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/juez_tartamudo.png", "descripcion": "Una vez por partida puede pedir en secreto al narrador una segunda votación de linchamiento ese mismo día.", "defaultCount": 0, "maxCount": 1, "poder": 1.1},
+    {"id": "caballero_espada_oxidada", "nombre": "El Caballero de la Espada Oxidada", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/caballero_espada_oxidada.png", "descripcion": "Si los lobos lo devoran, infecta de óxido al primer lobo a su izquierda, que morirá en la siguiente luna llena.", "defaultCount": 0, "maxCount": 1, "poder": 1.2},
+    {"id": "abnegada_sirvienta", "nombre": "La Abnegada Sirvienta", "equipo": "aldeanos", "expansion": "base", "imagen": "resources/images/hombres-lobo/abnegada_sirvienta.png", "descripcion": "Cuando un jugador va a ser eliminado (linchado o devorado), puede revelarse y ocupar su lugar y su rol.", "defaultCount": 0, "maxCount": 1, "poder": 1.3},
+    {"id": "piromano", "nombre": "El Pirómano", "equipo": "aldeanos", "expansion": "la_aldea", "imagen": "resources/images/hombres-lobo/piromano.png", "descripcion": "Cada noche puede rociar de gasolina a los jugadores que quiera; en cualquier noche posterior puede prenderles fuego a todos a la vez, matándolos.", "defaultCount": 0, "maxCount": 1, "poder": 1.7},
+    {"id": "cuervo", "nombre": "El Cuervo", "equipo": "aldeanos", "expansion": "la_aldea", "imagen": "resources/images/hombres-lobo/cuervo.png", "descripcion": "Cada noche coloca una marca en la casa de un jugador, que sumará dos votos extra en su contra durante la votación del día siguiente.", "defaultCount": 0, "maxCount": 1, "poder": 1.2},
+    {"id": "guardia", "nombre": "El Guardia", "equipo": "aldeanos", "expansion": "luna_nueva", "imagen": "resources/images/hombres-lobo/guardia.png", "descripcion": "Cada noche puede leer en secreto el contenido de una de las cartas de acontecimiento reservadas para las próximas noches.", "defaultCount": 0, "maxCount": 1, "poder": 0.8},
+    {"id": "angel", "nombre": "El Ángel", "equipo": "solitario", "expansion": "base", "imagen": "resources/images/hombres-lobo/angel.png", "descripcion": "Gana la partida en solitario si consigue ser eliminado (linchado o devorado) durante las dos primeras rondas.", "defaultCount": 0, "maxCount": 1, "poder": 0},
+    {"id": "flautista", "nombre": "El Flautista", "equipo": "solitario", "expansion": "base", "imagen": "resources/images/hombres-lobo/flautista.png", "descripcion": "Cada noche encanta a dos jugadores. Gana en solitario si consigue encantar a todos los supervivientes.", "defaultCount": 0, "maxCount": 1, "poder": 0},
+    {"id": "abominable_sectario", "nombre": "El Abominable Sectario", "equipo": "solitario", "expansion": "base", "imagen": "resources/images/hombres-lobo/abominable_sectario.png", "descripcion": "Gana la partida junto con el bando (aldeanos o lobos) que quede en minoría entre los supervivientes al final.", "defaultCount": 0, "maxCount": 1, "poder": 0},
+    {"id": "nino_salvaje", "nombre": "El Niño Salvaje", "equipo": "solitario", "expansion": "base", "imagen": "resources/images/hombres-lobo/nino_salvaje.png", "descripcion": "Elige en secreto a un modelo a seguir. Si ese jugador muere, el Niño Salvaje se convierte en Hombre Lobo.", "defaultCount": 0, "maxCount": 1, "poder": 0},
+    {"id": "perro_lobo", "nombre": "El Perro Lobo", "equipo": "solitario", "expansion": "base", "imagen": "resources/images/hombres-lobo/perro_lobo.png", "descripcion": "La primera noche elige en secreto si jugará como aldeano o como Hombre Lobo el resto de la partida.", "defaultCount": 0, "maxCount": 1, "poder": 0},
+    {"id": "ladron", "nombre": "El Ladrón", "equipo": "solitario", "expansion": "base", "imagen": "resources/images/hombres-lobo/ladron.png", "descripcion": "Al principio de la partida puede intercambiar su carta por una de dos cartas extra reservadas, cambiando potencialmente de bando.", "defaultCount": 0, "maxCount": 1, "poder": 0},
+    {"id": "comediante", "nombre": "El Comediante", "equipo": "solitario", "expansion": "base", "imagen": "resources/images/hombres-lobo/comediante.png", "descripcion": "Cada noche puede tomar prestado, solo por esa noche, el poder de otro rol elegido entre varias cartas reservadas.", "defaultCount": 0, "maxCount": 1, "poder": 0},
+    {"id": "gitana", "nombre": "La Gitana", "equipo": "solitario", "expansion": "luna_nueva", "imagen": "resources/images/hombres-lobo/gitana.png", "descripcion": "Una vez por partida convoca al espíritu de un jugador muerto y puede hacerle una pregunta que se responde sí o no.", "defaultCount": 0, "maxCount": 1, "poder": 0}
+  ];
+
+  function loadRoles(){
+    return fetch('werewolf-roles.json')
+      .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
+      .then(function(data){ ROLES = data.roles; })
+      .catch(function(){ ROLES = ROLES_FALLBACK; })
+      .then(function(){
+        var saved = loadSavedRoleCounts();
+        ROLES.forEach(function(r){
+          if (!(r.id in counts)){
+            counts[r.id] = (r.id in saved) ? clamp(saved[r.id], 0, r.maxCount) : r.defaultCount;
+          }
+        });
+        renderRolePicker();
+        renderGuideRolesCatalog();
+        validateSetup();
+      });
+  }
+
+  var config = {
+    unguidedMode: false,
+    voteSeconds: 0, // 0 = sin límite; steps by VOTE_SECONDS_STEP
+    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; }).concat([{ name: "" }])
+  };
+
+  function persistPlayers(){
+    savePlayerNames(config.rows.map(function(r){ return r.name.trim(); }).filter(function(n){ return n !== ""; }));
+  }
+
+  var state = {
+    players: 0,
+    playerNames: [],
+    roleIds: [], // per player, index into ROLES
+    ladronReserve: [], // 2 role ids nobody is dealt, only set when El Ladrón is in play
+    current: 0,
+    round: 1,
+    alive: [],
+    deathCause: {}, // playerIdx -> 'lobos' | 'votacion' | 'otro'
+    lovers: null, // [idxA, idxB] set by Cupido
+    ancianoSurvived: false,
+    villagePowersLost: false, // El Anciano lynched by the village: every ALDEANOS-team power stops working (not the wolves')
+    reminders: [],
+    nightIdx: 0,
+    protectedIdx: null, // El Protector's pick tonight
+    lastProtectedIdx: null, // El Protector's pick the previous night
+    brujaLifeUsed: false,
+    brujaDeathUsed: false,
+    brujaActedThisRound: false, // only one potion allowed per round, even if both are still unused
+    brujaLifeUsedThisRound: false, // vs brujaLifeUsed (game-long): lets "Anterior" undo only a same-round save
+    brujaDeathUsedThisRound: false,
+    brujaLifeSavedIdx: null, // who was saved this round, to restore if undone
+    brujaLifeSavedSource: null, // 'lobos' | 'albino' — which pending-kill field to restore idx into on undo
+    brujaDeathPoisonedIdx: null, // who was poisoned this round, to revive if undone
+    wildChildModelIdx: null,
+    wildChildTransformed: false,
+    perroLoboChoice: null, // 'aldeano' | 'lobo'
+    perroLoboPlayerIdx: null, // its player index, kept even after roleIds[idx] flips to aldeano/lobo
+    ladronPlayerIdx: null, // El Ladrón's player index, kept even after roleIds[idx] flips to whatever he swapped into
+    ravenMark: null,
+    pyroSoaked: [],
+    pendingNightKillIdx: null, // wolves' chosen victim, resolved at dawn (before the vote)
+    pendingAlbinoKillIdx: null, // lobo_albino's own, independent victim (another wolf), also resolved at dawn
+    pendingCazadorShootIdx: null, // a Cazador who died tonight, still needs his revenge-shot chosen at the dawn announcement
+    zorroPowerLost: false, // permanent for the rest of the game once his check misses
+    deathsThisRound: [], // player indices actually killed tonight, announced to the village right before the vote
+    eventLog: [],
+    nightActionDone: {}, // roleId -> true, for mandatory roles with no other persisted "done" signal; reset every round
+    judgeUsed: false, // El Juez Tartamudo's re-vote power: once per game, ever
+    gitanaUsed: false, // La Gitana's spirit-question power: once per game, ever
+    comedianteChoiceId: null, // role id El Comediante is borrowing tonight, or null; reset every round
+    comedianteChoiceMade: false // whether he's picked (even "ninguno") tonight, reset every round
+  };
+
+  // key lets a later correction replace an earlier entry instead of piling
+  // up a duplicate (e.g. redoing Cupido's pairing, or the Bruja's potion,
+  // after going back a step to fix it)
+  function logEvent(text, key){
+    if (key) state.eventLog = state.eventLog.filter(function(e){ return e.key !== key; });
+    state.eventLog.push({ key: key || null, text: text });
+  }
+  function clearEventByKey(key){
+    state.eventLog = state.eventLog.filter(function(e){ return e.key !== key; });
+  }
+
+  var screenSetup = document.getElementById('screen-setup');
+  var screenGame = document.getElementById('screen-game');
+  var screenNarrator = document.getElementById('screen-narrator');
+  var screenRoster = document.getElementById('screen-roster');
+  var ALL_SCREENS = [screenSetup, screenGame, screenNarrator, screenRoster];
+
+  function switchScreen(target){
+    ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
+    target.classList.remove('hidden');
+  }
+
+  // ---------- players ----------
+  // No "add player" button: the last row is always an empty slot, and
+  // filling it grows the list automatically (see normalizeTrailingSlot).
+  var rowsContainer = document.getElementById('players-list');
+
+  function effectivePlayerCount(rows){
+    var n = rows.length;
+    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
+    return n;
+  }
+
+  // El Ladrón is dealt to a player like any other role, but he also needs 2
+  // extra reserve cards that nobody is dealt — these have to be chosen up
+  // front too (see startBtn), so they count toward the role slots needed
+  function roleSlotsNeeded(rows){
+    return effectivePlayerCount(rows) + (counts['ladron'] ? 2 : 0);
+  }
+
+  function rowHtml(row, idx, rows){
+    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
+    if (isTrailingSlot){
+      return (
+        '<div class="player-row">' +
+          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
+            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
+        '</div>'
+      );
+    }
+    var removeBtn = '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
+      (effectivePlayerCount(rows) <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>';
+    return (
+      '<div class="player-row">' +
+        '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
+          'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
+        removeBtn +
+      '</div>'
+    );
+  }
+
+  function renderRows(){
+    var rows = config.rows;
+    rowsContainer.innerHTML = rows.map(function(row, idx){
+      return rowHtml(row, idx, rows);
+    }).join('');
+  }
+
+  // keeps exactly one empty row at the end, ready for the next player
+  function normalizeTrailingSlot(){
+    var rows = config.rows;
+    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
+      rows.pop();
+    }
+    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
+      rows.push({ name: "" });
+    }
+  }
+
+  rowsContainer.addEventListener('input', function(e){
+    var target = e.target;
+    if (!target.classList.contains('player-name-input')) return;
+    var idx = parseInt(target.getAttribute('data-index'), 10);
+    config.rows[idx].name = target.value;
+    normalizeTrailingSlot();
+    persistPlayers();
+
+    // a row can gain/lose its buttons here (placeholder -> real player and
+    // back) and every row's disabled state can shift (MIN_PLAYERS crossed),
+    // so re-render fully and just restore focus/caret on the active input
+    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+    renderRows();
+    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
+    if (restored){
+      restored.focus();
+      restored.setSelectionRange(selStart, selEnd);
+    }
+    validateSetup();
+  });
+
+  rowsContainer.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.row-remove-btn');
+    if (!removeBtn || removeBtn.disabled) return;
+    var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
+    config.rows.splice(rIdx, 1);
+    normalizeTrailingSlot();
+    renderRows();
+    persistPlayers();
+    validateSetup();
+  });
+
+  // ---------- roles ----------
+  // Tap a card in "available" to add one; tap a filled slot in "included" to
+  // remove one. Dos Hermanas / Tres Hermanos are an indivisible group: adding
+  // or removing either always adds/removes the whole set at once.
+  var includedRolesGridEl = document.getElementById('included-roles-grid');
+  var includedRolesLabelEl = document.getElementById('included-roles-label');
+  var availableRolesGridEl = document.getElementById('available-roles-grid');
+  var setupError = document.getElementById('setup-error');
+  var rolesSetupError = document.getElementById('roles-setup-error');
+  var startBtn = document.getElementById('start-btn');
+  var setupStepPlayersEl = document.getElementById('setup-step-players');
+  var setupStepRolesEl = document.getElementById('setup-step-roles');
+  var setupStepFinalEl = document.getElementById('setup-step-final');
+  var setupNavEl = document.getElementById('setup-nav');
+  var setupPrevBtn = document.getElementById('setup-prev-btn');
+  var setupNextBtn = document.getElementById('setup-next-btn');
+  var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
+  var balanceBarFixedEl = document.getElementById('balance-bar-fixed');
+  var setupCardEl = document.querySelector('#screen-setup .card');
+
+  // 0 = jugadores, 1 = roles, 2 = configuración final — three separate steps
+  // with explicit forward/back navigation instead of one long scrolling form
+  var setupStep = 0;
+  function renderSetupStep(){
+    setupStepPlayersEl.classList.toggle('hidden', setupStep !== 0);
+    setupStepRolesEl.classList.toggle('hidden', setupStep !== 1);
+    setupStepFinalEl.classList.toggle('hidden', setupStep !== 2);
+    setupNavEl.classList.toggle('hidden', setupStep === 2);
+    setupPrevBtn.classList.toggle('hidden', setupStep === 0);
+    balanceBarFixedEl.classList.toggle('hidden', setupStep !== 1);
+    setupCardEl.classList.toggle('balance-visible', setupStep === 1);
+  }
+  setupPrevBtn.addEventListener('click', function(){
+    if (setupStep > 0){ setupStep--; renderSetupStep(); validateSetup(); }
+  });
+  setupNextBtn.addEventListener('click', function(){
+    if (setupStep < 2 && !setupNextBtn.disabled){ setupStep++; renderSetupStep(); validateSetup(); }
+  });
+  renderSetupStep(); // sync the nav buttons/steps to setupStep's initial value on page load
+  setupFinalBackBtn.addEventListener('click', function(){
+    setupStep = 1;
+    renderSetupStep();
+    validateSetup();
+  });
+
+  var SIBLING_GROUP_IDS = ['dos_hermanas', 'tres_hermanos'];
+
+  function totalRoleCount(){
+    var total = 0;
+    for (var id in counts) total += counts[id];
+    return total;
+  }
+
+  function renderIncludedRoles(){
+    var slots = roleSlotsNeeded(config.rows);
+    var cards = [];
+    if (ROLES){
+      ROLES.forEach(function(role){
+        var c = counts[role.id] || 0;
+        for (var i = 0; i < c; i++){
+          cards.push(
+            '<div class="role-slot filled" data-role-id="' + role.id + '" title="Quitar ' + escapeHtml(role.nombre) + '">' +
+              '<img src="' + role.imagen + '" alt="' + escapeHtml(role.nombre) + '" loading="lazy">' +
+            '</div>'
+          );
+        }
+      });
+    }
+    var emptyCount = Math.max(0, slots - cards.length);
+    for (var j = 0; j < emptyCount; j++){
+      cards.push('<div class="role-slot empty">?</div>');
+    }
+    includedRolesGridEl.innerHTML = cards.join('');
+    includedRolesLabelEl.textContent = 'Roles incluidos (' + totalRoleCount() + ' / ' + slots + ')' +
+      (counts['ladron'] ? ' · incluye 2 cartas de reserva para El Ladrón' : '');
+  }
+
+  // a role drops out of this list entirely (not just dimmed) the moment it
+  // can no longer be added — either it's at its own maxCount, or there's no
+  // room left among the remaining player slots
+  function renderAvailableRoles(){
+    if (!ROLES || ROLES.length === 0){
+      availableRolesGridEl.innerHTML = '<p class="chip-loading">Cargando roles…</p>';
+      return;
+    }
+    var slots = roleSlotsNeeded(config.rows);
+    var remaining = slots - totalRoleCount();
+    var pickable = ROLES.filter(function(role){
+      var c = counts[role.id] || 0;
+      // adding him brings his own +2 reserve slots along, so he's always
+      // pickable regardless of how full the current slots already are
+      if (role.id === 'ladron') return c < role.maxCount;
+      var isGroup = SIBLING_GROUP_IDS.indexOf(role.id) !== -1;
+      var need = isGroup ? (role.maxCount - c) : 1;
+      return c < role.maxCount && need > 0 && remaining >= need;
+    });
+    if (!pickable.length){
+      availableRolesGridEl.innerHTML = '<p class="chip-loading">' +
+        (remaining <= 0 ? 'Ya has completado todos los roles.' : 'No quedan roles disponibles para añadir.') +
+        '</p>';
+      return;
+    }
+    availableRolesGridEl.innerHTML = pickable.map(function(role){
+      return (
+        '<div class="role-picker-card" data-role-id="' + role.id + '">' +
+          '<img src="' + role.imagen + '" alt="" loading="lazy" draggable="false">' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function renderRolePicker(){
+    renderIncludedRoles();
+    renderAvailableRoles();
+  }
+
+  // tap a card to add its role; press and hold it instead to see its full
+  // card (image, team, description) via openRoleInfo() — the hold suppresses
+  // the trailing click so it doesn't also add the role
+  var ROLE_CARD_LONG_PRESS_MS = 500;
+  var rolePickerPress = null; // { id, timer }
+  var rolePickerLongPressFiredId = null;
+
+  function cancelRolePickerPress(){
+    if (rolePickerPress) clearTimeout(rolePickerPress.timer);
+    rolePickerPress = null;
+  }
+
+  availableRolesGridEl.addEventListener('pointerdown', function(e){
+    var card = e.target.closest('.role-picker-card');
+    if (!card) return;
+    var id = card.getAttribute('data-role-id');
+    cancelRolePickerPress();
+    rolePickerPress = { id: id, timer: setTimeout(function(){
+      rolePickerPress = null;
+      rolePickerLongPressFiredId = id;
+      var role = ROLES.filter(function(r){ return r.id === id; })[0];
+      if (role) openRoleInfo(role);
+    }, ROLE_CARD_LONG_PRESS_MS) };
+  });
+  availableRolesGridEl.addEventListener('pointerup', cancelRolePickerPress);
+  availableRolesGridEl.addEventListener('pointercancel', cancelRolePickerPress);
+
+  availableRolesGridEl.addEventListener('click', function(e){
+    var card = e.target.closest('.role-picker-card');
+    if (!card) return;
+    var id = card.getAttribute('data-role-id');
+    if (rolePickerLongPressFiredId === id){
+      rolePickerLongPressFiredId = null; // this click is just the tail end of the long-press, not a real tap
+      return;
+    }
+    var role = ROLES.filter(function(r){ return r.id === id; })[0];
+    if (!role) return;
+    var slots = roleSlotsNeeded(config.rows);
+    if (SIBLING_GROUP_IDS.indexOf(id) !== -1){
+      var need = role.maxCount - (counts[id] || 0);
+      if (need <= 0 || totalRoleCount() + need > slots) return;
+      counts[id] = role.maxCount;
+    } else {
+      // adding ladron himself brings 2 extra slots along (see roleSlotsNeeded)
+      var slotsAfterPick = slots + (id === 'ladron' ? 2 : 0);
+      if (totalRoleCount() >= slotsAfterPick) return;
+      counts[id] = clamp((counts[id] || 0) + 1, 0, role.maxCount);
+    }
+    saveRoleCounts(counts);
+    renderRolePicker();
+    validateSetup();
+  });
+
+  includedRolesGridEl.addEventListener('click', function(e){
+    var slot = e.target.closest('.role-slot.filled');
+    if (!slot) return;
+    var id = slot.getAttribute('data-role-id');
+    if (!(id in counts)) return;
+    counts[id] = SIBLING_GROUP_IDS.indexOf(id) !== -1 ? 0 : Math.max(0, counts[id] - 1);
+    saveRoleCounts(counts);
+    renderRolePicker();
+    validateSetup();
+  });
+
+  // ---------- how-to-play guide ----------
+  setupModal(
+    document.querySelectorAll('.ayuda-trigger'),
+    document.getElementById('guide-modal-backdrop'),
+    document.getElementById('guide-modal-close')
+  );
+
+  // ---------- back to setup ----------
+  initBackToSetupConfirm(function(){ stopVoteTimer(); enterSetup(); });
+
+  // ---------- role picker tip (explains the long-press-for-details gesture) ----------
+  setupModal(
+    document.getElementById('role-picker-tip-btn'),
+    document.getElementById('role-tip-backdrop'),
+    document.getElementById('role-tip-close')
+  );
+
+  // ---------- role info modal (long-press an available role card) ----------
+  // no dedicated trigger button — opened programmatically from openRoleInfo(), so
+  // it's wired up by hand instead of via setupModal()
+  var roleInfoBackdrop = document.getElementById('role-info-backdrop');
+  var roleInfoImg = document.getElementById('role-info-img');
+  var roleInfoName = document.getElementById('role-info-name');
+  var roleInfoTeam = document.getElementById('role-info-team');
+  var roleInfoDesc = document.getElementById('role-info-desc');
+  function closeRoleInfo(){ roleInfoBackdrop.classList.add('hidden'); }
+  document.getElementById('role-info-close').addEventListener('click', closeRoleInfo);
+  roleInfoBackdrop.addEventListener('click', function(e){ if (e.target === roleInfoBackdrop) closeRoleInfo(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeRoleInfo(); });
+  function openRoleInfo(role){
+    roleInfoImg.src = role.imagen;
+    roleInfoName.textContent = role.nombre;
+    roleInfoTeam.textContent = TEAM_LABELS[role.equipo];
+    roleInfoTeam.className = 'card-modal-team ' + TEAM_CLASS[role.equipo];
+    roleInfoDesc.textContent = role.descripcion;
+    roleInfoBackdrop.classList.remove('hidden');
+  }
+
+  // populated once ROLES loads (see loadRoles) — the setup cards no longer
+  // have a per-card preview, so the full catalog lives here instead
+  var guideRolesCatalogEl = document.getElementById('guide-roles-catalog');
+  function renderGuideRolesCatalog(){
+    if (!ROLES || ROLES.length === 0) return;
+    guideRolesCatalogEl.innerHTML = ROLES.map(function(role){
+      return (
+        '<div class="role-row">' +
+          '<img class="role-thumb" src="' + role.imagen + '" alt="" loading="lazy">' +
+          '<div class="role-info">' +
+            '<div class="role-name">' + escapeHtml(role.nombre) + '</div>' +
+            '<div class="role-team-tag">' + TEAM_LABELS[role.equipo] + '</div>' +
+            '<div class="guide-role-desc">' + escapeHtml(role.descripcion) + '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  // ---------- team balance bar ----------
+  // Each role carries a "poder" weight reflecting how much it tips the game
+  // toward its team. A lone wolf isn't as "strong" as a lone villager: the
+  // game's parity win rule (lobos win once they equal aldeanos alive) means
+  // one wolf is worth roughly what 3 plain villagers are, so lobo_comun is
+  // baselined at 3 against aldeano_comun's baseline of 1 (a textbook ~1-wolf-
+  // per-4-players setup then reads as equilibrado instead of "ventaja pueblo").
+  // Special roles are weighted relative to their team's common-card baseline.
+  // solitario roles play for themselves and don't push the balance either way.
+  var balanceFillLobos = document.getElementById('balance-fill-lobos');
+  var balanceFillAldeanos = document.getElementById('balance-fill-aldeanos');
+  var balanceVerdict = document.getElementById('balance-verdict');
+
+  function updateBalance(){
+    var lobosPower = 0, aldeanosPower = 0;
+    if (ROLES){
+      ROLES.forEach(function(role){
+        var c = counts[role.id] || 0;
+        if (!c) return;
+        var weight = typeof role.poder === 'number' ? role.poder : 1;
+        if (role.equipo === 'lobos') lobosPower += c * weight;
+        else if (role.equipo === 'aldeanos') aldeanosPower += c * weight;
+      });
+    }
+
+    var totalPower = lobosPower + aldeanosPower;
+    var lobosPct = totalPower > 0 ? (lobosPower / totalPower * 100) : 50;
+    balanceFillLobos.style.flexBasis = lobosPct + '%';
+    balanceFillAldeanos.style.flexBasis = (100 - lobosPct) + '%';
+
+    var verdict;
+    if (totalPower === 0){
+      verdict = "Añade roles para ver el balance";
+    } else if (Math.abs(lobosPct - 50) < 6){
+      verdict = "Equilibrado";
+    } else if (lobosPct > 50){
+      verdict = "Ventaja Lobos";
+    } else {
+      verdict = "Ventaja Pueblo";
+    }
+    balanceVerdict.textContent = verdict;
+  }
+
+  // if slots shrink (e.g. El Ladrón is removed, taking his 2 reserve slots
+  // with him) and that leaves more roles picked than there's room for, trim
+  // the excess automatically instead of forcing a manual cleanup. Filler
+  // roles (common villager/wolf) are trimmed first since they're the least
+  // meaningful cards to lose.
+  function trimExcessRoles(){
+    if (!ROLES) return;
+    var excess = totalRoleCount() - roleSlotsNeeded(config.rows);
+    if (excess <= 0) return;
+    var priorityIds = ['aldeano_comun', 'lobo_comun'];
+    var order = priorityIds.concat(
+      ROLES.map(function(r){ return r.id; })
+        .filter(function(id){ return priorityIds.indexOf(id) === -1 && id !== 'ladron'; })
+        .reverse()
+    );
+    order.forEach(function(id){
+      while (excess > 0 && (counts[id] || 0) > 0){
+        counts[id]--;
+        excess--;
+      }
+    });
+    saveRoleCounts(counts);
+  }
+
+  function validateSetup(){
+    trimExcessRoles();
+    var rows = config.rows;
+    var playerMsgs = [];
+    var hasEmptyName = rows.some(function(r, idx){ return idx !== rows.length - 1 && !r.name.trim(); });
+    if (hasEmptyName) playerMsgs.push("Todos los jugadores necesitan un nombre.");
+    else if (hasDuplicatePlayerNames(rows)) playerMsgs.push("No puede haber dos jugadores con el mismo nombre.");
+
+    var total = totalRoleCount();
+    var players = effectivePlayerCount(rows);
+    var roleSlots = roleSlotsNeeded(rows); // players + 2 reserve slots once El Ladrón is included
+    if (players < MIN_PLAYERS) playerMsgs.push("Necesitas al menos " + MIN_PLAYERS + " jugadores.");
+
+    var lobosCount = ROLES ? ROLES.filter(function(r){ return r.equipo === 'lobos'; })
+      .reduce(function(sum, r){ return sum + (counts[r.id] || 0); }, 0) : 0;
+    var aldeanosCount = ROLES ? ROLES.filter(function(r){ return r.equipo === 'aldeanos'; })
+      .reduce(function(sum, r){ return sum + (counts[r.id] || 0); }, 0) : 0;
+
+    var roleMsgs = [];
+    if (!ROLES || ROLES.length === 0){
+      roleMsgs.push("Cargando roles…");
+    } else {
+      if (lobosCount < 1) roleMsgs.push("Debes incluir al menos un Hombre Lobo.");
+      else if (aldeanosCount < 1) roleMsgs.push("Debes incluir al menos un Aldeano.");
+      else if (total < roleSlots) roleMsgs.push("Faltan " + (roleSlots - total) + " rol" + (roleSlots - total === 1 ? "" : "es") + " por elegir.");
+      else if (total > roleSlots) roleMsgs.push("Sobran " + (total - roleSlots) + " rol" + (total - roleSlots === 1 ? "" : "es") + ": quita alguno.");
+    }
+
+    var playersValid = playerMsgs.length === 0 && players >= MIN_PLAYERS;
+    var rolesValid = roleMsgs.length === 0;
+
+    renderRolePicker(); // player count or counts may have changed — refresh slots + which cards are still pickable
+    setupError.textContent = playerMsgs[0] || "";
+    rolesSetupError.textContent = roleMsgs[0] || "";
+    setupNextBtn.disabled = (setupStep === 0 && !playersValid) || (setupStep === 1 && !rolesValid);
+    startBtn.disabled = !(playersValid && rolesValid);
+    updateBalance();
+    return playersValid && rolesValid;
+  }
+
+  function enterSetup(){
+    renderRows();
+    renderRolePicker();
+    setupStep = 0;
+    renderSetupStep();
+    validateSetup();
+    switchScreen(screenSetup);
+  }
+
+  var unguidedModeToggle = document.getElementById('unguided-mode-toggle');
+  unguidedModeToggle.addEventListener('change', function(){
+    config.unguidedMode = unguidedModeToggle.checked;
+  });
+
+  var voteMinutesMinus = document.getElementById('vote-minutes-minus');
+  var voteMinutesPlus = document.getElementById('vote-minutes-plus');
+  var voteMinutesValue = document.getElementById('vote-minutes-value');
+  function renderVoteMinutes(){
+    voteMinutesValue.textContent = config.voteSeconds === 0 ? 'Sin límite' : formatVoteTime(config.voteSeconds);
+  }
+  voteMinutesMinus.addEventListener('click', function(){
+    config.voteSeconds = clamp(config.voteSeconds - VOTE_SECONDS_STEP, 0, MAX_VOTE_SECONDS);
+    renderVoteMinutes();
+    popValue(voteMinutesValue);
+  });
+  voteMinutesPlus.addEventListener('click', function(){
+    config.voteSeconds = clamp(config.voteSeconds + VOTE_SECONDS_STEP, 0, MAX_VOTE_SECONDS);
+    renderVoteMinutes();
+    popValue(voteMinutesValue);
+  });
+
+  // ---------- role reveal roster: tap your own name to show your card ----------
+  var revealRosterEl = document.getElementById('reveal-roster');
+  var revealContinueBtn = document.getElementById('reveal-continue-btn');
+  var revealModalBackdrop = document.getElementById('reveal-modal-backdrop');
+  var revealModalClose = document.getElementById('reveal-modal-close');
+  var revealWrap = document.getElementById('reveal-wrap');
+  var revealContent = document.getElementById('reveal-content');
+  var revealNameCaption = document.getElementById('reveal-name-caption');
+  var revealBtn = document.getElementById('reveal-btn');
+  var currentRevealIdx = -1;
+
+  // reuses the modal's close button as the "nextBtn": createRevealCard keeps
+  // it disabled until the card has actually been tapped open, so a row can't
+  // be marked as viewed without being seen at least once
+  var revealCard = createRevealCard(revealWrap, revealContent, revealBtn, revealModalClose);
+
+  // the description stays hidden behind the portrait until the card is
+  // tapped; showPlayer() resets revealContent's className each turn, which
+  // clears any leftover "desc-open" from the previous player automatically
+  revealContent.addEventListener('click', function(){
+    if (!revealWrap.classList.contains('revealed')) return;
+    revealContent.classList.toggle('desc-open');
+  });
+
+  // the name caption lives below reveal-wrap, so it isn't covered by
+  // reveal-btn the way the portrait is: it needs its own instant-hide /
+  // fade-in handling so the next player's name can never leak through
+  // its own opacity transition while it's being swapped out of view.
+  revealBtn.addEventListener('click', function(){
+    revealNameCaption.classList.add('visible');
+  });
+
+  function hideNameCaptionInstantly(){
+    revealNameCaption.style.transition = 'none';
+    revealNameCaption.classList.remove('visible');
+    void revealNameCaption.offsetWidth; // force the hide to apply before we restore the transition
+    revealNameCaption.style.transition = '';
+  }
+
+  function renderRevealRoster(){
+    var html = '';
+    for (var idx = 0; idx < state.playerNames.length; idx++){
+      if (state.viewed[idx]) continue;
+      html += '<button type="button" class="roster-row" data-index="' + idx + '">' +
+        '<span class="roster-row-name">' + escapeHtml(state.playerNames[idx]) + '</span>' +
+      '</button>';
+    }
+    revealRosterEl.innerHTML = html;
+    revealContinueBtn.disabled = state.viewed.some(function(v){ return !v; });
+  }
+
+  function openRevealModal(idx){
+    currentRevealIdx = idx;
+    hideNameCaptionInstantly();
+
+    var role = ROLES.filter(function(r){ return r.id === state.roleIds[idx]; })[0];
+    revealContent.innerHTML =
+      '<img class="reveal-portrait" src="' + role.imagen + '" alt="" draggable="false" oncontextmenu="return false">' +
+      '<div class="reveal-desc-overlay">' + escapeHtml(role.descripcion) + '</div>';
+    revealContent.className = 'reveal-content ' + TEAM_CLASS[role.equipo];
+
+    revealNameCaption.innerHTML =
+      escapeHtml(role.nombre) +
+      '<span class="reveal-hint">Toca la carta para ver su descripción</span>';
+    revealNameCaption.className = 'reveal-name-caption ' + TEAM_CLASS[role.equipo];
+
+    revealCard.showFor(role.equipo === 'lobos');
+    revealModalBackdrop.classList.remove('hidden');
+  }
+
+  revealRosterEl.addEventListener('click', function(e){
+    var row = e.target.closest('.roster-row');
+    if (!row) return;
+    openRevealModal(parseInt(row.getAttribute('data-index'), 10));
+  });
+
+  revealModalClose.addEventListener('click', function(){
+    if (revealModalClose.disabled) return;
+    revealModalBackdrop.classList.add('hidden');
+    state.viewed[currentRevealIdx] = true;
+    renderRevealRoster();
+  });
+
+  var startConfirmBackdrop = document.getElementById('start-confirm-backdrop');
+  var startConfirmBtn = document.getElementById('start-confirm-btn');
+
+  // shown once every player has viewed their role — a checkpoint that the
+  // device is back with the narrator before the night guide (or the
+  // unguided roster) actually begins
+  revealContinueBtn.addEventListener('click', function(){
+    if (revealContinueBtn.disabled) return;
+    startConfirmBackdrop.classList.remove('hidden');
+  });
+
+  startConfirmBtn.addEventListener('click', function(){
+    startConfirmBackdrop.classList.add('hidden');
+    if (config.unguidedMode){
+      enterRoster();
+      switchScreen(screenRoster);
+    } else {
+      enterNarrator();
+      switchScreen(screenNarrator);
+    }
+  });
+
+  startBtn.addEventListener('click', function(){
+    if (!validateSetup()) return;
+    config.rows.forEach(function(r){ r.name = r.name.trim(); });
+
+    var deck = [];
+    ROLES.forEach(function(role){
+      for (var i = 0; i < (counts[role.id] || 0); i++) deck.push(role.id);
+    });
+
+    // El Ladrón always ends up dealt to a player; the 2 reserve cards are
+    // withheld from everyone else and only he gets a shot at swapping into
+    // one of them, on his first-night turn (see widgetLadronHtml)
+    state.ladronReserve = [];
+    if (counts['ladron']){
+      shuffle(deck);
+      deck.splice(deck.indexOf('ladron'), 1);
+      state.ladronReserve = deck.splice(0, 2);
+      deck.push('ladron');
+    }
+    shuffle(deck);
+
+    state.playerNames = config.rows.map(function(r){ return r.name; }).filter(function(n){ return n !== ""; });
+    state.players = state.playerNames.length;
+    state.roleIds = deck;
+    state.viewed = state.playerNames.map(function(){ return false; });
+
+    renderRevealRoster();
+    switchScreen(screenGame);
+  });
+
+  // ---------- narrator: night guide ----------
+  var NIGHT_ORDER = [
+    { id: 'ladron', freq: 'primera' },
+    { id: 'cupido', freq: 'primera' },
+    { id: 'comediante', freq: 'cada' }, // picks his card before anyone else acts; his borrowed power resolves later, at that role's own slot (see insertComedianteActionStep)
+    { id: 'perro_lobo', freq: 'primera' },
+    { id: 'nino_salvaje', freq: 'primera' },
+    { id: 'dos_hermanas', freq: 'primera' },
+    { id: 'tres_hermanos', freq: 'primera' },
+    { id: 'vidente', freq: 'cada' },
+    { id: 'cuervo', freq: 'cada' },
+    { id: 'zorro', freq: 'cada' },
+    { id: 'protector', freq: 'cada' },
+    { id: 'lobo_comun', freq: 'cada' },
+    { id: 'lobo_feroz', freq: 'cada' },
+    { id: 'infecto_padre', freq: 'cada' },
+    { id: 'lobo_albino', freq: 'alterna' },
+    { id: 'bruja', freq: 'cada' },
+    { id: 'flautista', freq: 'cada' },
+    { id: 'piromano', freq: 'cada' },
+    { id: 'guardia', freq: 'cada' },
+    { id: 'gitana', freq: 'especial' }
+  ];
+  var CAUSE_LABELS = { lobos: 'Lobos', votacion: 'Votación', otro: 'Otra causa', amor: 'Pena de amor', disparo: 'Disparo del Cazador', veneno: 'Veneno de la Bruja', fuego: 'Fuego del Pirómano' };
+  var CAUSE_ICONS = { lobos: '🐺', votacion: '🗳️', otro: '☠️', amor: '💔', disparo: '🔫', veneno: '🧪', fuego: '🔥' };
+
+  var nightSteps = [];
+  var reminderSeq = 1;
+
+  var dayNightStatusEl = document.getElementById('day-night-status');
+  var tabDeathsBtn = document.getElementById('tab-deaths-btn'); // "Personajes" icon button — opens the overlay below
+  var deathsModalBackdrop = document.getElementById('deaths-modal-backdrop');
+  var deathsModalClose = document.getElementById('deaths-modal-close');
+  var panelNight = document.getElementById('panel-night');
+  var panelVote = document.getElementById('panel-vote');
+  var voteAnnounceViewEl = document.getElementById('vote-announce-view');
+  var voteAnnounceCueEl = document.getElementById('vote-announce-cue');
+  var voteAnnounceListEl = document.getElementById('vote-announce-list');
+  var voteAnnounceContinueBtn = document.getElementById('vote-announce-continue-btn');
+  var announceCazadorShootWrap = document.getElementById('announce-cazador-shoot');
+  var announceCazadorShootListEl = document.getElementById('announce-cazador-shoot-list');
+  var voteSelectViewEl = document.getElementById('vote-select-view');
+  var judgePromptViewEl = document.getElementById('judge-prompt-view');
+  var judgePromptCueEl = document.getElementById('judge-prompt-cue');
+  var judgeSkipBtn = document.getElementById('judge-skip-btn');
+  var judgeUseBtn = document.getElementById('judge-use-btn');
+  var voteContinueViewEl = document.getElementById('vote-continue-view');
+  var roundContinueBtn = document.getElementById('round-continue-btn');
+  var votePlayersListEl = document.getElementById('vote-players-list');
+  var confirmVoteBtn = document.getElementById('confirm-vote-btn');
+  var voteTimerWrapEl = document.getElementById('vote-timer-wrap');
+  var voteTimerMmEl = document.getElementById('vote-timer-mm');
+  var voteTimerSsEl = document.getElementById('vote-timer-ss');
+  var gameOverBackdrop = document.getElementById('game-over-backdrop');
+  var gameOverIconEl = document.getElementById('game-over-icon');
+  var gameOverTitleEl = document.getElementById('game-over-title');
+  var gameOverSummaryEl = document.getElementById('game-over-summary');
+  var gameOverNewRoundBtn = document.getElementById('game-over-new-round-btn');
+  var narratorBalanceLobos = document.getElementById('narrator-balance-lobos');
+  var narratorBalanceAldeanos = document.getElementById('narrator-balance-aldeanos');
+  var narratorWakeCueEl = document.getElementById('narrator-wake-cue');
+  var nightWakeCueEl = document.getElementById('night-wake-cue');
+  var nightRevealContent = document.getElementById('night-reveal-content');
+  var nightRevealCaption = document.getElementById('night-reveal-caption');
+  var nightNav = document.getElementById('night-nav');
+  var nightNavErrorEl = document.getElementById('night-nav-error');
+  var nightPrevBtn = document.getElementById('night-prev-btn');
+  var nightNextBtn = document.getElementById('night-next-btn');
+  var nightProgressDots = document.getElementById('night-progress-dots');
+  var nightDots = createDots(nightProgressDots);
+  var roleWidgetEl = document.getElementById('role-widget');
+
+  function goToNextRound(){
+    stopVoteTimer();
+    state.round++;
+    state.lastProtectedIdx = state.protectedIdx;
+    state.protectedIdx = null;
+    state.ravenMark = null;
+    state.nightActionDone = {};
+    state.brujaActedThisRound = false;
+    state.brujaLifeUsedThisRound = false;
+    state.brujaDeathUsedThisRound = false;
+    state.brujaLifeSavedIdx = null;
+    state.brujaLifeSavedSource = null;
+    state.brujaDeathPoisonedIdx = null;
+    state.deathsThisRound = [];
+    state.comedianteChoiceId = null;
+    state.comedianteChoiceMade = false;
+    cupidoSelection = [];
+    zorroSelection = [];
+    zorroConfirmed = false;
+    videntePickIdx = null;
+    state.nightIdx = 0;
+    buildNightSteps();
+    setNarratorTab('night');
+    renderNightStep();
+    nightDots.build(nightSteps.length);
+    nightDots.update(0);
+  }
+  var selectedVoteIdx = null;
+  var afterDeathModalResolve = null; // set right before opening a modal that must be followed by another step
+  var suppressGameOverCheck = false; // true only while the dawn kill is being resolved, before the vote gets its turn
+
+  // the narrator screen only ever has two states now: the night guide, and
+  // the forced day-vote event triggered by beginEndOfRound(). "Personajes" is
+  // no longer a tab — it's an overlay (see deathsModalBackdrop below) that's
+  // only reachable while the night guide is showing, never during the vote.
+  function setNarratorTab(tab){
+    panelNight.classList.toggle('hidden', tab !== 'night');
+    panelVote.classList.toggle('hidden', tab !== 'vote');
+    tabDeathsBtn.classList.toggle('hidden', tab !== 'night');
+  }
+
+  var deathsModal = setupModal(tabDeathsBtn, deathsModalBackdrop, deathsModalClose);
+  tabDeathsBtn.addEventListener('click', renderDeathLists);
+
+  // ---------- narrator: day vote countdown (optional, set at setup) ----------
+  var voteTimerInterval = null;
+  var voteAudioCtx = null;
+
+  function updateVoteTimerDisplay(totalSeconds){
+    var m = Math.floor(totalSeconds / 60), s = totalSeconds % 60;
+    voteTimerMmEl.textContent = (m < 10 ? '0' : '') + m;
+    voteTimerSsEl.textContent = (s < 10 ? '0' : '') + s;
+  }
+  function stopVoteTimer(){
+    if (voteTimerInterval){ clearInterval(voteTimerInterval); voteTimerInterval = null; }
+    voteTimerWrapEl.classList.add('hidden');
+    voteTimerWrapEl.classList.remove('time-up');
+  }
+  // creating/resuming the AudioContext here happens inside a click handler
+  // (the "terminar la noche" / death-modal chain), satisfying the browser's
+  // user-gesture requirement so the later, timer-triggered alarm can play
+  function unlockVoteAlarmAudio(){
+    if (!voteAudioCtx){
+      try { voteAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e){ voteAudioCtx = null; }
+    } else if (voteAudioCtx.state === 'suspended'){
+      voteAudioCtx.resume();
+    }
+  }
+  function playVoteAlarmSound(){
+    if (!voteAudioCtx) return;
+    var now = voteAudioCtx.currentTime;
+    [0, 0.3, 0.6].forEach(function(offset){
+      var osc = voteAudioCtx.createOscillator();
+      var gain = voteAudioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.0001, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.25, now + offset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.25);
+      osc.connect(gain).connect(voteAudioCtx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.3);
+    });
+  }
+  function startVoteTimer(){
+    stopVoteTimer();
+    if (config.voteSeconds <= 0) return;
+    var remaining = config.voteSeconds;
+    updateVoteTimerDisplay(remaining);
+    voteTimerWrapEl.classList.remove('hidden');
+    voteTimerInterval = setInterval(function(){
+      remaining--;
+      updateVoteTimerDisplay(remaining);
+      if (remaining <= 0){
+        clearInterval(voteTimerInterval);
+        voteTimerInterval = null;
+        voteTimerWrapEl.classList.add('time-up');
+        playVoteAlarmSound();
+      }
+    }, 1000);
+  }
+
+  // ---------- narrator: end of round (dawn reveal + day vote) ----------
+  // both the regular pack and the (independent) Lobo Albino can each have a
+  // pending kill the same night — resolve them one at a time, then vote
+  function beginEndOfRound(){
+    var queue = [];
+    if (state.pendingNightKillIdx !== null) queue.push(state.pendingNightKillIdx);
+    if (state.pendingAlbinoKillIdx !== null) queue.push(state.pendingAlbinoKillIdx);
+    state.pendingNightKillIdx = null;
+    state.pendingAlbinoKillIdx = null;
+    resolvePendingKillQueue(queue);
+  }
+
+  function resolvePendingKillQueue(queue){
+    if (queue.length === 0){
+      beginVotePhase();
+      return;
+    }
+    var idx = queue.shift();
+    suppressGameOverCheck = true;
+    afterDeathModalResolve = function(){ resolvePendingKillQueue(queue); };
+    openDeathModal(idx, 'lobos');
+  }
+
+  function beginVotePhase(){
+    suppressGameOverCheck = false; // recompute below: this is the point where a dawn-only tie/ending finally counts
+    unlockVoteAlarmAudio();
+    dayNightStatusEl.textContent = '☀️ Día';
+    setNarratorTab('vote');
+    voteContinueViewEl.classList.add('hidden');
+    voteSelectViewEl.classList.add('hidden');
+    judgePromptViewEl.classList.add('hidden');
+
+    // if the dawn's deaths already leave only one of the two main factions
+    // (or the wolves at parity), voting is pointless — end the game right
+    // after announcing those deaths instead of prompting a vote
+    var status = getGameStatus();
+
+    // always pause here so the narrator can wake the village and announce
+    // the night's deaths (even "nobody died") before the debate/vote starts —
+    // whether anyone actually died is said once, by renderDeathAnnouncement()
+    narratorWakeCueEl.textContent = '☀️ El pueblo se despierta';
+    renderDeathAnnouncement();
+    voteAnnounceViewEl.classList.remove('hidden');
+    voteAnnounceContinueBtn.textContent = status.over ? 'Continuar ›' : 'Continuar al debate ›';
+  }
+
+  function renderDeathAnnouncement(){
+    var anyDeaths = state.deathsThisRound.length > 0;
+    voteAnnounceCueEl.textContent = !anyDeaths ? '🌅 Esta noche no ha muerto nadie' :
+      state.deathsThisRound.length === 1 ? '🌅 Esta noche ha muerto...' : '🌅 Esta noche han muerto...';
+    // the roster box only makes sense when there's actually someone to list —
+    // otherwise it'd just be a third "nobody died" message under the cue above
+    voteAnnounceListEl.classList.toggle('hidden', !anyDeaths);
+    // the cause of death is deliberately not shown here — this is what the
+    // narrator reads aloud to the table, and only Personajes (the narrator's
+    // own reference) should reveal *how* each player died
+    voteAnnounceListEl.innerHTML = state.deathsThisRound.map(function(idx){
+      var role = roleOf(idx);
+      return (
+        '<div class="role-row roster-row" data-index="' + idx + '">' +
+          '<img class="role-thumb" src="' + role.imagen + '" alt="" loading="lazy">' +
+          '<div class="role-info">' +
+            '<div class="roster-name">' + escapeHtml(state.playerNames[idx]) + '</div>' +
+            '<div class="role-name">' + escapeHtml(role.nombre) + '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+
+    // the Cazador's revenge shot (if he died tonight) is chosen right here,
+    // not earlier during resolution — the continue button stays locked until
+    // it's picked
+    var pendingIdx = state.pendingCazadorShootIdx;
+    announceCazadorShootWrap.classList.toggle('hidden', pendingIdx === null);
+    if (pendingIdx !== null){
+      announceCazadorShootListEl.innerHTML = state.playerNames.map(function(n, idx){
+        return (state.alive[idx] && idx !== pendingIdx) ?
+          '<button type="button" class="chip" data-idx="' + idx + '">' + escapeHtml(n) + '</button>' : '';
+      }).join('');
+    }
+    voteAnnounceContinueBtn.disabled = pendingIdx !== null;
+  }
+
+  // tap a name in the dawn death summary to show that player's card to the table
+  voteAnnounceListEl.addEventListener('click', function(e){
+    var row = e.target.closest('.roster-row');
+    if (!row) return;
+    showLynchReveal(parseInt(row.getAttribute('data-index'), 10), function(){});
+  });
+
+  announceCazadorShootListEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.chip');
+    if (!btn) return;
+    var idx = parseInt(btn.getAttribute('data-idx'), 10);
+    var cazadorIdx = state.pendingCazadorShootIdx;
+    if (cazadorIdx === null) return;
+    state.pendingCazadorShootIdx = null;
+    state.alive[idx] = false;
+    state.deathCause[idx] = 'disparo';
+    state.deathsThisRound.push(idx);
+    logEvent('🔫 El Cazador (' + state.playerNames[cazadorIdx] + ') disparó a ' + state.playerNames[idx] + ' (' + roleOf(idx).nombre + ') al morir.');
+    renderDeathAnnouncement();
+  });
+
+  function startVoteSelection(){
+    voteAnnounceViewEl.classList.add('hidden');
+    voteSelectViewEl.classList.remove('hidden');
+    selectedVoteIdx = null;
+    renderVoteList();
+    startVoteTimer();
+  }
+
+  voteAnnounceContinueBtn.addEventListener('click', function(){
+    if (getGameStatus().over) updateGameOverUI();
+    else startVoteSelection();
+  });
+
+  function showRoundContinueView(){
+    stopVoteTimer();
+    voteSelectViewEl.classList.add('hidden');
+    judgePromptViewEl.classList.add('hidden');
+    voteContinueViewEl.classList.remove('hidden');
+    // the vote is over — the village goes back to sleep, it hasn't "woken up"
+    // again until the next round's own dawn/vote event
+    dayNightStatusEl.textContent = '🌙 Noche';
+    narratorWakeCueEl.textContent = '😴 El pueblo se duerme...';
+  }
+
+  // El Juez Tartamudo: once per game, may secretly ask the narrator for a
+  // second lynching vote the same day — checked right after a vote resolves
+  function canJudgeRevote(){
+    if (state.judgeUsed) return false;
+    var idx = state.roleIds.indexOf('juez_tartamudo');
+    return idx !== -1 && state.alive[idx];
+  }
+  function showJudgePromptView(){
+    stopVoteTimer();
+    voteSelectViewEl.classList.add('hidden');
+    judgePromptViewEl.classList.remove('hidden');
+    var idx = state.roleIds.indexOf('juez_tartamudo');
+    judgePromptCueEl.textContent = '🤫 ' + state.playerNames[idx] + ' (El Juez Tartamudo) pide en secreto repetir la votación...';
+  }
+  judgeSkipBtn.addEventListener('click', function(){
+    // only now do we lock in whatever this vote's outcome was — the judge
+    // had first crack at rescuing a game-ending result and passed on it
+    suppressGameOverCheck = false;
+    renderDeathLists();
+    if (!getGameStatus().over) showRoundContinueView();
+  });
+  judgeUseBtn.addEventListener('click', function(){
+    state.judgeUsed = true;
+    var idx = state.roleIds.indexOf('juez_tartamudo');
+    logEvent('⚖️ El Juez Tartamudo (' + state.playerNames[idx] + ') usó su poder: se repite la votación.');
+    judgePromptViewEl.classList.add('hidden');
+    startVoteSelection();
+  });
+
+  roundContinueBtn.addEventListener('click', function(){
+    goToNextRound();
+  });
+
+  // ---------- narrator: day vote ----------
+  function renderVoteList(){
+    if (selectedVoteIdx !== null && !state.alive[selectedVoteIdx]) selectedVoteIdx = null;
+    var html = state.playerNames.map(function(name, idx){
+      if (!state.alive[idx]) return '';
+      return '<div class="vote-row' + (idx === selectedVoteIdx ? ' selected' : '') + '" data-index="' + idx + '">' +
+        '<span>' + escapeHtml(name) + '</span>' +
+      '</div>';
+    }).join('');
+    votePlayersListEl.innerHTML = html || '<p class="chip-loading">No quedan jugadores vivos.</p>';
+    confirmVoteBtn.disabled = selectedVoteIdx === null;
+  }
+
+  votePlayersListEl.addEventListener('click', function(e){
+    var row = e.target.closest('.vote-row');
+    if (!row) return;
+    var idx = parseInt(row.getAttribute('data-index'), 10);
+    selectedVoteIdx = (selectedVoteIdx === idx) ? null : idx;
+    renderVoteList();
+  });
+
+  confirmVoteBtn.addEventListener('click', function(){
+    if (selectedVoteIdx === null) return;
+    stopVoteTimer();
+    var idx = selectedVoteIdx;
+    selectedVoteIdx = null;
+    suppressGameOverCheck = true; // hold off the win check until voting fully resolves
+    // show the voted-out player's card first, then resolve any special
+    // guidance (e.g. the Cazador's revenge shot) on top of it
+    showLynchReveal(idx, function(){
+      afterDeathModalResolve = finishVoteResolution;
+      openDeathModal(idx, 'votacion');
+    });
+  });
+
+  function finishVoteResolution(){
+    // the Judge gets first crack at this vote's outcome — including a
+    // game-ending one, since "the village made one bad decision" is
+    // exactly the moment his power exists to rescue. Only once he's
+    // passed (or isn't eligible) do we lock in the result and let a
+    // game-over stand.
+    if (canJudgeRevote()){
+      renderDeathLists(); // refresh alive/dead lists, but suppressGameOverCheck is still true — no overlay yet
+      showJudgePromptView();
+      return;
+    }
+    suppressGameOverCheck = false;
+    renderDeathLists(); // win check happens here, after the reveal
+    if (!getGameStatus().over) showRoundContinueView();
+  }
+
+  // ---------- narrator: win condition ----------
+  function getGameStatus(){
+    var lobosAlive = 0, aldeanosAlive = 0;
+    state.alive.forEach(function(isAlive, idx){
+      if (!isAlive) return;
+      var role = roleOf(idx);
+      if (role.equipo === 'lobos') lobosAlive++;
+      else if (role.equipo === 'aldeanos') aldeanosAlive++;
+    });
+    var winner = null;
+    if (lobosAlive === 0) winner = 'aldeanos';
+    else if (lobosAlive >= aldeanosAlive) winner = 'lobos';
+    return { over: winner !== null, winner: winner, lobosAlive: lobosAlive, aldeanosAlive: aldeanosAlive };
+  }
+
+  // live readout of how close the game is to ending. Lobos win at PARITY
+  // (lobosAlive >= aldeanosAlive), not at a majority — so their raw share of
+  // alive players understates the danger (e.g. 2 lobos/3 aldeanos is a raw
+  // 40%, which reads as "aldeanos comfortably ahead" even though one more
+  // aldeano death ends the game). Scale against that real threshold instead:
+  // lobosAlive/aldeanosAlive, where 100% means parity — i.e. lobos win now.
+  function updateAliveBalance(){
+    var status = getGameStatus();
+    var lobosPct = status.aldeanosAlive > 0 ?
+      clamp(status.lobosAlive / status.aldeanosAlive * 100, 0, 100) : 100;
+    narratorBalanceLobos.style.flexBasis = lobosPct + '%';
+    narratorBalanceAldeanos.style.flexBasis = (100 - lobosPct) + '%';
+  }
+
+  var gameOverShown = false;
+
+  function updateGameOverUI(){
+    var status = getGameStatus();
+    if (!status.over){
+      gameOverShown = false;
+      gameOverBackdrop.classList.add('hidden');
+      return;
+    }
+    if (gameOverShown) return; // already showing the overlay for this ending, don't re-trigger it
+    gameOverShown = true;
+    stopVoteTimer();
+    gameOverIconEl.textContent = status.winner === 'lobos' ? '🐺' : '🏘️';
+    gameOverTitleEl.textContent = status.winner === 'lobos' ? 'GANAN LOS LOBOS' : 'GANAN LOS ALDEANOS';
+    gameOverTitleEl.className = 'game-over-title winner-' + status.winner;
+    gameOverSummaryEl.innerHTML = state.eventLog.length ?
+      state.eventLog.map(function(e){ return '<p>' + escapeHtml(e.text) + '</p>'; }).join('') :
+      '<p>Sin eventos registrados.</p>';
+    gameOverBackdrop.classList.remove('hidden');
+  }
+
+  // lobo_comun/lobo_feroz/infecto_padre hunt together as a single pack
+  // decision every night — merged into one step. lobo_albino is the
+  // exception: it wakes apart from the pack to act on its own, so it stays
+  // as its own separate step.
+  var WOLF_PACK_IDS = ['lobo_comun', 'lobo_feroz', 'infecto_padre'];
+
+  // nobody's left alive holding that card — nothing to do, so it shouldn't
+  // clutter the night guide either (e.g. the sole Vidente died last round)
+  function roleHasAlivePlayer(roleId){
+    return state.roleIds.some(function(rid, idx){ return rid === roleId && state.alive[idx]; });
+  }
+
+  // shared active/inactive check for a NIGHT_ORDER entry — used both to
+  // build the real step list and to list the Comediante's candidate cards
+  function nightOrderEntryActive(o){
+    if (!(counts[o.id] || 0)) return false;
+    // roles marked 'primera' only ever act the first night: from round 2 on
+    // they have nothing left to do, so they drop out of the list entirely
+    // instead of showing up as an empty step every round.
+    if (o.freq === 'primera' && state.round > 1) return false;
+    if (o.id === 'zorro' && state.zorroPowerLost) return false;
+    // Lobo Albino only hunts solo every other night, starting the 2nd night
+    if (o.freq === 'alterna' && state.round % 2 !== 0) return false;
+    // La Gitana needs a corpse to talk to, and only ever once per game
+    if (o.freq === 'especial' && (state.gitanaUsed || !state.alive.some(function(a){ return !a; }))) return false;
+    if (WOLF_PACK_IDS.indexOf(o.id) === -1 && !roleHasAlivePlayer(o.id)) return false;
+    var role = ROLES.filter(function(r){ return r.id === o.id; })[0];
+    // El Anciano's lynching strips every VILLAGE special power (not the
+    // wolves') — those roles simply stop waking up at night from then on
+    if (state.villagePowersLost && role && role.equipo === 'aldeanos') return false;
+    return true;
+  }
+
+  function buildNightSteps(){
+    var packAdded = false;
+    nightSteps = [];
+    NIGHT_ORDER.forEach(function(o){
+      if (!nightOrderEntryActive(o)) return;
+
+      if (WOLF_PACK_IDS.indexOf(o.id) !== -1){
+        if (packAdded) return;
+        packAdded = true;
+        var activePackRoles = WOLF_PACK_IDS
+          .map(function(id){ return ROLES.filter(function(r){ return r.id === id; })[0]; })
+          .filter(function(r){ return r && (counts[r.id] || 0) > 0 && roleHasAlivePlayer(r.id); });
+        if (!activePackRoles.length) return;
+        var baseRole = activePackRoles[0];
+        var extraNotes = activePackRoles.slice(1).map(function(r){ return r.nombre + ': ' + r.descripcion; });
+        nightSteps.push({
+          role: {
+            id: 'lobo_pack',
+            nombre: activePackRoles.length > 1 ? 'Los Lobos' : baseRole.nombre,
+            equipo: 'lobos',
+            imagen: baseRole.imagen,
+            descripcion: baseRole.descripcion + (extraNotes.length ? ' ' + extraNotes.join(' ') : '')
+          },
+          freq: 'cada'
+        });
+        return;
+      }
+
+      var stepRole = ROLES.filter(function(r){ return r.id === o.id; })[0];
+      nightSteps.push({ role: stepRole, freq: o.freq });
+    });
+
+    insertComedianteActionStep();
+  }
+
+  // El Comediante's own step (above) only picks a card; the borrowed power
+  // actually resolves later, at that role's own slot — so once he's chosen,
+  // splice a second "acting as X" step right after the real X's step.
+  function comedianteCandidateRoles(){
+    // only roles whose turn hasn't happened yet tonight are valid to borrow —
+    // he acts right after Cupido, so anything earlier (Ladrón, Cupido) has
+    // already resolved and has nothing left for him to "act as"
+    var comedianteIdx = -1;
+    for (var i = 0; i < NIGHT_ORDER.length; i++){
+      if (NIGHT_ORDER[i].id === 'comediante'){ comedianteIdx = i; break; }
+    }
+    var seenPack = false;
+    var out = [];
+    NIGHT_ORDER.forEach(function(o, idx){
+      if (comedianteIdx !== -1 && idx <= comedianteIdx) return;
+      if (!nightOrderEntryActive(o)) return;
+      if (WOLF_PACK_IDS.indexOf(o.id) !== -1){
+        if (seenPack) return;
+        seenPack = true;
+        var wolfRole = ROLES.filter(function(r){ return r.id === o.id; })[0];
+        if (wolfRole) out.push({ id: 'lobo_pack', nombre: 'Los Lobos', imagen: wolfRole.imagen });
+        return;
+      }
+      var role = ROLES.filter(function(r){ return r.id === o.id; })[0];
+      if (role) out.push({ id: role.id, nombre: role.nombre, imagen: role.imagen });
+    });
+    return out;
+  }
+
+  function insertComedianteActionStep(){
+    // drop any stale borrow-step from a previous choice, then re-add if needed
+    nightSteps = nightSteps.filter(function(s){ return !s.isComedianteBorrow; });
+    if (!state.comedianteChoiceId) return;
+    var targetIdx = -1;
+    for (var i = 0; i < nightSteps.length; i++){
+      if (nightSteps[i].role.id === state.comedianteChoiceId){ targetIdx = i; break; }
+    }
+    if (targetIdx === -1) return;
+    var targetRole = nightSteps[targetIdx].role;
+    var comedianteRole = ROLES.filter(function(r){ return r.id === 'comediante'; })[0];
+    nightSteps.splice(targetIdx + 1, 0, {
+      role: {
+        id: 'comediante_borrow',
+        nombre: 'El Comediante (usa el poder de ' + targetRole.nombre + ')',
+        equipo: 'solitario',
+        imagen: comedianteRole.imagen,
+        descripcion: 'El Comediante actúa ahora, solo esta noche, con el poder de ' + targetRole.nombre + '.'
+      },
+      freq: 'cada',
+      isComedianteBorrow: true
+    });
+  }
+
+  function renderNightStep(){
+    dayNightStatusEl.textContent = '🌙 Noche';
+    nightNavErrorEl.textContent = '';
+
+    if (nightSteps.length === 0){
+      nightWakeCueEl.textContent = '';
+      nightRevealCaption.innerHTML = '';
+      nightRevealContent.innerHTML = '<p class="night-empty">No hay roles con acción nocturna esta ronda.</p>';
+      nightRevealContent.className = 'reveal-content';
+      nightNav.classList.remove('hidden');
+      nightPrevBtn.disabled = true;
+      nightNextBtn.disabled = false;
+      nightNextBtn.textContent = 'Terminar la noche ›';
+      roleWidgetEl.classList.add('hidden');
+      roleWidgetEl.innerHTML = '';
+      nightDots.build(0);
+      return;
+    }
+    nightNav.classList.remove('hidden');
+    var step = nightSteps[state.nightIdx];
+    nightWakeCueEl.textContent = 'Se despierta...';
+    nightRevealContent.innerHTML =
+      '<img class="reveal-portrait" src="' + step.role.imagen + '" alt="" draggable="false" oncontextmenu="return false">' +
+      '<div class="reveal-desc-overlay">' + escapeHtml(step.role.descripcion) + '</div>';
+    nightRevealContent.className = 'reveal-content ' + TEAM_CLASS[step.role.equipo];
+
+    nightRevealCaption.innerHTML =
+      escapeHtml(step.role.nombre) +
+      '<span class="reveal-hint">Toca la carta para ver su descripción</span>';
+    nightRevealCaption.className = 'reveal-name-caption visible ' + TEAM_CLASS[step.role.equipo];
+
+    nightPrevBtn.disabled = state.nightIdx === 0;
+    nightNextBtn.disabled = false;
+    nightNextBtn.textContent = (state.nightIdx === nightSteps.length - 1) ? 'Terminar la noche' : 'Siguiente';
+
+    renderRoleWidget(step);
+  }
+
+  nightRevealContent.addEventListener('click', function(){
+    nightRevealContent.classList.toggle('desc-open');
+  });
+
+  // roles whose action is optional (may legitimately do nothing this night
+  // without losing anything) never block advancing. Everything else with a
+  // trackable widget must complete its action first.
+  var OPTIONAL_NIGHT_ROLES = ['zorro', 'bruja', 'piromano', 'lobo_albino'];
+
+  function isNightActionComplete(step){
+    var roleId = step.role.id;
+    if (OPTIONAL_NIGHT_ROLES.indexOf(roleId) !== -1) return true;
+    switch (roleId){
+      case 'lobo_pack': return state.pendingNightKillIdx !== null;
+      case 'protector': return state.protectedIdx !== null;
+      case 'cupido': return state.lovers !== null;
+      case 'nino_salvaje': return state.wildChildModelIdx !== null || state.wildChildTransformed;
+      case 'perro_lobo': return state.perroLoboChoice !== null;
+      case 'cuervo': return state.ravenMark !== null;
+      case 'vidente': return state.nightActionDone.vidente === true;
+      case 'comediante': return state.comedianteChoiceMade === true;
+      default: return true; // no widget (or no trackable action) to enforce
+    }
+  }
+
+  // going back one step undoes only what was done THIS round on the step
+  // you land on — not the whole game, and not other steps' choices
+  function undoStepAction(step){
+    if (!step) return;
+    switch (step.role.id){
+      case 'lobo_pack':
+        state.pendingNightKillIdx = null;
+        break;
+      case 'lobo_albino':
+        state.pendingAlbinoKillIdx = null;
+        break;
+      case 'protector':
+        state.protectedIdx = null;
+        break;
+      case 'cuervo':
+        state.ravenMark = null;
+        break;
+      case 'cupido':
+        state.lovers = null;
+        cupidoSelection = [];
+        clearEventByKey('cupido');
+        break;
+      case 'nino_salvaje':
+        if (!state.wildChildTransformed) state.wildChildModelIdx = null;
+        break;
+      case 'perro_lobo':
+        if (state.perroLoboChoice !== null && state.perroLoboPlayerIdx !== null){
+          state.roleIds[state.perroLoboPlayerIdx] = 'perro_lobo';
+          state.perroLoboChoice = null;
+        }
+        break;
+      case 'ladron':
+        if (state.ladronPlayerIdx !== null){
+          var ladronIdx = state.ladronPlayerIdx;
+          var heldRoleId = state.roleIds[ladronIdx];
+          if (heldRoleId !== 'ladron'){
+            var freeSlot = state.ladronReserve.indexOf('ladron');
+            if (freeSlot !== -1) state.ladronReserve[freeSlot] = heldRoleId;
+            state.roleIds[ladronIdx] = 'ladron';
+          }
+          state.ladronPlayerIdx = null;
+        }
+        break;
+      case 'vidente':
+        state.nightActionDone.vidente = false;
+        videntePickIdx = null;
+        break;
+      case 'comediante':
+        state.comedianteChoiceId = null;
+        state.comedianteChoiceMade = false;
+        insertComedianteActionStep();
+        break;
+      case 'gitana':
+        state.gitanaUsed = false;
+        break;
+      case 'bruja':
+        if (state.brujaLifeUsedThisRound){
+          state.brujaLifeUsed = false;
+          if (state.brujaLifeSavedSource === 'albino') state.pendingAlbinoKillIdx = state.brujaLifeSavedIdx;
+          else state.pendingNightKillIdx = state.brujaLifeSavedIdx;
+          state.brujaLifeSavedIdx = null;
+          state.brujaLifeSavedSource = null;
+          state.brujaLifeUsedThisRound = false;
+          clearEventByKey('bruja-life-r' + state.round);
+        }
+        if (state.brujaDeathUsedThisRound){
+          state.brujaDeathUsed = false;
+          if (state.brujaDeathPoisonedIdx !== null){
+            state.alive[state.brujaDeathPoisonedIdx] = true;
+            delete state.deathCause[state.brujaDeathPoisonedIdx];
+            var announceIdx = state.deathsThisRound.indexOf(state.brujaDeathPoisonedIdx);
+            if (announceIdx !== -1) state.deathsThisRound.splice(announceIdx, 1);
+          }
+          state.brujaDeathPoisonedIdx = null;
+          state.brujaDeathUsedThisRound = false;
+          clearEventByKey('bruja-death-r' + state.round);
+        }
+        state.brujaActedThisRound = false;
+        break;
+    }
+    updateAliveBalance();
+  }
+
+  nightPrevBtn.addEventListener('click', function(){
+    if (state.nightIdx > 0){
+      state.nightIdx--;
+      undoStepAction(nightSteps[state.nightIdx]);
+      renderNightStep();
+    }
+  });
+  nightNextBtn.addEventListener('click', function(){
+    var currentStep = nightSteps[state.nightIdx];
+    if (currentStep && !isNightActionComplete(currentStep)){
+      nightNavErrorEl.textContent = 'Completa la acción de ' + currentStep.role.nombre + ' antes de continuar.';
+      return;
+    }
+    nightNavErrorEl.textContent = '';
+    if (state.nightIdx < nightSteps.length - 1){
+      state.nightIdx++;
+      renderNightStep();
+    } else {
+      beginEndOfRound();
+    }
+  });
+
+  // ---------- per-role interactive widgets (shown under the night card) ----------
+  // target pickers are plain name buttons (tap = pick), not dropdowns
+  function playerButtonsHtml(action, opts){
+    opts = opts || {};
+    return state.playerNames.map(function(n, idx){
+      if (opts.filter && !opts.filter(idx)) return '';
+      var selected = idx === opts.selected;
+      return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-action="' + action + '" data-idx="' + idx + '">' + escapeHtml(n) + '</button>';
+    }).join('');
+  }
+
+  // roles never target themselves with a look/protect/mark-type power —
+  // used to exclude the acting player's own index from target selects
+  function roleActorIndex(roleId){
+    return state.roleIds.indexOf(roleId);
+  }
+
+  var cupidoSelection = []; // in-progress picks, staged until 2 distinct are chosen
+
+  function widgetCupidoHtml(){
+    // playerButtonsHtml only marks a single "selected" index — build manually
+    // here since Cupido needs up to two highlighted at once. Selection stays
+    // fully editable (tap to add/remove); as soon as two are selected the
+    // pairing becomes effective immediately, no separate confirm step.
+    var buttons = state.playerNames.map(function(n, idx){
+      var selected = cupidoSelection.indexOf(idx) !== -1;
+      return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-action="cupido-toggle" data-idx="' + idx + '">' + escapeHtml(n) + '</button>';
+    }).join('');
+    return (
+      '<label>Elige a los dos enamorados (' + cupidoSelection.length + '/2)</label>' +
+      '<div class="role-widget-checklist">' + buttons + '</div>'
+    );
+  }
+  function actionCupidoToggle(idx){
+    var pos = cupidoSelection.indexOf(idx);
+    if (pos !== -1) cupidoSelection.splice(pos, 1);
+    else if (cupidoSelection.length < 2) cupidoSelection.push(idx);
+    if (cupidoSelection.length === 2){
+      var a = cupidoSelection[0], b = cupidoSelection[1];
+      state.lovers = [a, b];
+      logEvent('💘 Cupido (' + state.playerNames[roleActorIndex('cupido')] + ') enamoró a ' +
+        state.playerNames[a] + ' (' + roleOf(a).nombre + ') y ' + state.playerNames[b] + ' (' + roleOf(b).nombre + ').', 'cupido');
+    } else {
+      state.lovers = null;
+      clearEventByKey('cupido');
+    }
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  var videntePickIdx = null; // who the Vidente looked at tonight — tap again to deselect/redo
+
+  function widgetVidenteHtml(){
+    var selfIdx = roleActorIndex('vidente');
+    var buttons = playerButtonsHtml('seer-pick', { selected: videntePickIdx, filter: function(idx){ return idx !== selfIdx && state.alive[idx]; } });
+    return (
+      '<label>¿A quién mira la Vidente?</label>' +
+      '<div class="role-widget-checklist">' + buttons + '</div>'
+    );
+  }
+  function actionSeerPick(idx){
+    if (videntePickIdx === idx){
+      videntePickIdx = null;
+      state.nightActionDone.vidente = false;
+      renderRoleWidget(nightSteps[state.nightIdx]);
+      return;
+    }
+    videntePickIdx = idx;
+    state.nightActionDone.vidente = true;
+    renderRoleWidget(nightSteps[state.nightIdx]);
+    // show the target's card full-screen so the narrator can hand the device to the Vidente
+    showLynchReveal(idx, function(){});
+  }
+
+  var zorroSelection = []; // in-progress picks, staged until 3 distinct are chosen
+  var zorroConfirmed = false; // whether the current 3-pick has been checked (reveals the result)
+
+  function widgetZorroHtml(){
+    var selfIdx = roleActorIndex('zorro');
+    var buttons = state.playerNames.map(function(n, idx){
+      if (idx === selfIdx) return '';
+      var selected = zorroSelection.indexOf(idx) !== -1;
+      return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-action="fox-toggle" data-idx="' + idx + '">' + escapeHtml(n) + '</button>';
+    }).join('');
+    var extra = '';
+    if (zorroSelection.length === 3){
+      if (zorroConfirmed){
+        var hasWolf = zorroSelection.some(function(i){ return roleOf(i).equipo === 'lobos'; });
+        extra = '<div class="role-widget-reveal danger">' +
+          (hasWolf ? '🐺 Sí, hay un Hombre Lobo.' : '❌ No. Pierde su poder.') +
+          '</div>';
+      } else {
+        extra = '<button type="button" class="btn-main" data-action="fox-confirm" style="margin-top:8px;">Comprobar</button>';
+      }
+    }
+    return (
+      '<label>Elige tres jugadores a comprobar (' + zorroSelection.length + '/3)</label>' +
+      '<div class="role-widget-checklist">' + buttons + '</div>' +
+      extra
+    );
+  }
+  function actionFoxToggle(idx){
+    var pos = zorroSelection.indexOf(idx);
+    if (pos !== -1) zorroSelection.splice(pos, 1);
+    else if (zorroSelection.length < 3) zorroSelection.push(idx);
+    zorroConfirmed = false; // any change to the trio invalidates a pending/previous check
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+  function actionFoxConfirm(){
+    if (zorroSelection.length !== 3) return;
+    zorroConfirmed = true;
+    // re-checking (e.g. the narrator fixing a mis-click) overwrites the
+    // previous verdict — it only locks in for good once the round ends and
+    // buildNightSteps drops him from future nights (see there)
+    var hasWolf = zorroSelection.some(function(i){ return roleOf(i).equipo === 'lobos'; });
+    state.zorroPowerLost = !hasWolf;
+    if (state.zorroPowerLost) logEvent('🦊 El Zorro (' + state.playerNames[roleActorIndex('zorro')] + ') falló su comprobación y perdió su poder.', 'zorro-power-lost');
+    else clearEventByKey('zorro-power-lost');
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  function widgetProtectorHtml(){
+    var selfIdx = roleActorIndex('protector');
+    var buttons = playerButtonsHtml('guard-pick', { selected: state.protectedIdx, filter: function(idx){
+      return idx !== selfIdx && idx !== state.lastProtectedIdx;
+    } });
+    return (
+      '<label>¿A quién protege esta noche?</label>' +
+      '<div class="role-widget-checklist">' + buttons + '</div>'
+    );
+  }
+  function actionGuardPick(idx){
+    state.protectedIdx = (idx === state.protectedIdx) ? null : idx;
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  var brujaActiveTab = 'life'; // 'life' | 'death' — which potion the narrator is looking at
+
+  function getPendingNightKills(){
+    var list = [];
+    if (state.pendingNightKillIdx !== null) list.push({ idx: state.pendingNightKillIdx, source: 'lobos' });
+    if (state.pendingAlbinoKillIdx !== null) list.push({ idx: state.pendingAlbinoKillIdx, source: 'albino' });
+    return list;
+  }
+
+  // true when tonight's marked victim would survive the wolves' attack
+  // regardless (El Protector's pick, or El Anciano's one free hit) — the
+  // Bruja has nobody real to revive there, since they were never going to die
+  function pendingKillSurvives(idx){
+    if (idx === state.protectedIdx) return true;
+    if (state.roleIds[idx] === 'anciano' && !state.ancianoSurvived) return true;
+    return false;
+  }
+
+  function widgetBrujaHtml(){
+    var lifeAvailable = !state.brujaLifeUsed;
+    var deathAvailable = !state.brujaDeathUsed;
+    if (!lifeAvailable && !deathAvailable){
+      return '<div class="role-widget-status">Ha usado sus dos pociones: ya no le quedan acciones.</div>';
+    }
+    // only one potion per round: once one is applied, the other tab locks —
+    // but the one just used stays visible (and tappable, to undo/redo it)
+    var lifeLocked = state.brujaActedThisRound && !state.brujaLifeUsedThisRound;
+    var deathLocked = state.brujaActedThisRound && !state.brujaDeathUsedThisRound;
+
+    if (brujaActiveTab === 'life' && (!lifeAvailable || lifeLocked)) brujaActiveTab = 'death';
+    if (brujaActiveTab === 'death' && (!deathAvailable || deathLocked)) brujaActiveTab = 'life';
+
+    var tabsHtml = '<div class="submode-toggle">' +
+      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'life' ? ' active' : '') + '" data-action="bruja-tab" data-tab="life"' + (!lifeAvailable || lifeLocked ? ' disabled' : '') + '><span class="submode-btn-icon">💚</span>Poción de vida</button>' +
+      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'death' ? ' active' : '') + '" data-action="bruja-tab" data-tab="death"' + (!deathAvailable || deathLocked ? ' disabled' : '') + '><span class="submode-btn-icon">☠️</span>Poción de muerte</button>' +
+    '</div>';
+
+    if (brujaActiveTab === 'life'){
+      // already applied this round — show the saved pick, still tappable to undo
+      if (state.brujaLifeUsedThisRound){
+        var savedIdx = state.brujaLifeSavedIdx;
+        return tabsHtml +
+          '<label>¿A quién revive?</label>' +
+          '<div class="role-widget-checklist"><button type="button" class="chip selected" data-action="bruja-life-toggle" data-idx="' + savedIdx + '">' + escapeHtml(state.playerNames[savedIdx]) + '</button></div>';
+      }
+      // the life potion only ever saves one of THIS round's pending victims
+      // (the pack's own pick, and/or Lobo Albino's separate one) — deaths are
+      // resolved at dawn (see beginEndOfRound), so before that they're just
+      // pending picks, not yet in state.alive at all; a death from a past
+      // round can't be undone
+      var allPending = getPendingNightKills();
+      if (allPending.length === 0){
+        return tabsHtml + '<div class="role-widget-status">Nadie ha sido marcado para morir esta noche.</div>';
+      }
+      // a target who'd survive the attack anyway (protected, or El Anciano's
+      // first hit) was never really going to die — nothing there to revive
+      var pending = allPending.filter(function(p){ return !pendingKillSurvives(p.idx); });
+      if (pending.length === 0){
+        return tabsHtml + '<div class="role-widget-status">La víctima de esta noche está a salvo de todas formas: no hay a quién revivir.</div>';
+      }
+      var lifeButtons = pending.map(function(p){
+        return '<button type="button" class="chip" data-action="bruja-life-toggle" data-idx="' + p.idx + '">' + escapeHtml(state.playerNames[p.idx]) + '</button>';
+      }).join('');
+      return tabsHtml +
+        '<label>¿A quién revive?</label>' +
+        '<div class="role-widget-checklist">' + lifeButtons + '</div>';
+    }
+
+    // already applied this round — show the poisoned pick, still tappable to undo
+    if (state.brujaDeathUsedThisRound){
+      var poisonedIdx = state.brujaDeathPoisonedIdx;
+      return tabsHtml +
+        '<label>¿A quién envenena?</label>' +
+        '<div class="role-widget-checklist"><button type="button" class="chip selected" data-action="bruja-death-toggle" data-idx="' + poisonedIdx + '">' + escapeHtml(state.playerNames[poisonedIdx]) + '</button></div>';
+    }
+    // can't poison anyone already marked to die tonight (only saved or left to die), nor herself
+    var brujaIdx = roleActorIndex('bruja');
+    var pendingIdxs = getPendingNightKills().map(function(p){ return p.idx; });
+    var deathBtns = playerButtonsHtml('bruja-death-toggle', { filter: function(idx){
+      return state.alive[idx] && idx !== brujaIdx && pendingIdxs.indexOf(idx) === -1;
+    } });
+    return tabsHtml +
+      '<label>¿A quién envenena?</label>' +
+      '<div class="role-widget-checklist">' + deathBtns + '</div>';
+  }
+  function actionBrujaTab(tab){
+    brujaActiveTab = tab;
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+  function actionBrujaLifeToggle(idx){
+    // tapping the already-applied pick again undoes it, for redoing
+    if (state.brujaLifeUsedThisRound && state.brujaLifeSavedIdx === idx){
+      state.brujaLifeUsed = false;
+      state.brujaActedThisRound = false;
+      state.brujaLifeUsedThisRound = false;
+      if (state.brujaLifeSavedSource === 'albino') state.pendingAlbinoKillIdx = idx;
+      else state.pendingNightKillIdx = idx;
+      state.brujaLifeSavedIdx = null;
+      state.brujaLifeSavedSource = null;
+      clearEventByKey('bruja-life-r' + state.round);
+      renderRoleWidget(nightSteps[state.nightIdx]);
+      return;
+    }
+    if (state.brujaLifeUsed || state.brujaActedThisRound) return;
+    var source = null;
+    if (state.pendingNightKillIdx === idx) source = 'lobos';
+    else if (state.pendingAlbinoKillIdx === idx) source = 'albino';
+    if (!source) return;
+    state.brujaLifeUsed = true;
+    state.brujaActedThisRound = true;
+    state.brujaLifeUsedThisRound = true;
+    state.brujaLifeSavedIdx = idx;
+    state.brujaLifeSavedSource = source;
+    if (source === 'lobos') state.pendingNightKillIdx = null;
+    else state.pendingAlbinoKillIdx = null; // the wolves' (or Lobo Albino's) kill is cancelled — nothing to resolve at dawn
+    logEvent('🧪 La Bruja (' + state.playerNames[roleActorIndex('bruja')] + ') salvó a ' +
+      state.playerNames[idx] + ' (' + roleOf(idx).nombre + ') de los lobos.', 'bruja-life-r' + state.round);
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+  function actionBrujaDeathToggle(idx){
+    // tapping the already-applied pick again undoes it, for redoing
+    if (state.brujaDeathUsedThisRound && state.brujaDeathPoisonedIdx === idx){
+      state.brujaDeathUsed = false;
+      state.brujaActedThisRound = false;
+      state.brujaDeathUsedThisRound = false;
+      state.alive[idx] = true;
+      delete state.deathCause[idx];
+      var announceIdx = state.deathsThisRound.indexOf(idx);
+      if (announceIdx !== -1) state.deathsThisRound.splice(announceIdx, 1);
+      state.brujaDeathPoisonedIdx = null;
+      clearEventByKey('bruja-death-r' + state.round);
+      renderRoleWidget(nightSteps[state.nightIdx]);
+      renderDeathLists();
+      return;
+    }
+    if (state.brujaDeathUsed || state.brujaActedThisRound) return;
+    if (state.pendingNightKillIdx === idx || state.pendingAlbinoKillIdx === idx) return; // guard: can't poison tonight's marked victims
+    state.alive[idx] = false;
+    state.deathCause[idx] = 'veneno';
+    state.brujaDeathUsed = true;
+    state.brujaActedThisRound = true;
+    state.brujaDeathUsedThisRound = true;
+    state.brujaDeathPoisonedIdx = idx;
+    state.deathsThisRound.push(idx); // announced to the village before the vote
+    logEvent('🧪 La Bruja (' + state.playerNames[roleActorIndex('bruja')] + ') envenenó a ' +
+      state.playerNames[idx] + ' (' + roleOf(idx).nombre + ').', 'bruja-death-r' + state.round);
+    renderRoleWidget(nightSteps[state.nightIdx]);
+    renderDeathLists();
+  }
+
+  function wildChildIndex(){
+    return state.roleIds.indexOf('nino_salvaje');
+  }
+  function widgetWildChildHtml(){
+    if (state.wildChildTransformed){
+      return '<div class="role-widget-status">🐺 Su modelo murió: ya se ha convertido en Hombre Lobo, no necesita más acciones.</div>';
+    }
+    var selfIdx = wildChildIndex();
+    var buttons = playerButtonsHtml('wildchild-pick', { selected: state.wildChildModelIdx, filter: function(idx){ return idx !== selfIdx; } });
+    return (
+      '<label>¿A quién elige como modelo?</label>' +
+      '<div class="role-widget-checklist">' + buttons + '</div>' +
+      '<div class="role-widget-status">Esta elección solo se hace la primera noche.</div>'
+    );
+  }
+  function actionWildChildPick(idx){
+    state.wildChildModelIdx = (state.wildChildModelIdx === idx) ? null : idx;
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  function widgetRavenHtml(){
+    var selfIdx = roleActorIndex('cuervo');
+    var buttons = playerButtonsHtml('raven-pick', { selected: state.ravenMark, filter: function(idx){ return idx !== selfIdx; } });
+    return (
+      '<label>¿A quién marca esta noche?</label>' +
+      '<div class="role-widget-checklist">' + buttons + '</div>' +
+      '<div class="role-widget-status">La marca da +2 votos mañana.</div>'
+    );
+  }
+  function actionRavenPick(idx){
+    state.ravenMark = (state.ravenMark === idx) ? null : idx;
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  function widgetPyroHtml(){
+    var chips = state.playerNames.map(function(n, idx){
+      if (!state.alive[idx]) return '';
+      var soaked = state.pyroSoaked.indexOf(idx) !== -1;
+      return '<button type="button" class="chip' + (soaked ? ' selected' : '') + '" data-action="pyro-toggle" data-idx="' + idx + '">' + escapeHtml(n) + '</button>';
+    }).join('');
+    return (
+      '<label>Jugadores rociados con gasolina (toca para marcar)</label>' +
+      '<div class="role-widget-checklist">' + chips + '</div>' +
+      '<button type="button" class="btn-main" data-action="pyro-ignite" style="margin-top:14px;"' + (state.pyroSoaked.length ? '' : ' disabled') + '>🔥 Prender fuego a los rociados</button>'
+    );
+  }
+  function actionPyroToggle(idx){
+    var pos = state.pyroSoaked.indexOf(idx);
+    if (pos === -1) state.pyroSoaked.push(idx);
+    else state.pyroSoaked.splice(pos, 1);
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+  function actionPyroIgnite(){
+    if (!state.pyroSoaked.length) return;
+    state.pyroSoaked.forEach(function(idx){
+      state.alive[idx] = false;
+      state.deathCause[idx] = 'fuego';
+      state.deathsThisRound.push(idx); // announced to the village before the vote
+    });
+    state.pyroSoaked = [];
+    renderRoleWidget(nightSteps[state.nightIdx]);
+    renderDeathLists();
+  }
+
+  // the wolves' victim is only marked here — it isn't resolved (no death,
+  // no chain reactions like the Cazador's revenge shot) until dawn, at the
+  // start of the end-of-round vote event
+  function widgetWolfKillHtml(){
+    var buttons = playerButtonsHtml('wolf-kill-pick', { selected: state.pendingNightKillIdx, filter: function(idx){ return state.alive[idx] && roleOf(idx).equipo !== 'lobos'; } });
+    return (
+      '<label>¿A quién devoran los lobos esta noche?</label>' +
+      '<div class="role-widget-checklist">' + buttons + '</div>'
+    );
+  }
+  function actionWolfKillPick(idx){
+    state.pendingNightKillIdx = (state.pendingNightKillIdx === idx) ? null : idx;
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  // Lobo Albino hunts apart from the pack: it secretly kills ANOTHER wolf,
+  // independently of the pack's own victim. Same defer-to-dawn pattern.
+  function widgetAlbinoKillHtml(){
+    var selfIdx = roleActorIndex('lobo_albino');
+    var buttons = playerButtonsHtml('albino-kill-pick', { selected: state.pendingAlbinoKillIdx, filter: function(idx){
+      return state.alive[idx] && idx !== selfIdx && roleOf(idx).equipo === 'lobos';
+    } });
+    return (
+      '<label>¿A qué otro Hombre Lobo elimina en secreto esta noche?</label>' +
+      '<div class="role-widget-checklist">' + buttons + '</div>'
+    );
+  }
+  function actionAlbinoKillPick(idx){
+    state.pendingAlbinoKillIdx = (state.pendingAlbinoKillIdx === idx) ? null : idx;
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  // El Perro Lobo picks its side only on its first turn, then locks in for
+  // the rest of the game: its actual role flips so team counts (win check,
+  // eliminated list) treat it as a real aldeano/lobo from then on.
+  function widgetPerroLoboHtml(){
+    var current = state.perroLoboChoice; // 'aldeano' | 'lobo' | null — tap the chosen one again to change your mind
+    var status = current ?
+      '<div class="role-widget-status">Toca de nuevo para cambiarlo.</div>' : '';
+    return (
+      '<label>¿Cómo decide jugar el resto de la partida?</label>' +
+      '<div class="role-widget-checklist">' +
+        '<button type="button" class="chip' + (current === 'aldeano' ? ' selected' : '') + '" data-action="perrolobo-choose" data-choice="aldeano">🏘️ Aldeano</button>' +
+        '<button type="button" class="chip' + (current === 'lobo' ? ' selected' : '') + '" data-action="perrolobo-choose" data-choice="lobo">🐺 Lobo</button>' +
+      '</div>' + status
+    );
+  }
+  function actionPerroLoboChoose(choice){
+    var idx = state.perroLoboPlayerIdx !== null ? state.perroLoboPlayerIdx : state.roleIds.indexOf('perro_lobo');
+    if (idx === -1) return;
+    if (state.perroLoboChoice === choice){
+      // tapping the already-chosen option reverts to unresolved
+      state.roleIds[idx] = 'perro_lobo';
+      state.perroLoboChoice = null;
+      state.perroLoboPlayerIdx = null;
+    } else {
+      state.roleIds[idx] = choice === 'lobo' ? 'lobo_comun' : 'aldeano_comun';
+      state.perroLoboChoice = choice;
+      state.perroLoboPlayerIdx = idx;
+    }
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  // El Ladrón was dealt 2 extra reserve cards nobody else got (see startBtn) —
+  // he alone may swap his card for one of them, only on this first-night turn,
+  // and can change his mind freely until the round moves on (see undoStepAction)
+  function widgetLadronHtml(){
+    var idx = state.ladronPlayerIdx !== null ? state.ladronPlayerIdx : state.roleIds.indexOf('ladron');
+    if (idx === -1 || state.ladronReserve.length !== 2){
+      return '<div class="role-widget-status">No hay cartas de reserva.</div>';
+    }
+    var currentRole = roleOf(idx);
+    var cards = state.ladronReserve.map(function(roleId, i){
+      var role = ROLES.filter(function(r){ return r.id === roleId; })[0];
+      if (!role) return '';
+      return (
+        '<div class="role-picker-card" data-action="ladron-swap" data-idx="' + i + '">' +
+          '<img src="' + role.imagen + '" alt="" loading="lazy">' +
+          '<div class="role-picker-name">' + escapeHtml(role.nombre) + '</div>' +
+        '</div>'
+      );
+    }).join('');
+    return (
+      '<label>¿Cambia su carta (' + escapeHtml(currentRole.nombre) + ') por una de estas dos reservadas?</label>' +
+      '<div class="role-picker-grid">' + cards + '</div>'
+    );
+  }
+  function actionLadronSwap(i){
+    var idx = state.ladronPlayerIdx !== null ? state.ladronPlayerIdx : state.roleIds.indexOf('ladron');
+    if (idx === -1 || !state.ladronReserve[i]) return;
+    var heldRoleId = state.roleIds[idx];
+    state.ladronPlayerIdx = idx;
+    state.roleIds[idx] = state.ladronReserve[i];
+    state.ladronReserve[i] = heldRoleId; // whatever he held goes back into that reserve slot
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  function widgetGitanaHtml(){
+    var used = state.gitanaUsed;
+    return (
+      '<label>Poder de una sola vez por partida.</label>' +
+      '<button type="button" class="chip' + (used ? ' selected' : '') + '" data-action="gitana-use">' +
+        (used ? '✓ Ya usó su poder esta partida' : 'Marcar como usada esta noche') +
+      '</button>'
+    );
+  }
+  function actionGitanaUse(){
+    state.gitanaUsed = !state.gitanaUsed;
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  function widgetComedianteHtml(){
+    var candidates = comedianteCandidateRoles();
+    var cards = candidates.map(function(r){
+      var selected = state.comedianteChoiceId === r.id;
+      return (
+        '<div class="role-picker-card' + (selected ? ' selected' : '') + '" data-action="comediante-pick" data-role="' + r.id + '">' +
+          '<img src="' + r.imagen + '" alt="" loading="lazy">' +
+          '<div class="role-picker-name">' + escapeHtml(r.nombre) + '</div>' +
+        '</div>'
+      );
+    }).join('');
+    var noneSelected = state.comedianteChoiceMade && !state.comedianteChoiceId;
+    var skipCard = '<div class="role-picker-card' + (noneSelected ? ' selected' : '') + '" data-action="comediante-pick" data-role="">' +
+        '<div class="role-picker-name">Ninguno (pasa esta noche)</div>' +
+      '</div>';
+    return (
+      '<label>¿Qué poder toma prestado esta noche?</label>' +
+      '<div class="role-picker-grid">' + cards + skipCard + '</div>'
+    );
+  }
+  function actionComedianteChoose(roleId){
+    state.comedianteChoiceId = roleId || null;
+    state.comedianteChoiceMade = true;
+    insertComedianteActionStep();
+    renderRoleWidget(nightSteps[state.nightIdx]);
+  }
+
+  var ROLE_WIDGETS = {
+    comediante: widgetComedianteHtml,
+    gitana: widgetGitanaHtml,
+    cupido: widgetCupidoHtml,
+    vidente: widgetVidenteHtml,
+    zorro: widgetZorroHtml,
+    protector: widgetProtectorHtml,
+    bruja: widgetBrujaHtml,
+    nino_salvaje: widgetWildChildHtml,
+    cuervo: widgetRavenHtml,
+    piromano: widgetPyroHtml,
+    lobo_pack: widgetWolfKillHtml,
+    lobo_albino: widgetAlbinoKillHtml,
+    perro_lobo: widgetPerroLoboHtml,
+    ladron: widgetLadronHtml
+  };
+
+  function renderRoleWidget(step){
+    var widgetFn = step && ROLE_WIDGETS[step.role.id];
+    if (!widgetFn){
+      roleWidgetEl.classList.add('hidden');
+      roleWidgetEl.innerHTML = '';
+      return;
+    }
+    roleWidgetEl.classList.remove('hidden');
+    roleWidgetEl.innerHTML = widgetFn();
+  }
+
+  // every target picker is a plain name button — tapping it is the action,
+  // no dropdown and no separate "confirm" step
+  roleWidgetEl.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    var idxAttr = btn.getAttribute('data-idx');
+    var idx = idxAttr !== null ? parseInt(idxAttr, 10) : null;
+    switch (btn.getAttribute('data-action')){
+      case 'bruja-tab': actionBrujaTab(btn.getAttribute('data-tab')); break;
+      case 'bruja-life-toggle': actionBrujaLifeToggle(idx); break;
+      case 'bruja-death-toggle': actionBrujaDeathToggle(idx); break;
+      case 'pyro-toggle': actionPyroToggle(idx); break;
+      case 'pyro-ignite': actionPyroIgnite(); break;
+      case 'wolf-kill-pick': actionWolfKillPick(idx); break;
+      case 'albino-kill-pick': actionAlbinoKillPick(idx); break;
+      case 'perrolobo-choose': actionPerroLoboChoose(btn.getAttribute('data-choice')); break;
+      case 'cupido-toggle': actionCupidoToggle(idx); break;
+      case 'seer-pick': actionSeerPick(idx); break;
+      case 'fox-toggle': actionFoxToggle(idx); break;
+      case 'fox-confirm': actionFoxConfirm(); break;
+      case 'guard-pick': actionGuardPick(idx); break;
+      case 'wildchild-pick': actionWildChildPick(idx); break;
+      case 'raven-pick': actionRavenPick(idx); break;
+      case 'ladron-swap': actionLadronSwap(idx); break;
+      case 'comediante-pick': actionComedianteChoose(btn.getAttribute('data-role')); break;
+      case 'gitana-use': actionGitanaUse(); break;
+    }
+  });
+
+  // ---------- narrator: death resolution ----------
+  var remindersListEl = document.getElementById('reminders-list');
+  var aliveListEl = document.getElementById('alive-list');
+  var deadListEl = document.getElementById('dead-list');
+
+  function addReminder(text){
+    state.reminders.push({ id: reminderSeq++, text: text });
+  }
+  function renderReminders(){
+    if (!state.reminders.length){ remindersListEl.innerHTML = ''; return; }
+    remindersListEl.innerHTML = '<label style="margin-top:0;">Recordatorios</label>' + state.reminders.map(function(r){
+      return '<div class="reminder-row" data-id="' + r.id + '"><span>' + escapeHtml(r.text) + '</span>' +
+        '<button type="button" class="reminder-dismiss" data-id="' + r.id + '">✕</button></div>';
+    }).join('');
+  }
+  remindersListEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.reminder-dismiss');
+    if (!btn) return;
+    var id = parseInt(btn.getAttribute('data-id'), 10);
+    state.reminders = state.reminders.filter(function(r){ return r.id !== id; });
+    renderReminders();
+  });
+
+  function roleOf(idx){
+    return ROLES.filter(function(r){ return r.id === state.roleIds[idx]; })[0];
+  }
+
+  function renderDeathLists(){
+    var aliveHtml = state.playerNames.map(function(name, idx){
+      if (!state.alive[idx]) return '';
+      var role = roleOf(idx);
+      return '<div class="vote-row" data-index="' + idx + '">' +
+        '<span>' + escapeHtml(name) + '</span>' +
+        '<span class="death-role-tag">' + escapeHtml(role.nombre) + '</span>' +
+      '</div>';
+    }).join('');
+    aliveListEl.innerHTML = aliveHtml || '<p class="chip-loading">No quedan jugadores vivos.</p>';
+
+    var deadHtml = state.playerNames.map(function(name, idx){
+      if (state.alive[idx]) return '';
+      var role = roleOf(idx);
+      var cause = state.deathCause[idx];
+      var causeLabel = CAUSE_LABELS[cause] || 'Causa desconocida';
+      var causeIcon = CAUSE_ICONS[cause] || '❓';
+      return '<div class="vote-row dead" data-index="' + idx + '">' +
+        '<span class="death-left">' +
+          '<span class="death-cause-icon">' + causeIcon + '</span>' +
+          '<span class="death-name">' + escapeHtml(name) + '</span>' +
+        '</span>' +
+        '<span class="death-right">' +
+          '<span class="death-role-tag">' + escapeHtml(role.nombre) + '</span>' +
+          '<span class="death-cause-tag">' + escapeHtml(causeLabel) + '</span>' +
+        '</span>' +
+      '</div>';
+    }).join('');
+    deadListEl.innerHTML = deadHtml || '<p class="chip-loading">Nadie ha muerto todavía.</p>';
+
+    renderReminders();
+    updateAliveBalance();
+    // suppressed during the dawn kill specifically: a tie (or worse) right
+    // after the wolves' kill isn't final until the vote (and its own chain
+    // reactions) also plays out — see beginEndOfRound()/beginVotePhase()
+    if (!suppressGameOverCheck) updateGameOverUI();
+  }
+
+  // read-only: Personajes only shows who's alive/dead and their role, it's
+  // not a way to mark someone dead or revive them (see openDeathModal/the
+  // vote flow for the actual, narrator-driven ways a player dies)
+
+  // ---------- death action modal ----------
+  var deathModalBackdrop = document.getElementById('death-modal-backdrop');
+  var deathModalClose = document.getElementById('death-modal-close');
+  var deathModalName = document.getElementById('death-modal-name');
+  var deathModalRole = document.getElementById('death-modal-role');
+  var deathCauseChips = document.getElementById('death-cause-chips');
+  var deathCauseAssumedEl = document.getElementById('death-cause-assumed');
+  var deathGuidanceEl = document.getElementById('death-guidance');
+  var deathChainShootWrap = document.getElementById('death-chain-shoot');
+  var deathChainShootListEl = document.getElementById('death-chain-shoot-list');
+  var deathConfirmBtn = document.getElementById('death-confirm-btn');
+
+  // ---------- lynch reveal (day vote result, shown before the round moves on) ----------
+  var lynchRevealBackdrop = document.getElementById('lynch-reveal-backdrop');
+  var lynchRevealContent = document.getElementById('lynch-reveal-content');
+  var lynchRevealName = document.getElementById('lynch-reveal-name');
+  var lynchRevealRole = document.getElementById('lynch-reveal-role');
+  var lynchRevealContinueBtn = document.getElementById('lynch-reveal-continue-btn');
+
+  var lynchRevealContinueCallback = null; // reused for any "show this player's card" moment: the vote result, the Cazador's victim, the Vidente's peek…
+
+  function showLynchReveal(idx, onContinue){
+    var role = roleOf(idx);
+    lynchRevealContent.innerHTML = '<img class="reveal-portrait" src="' + role.imagen + '" alt="" draggable="false" oncontextmenu="return false">';
+    lynchRevealContent.className = 'reveal-content ' + TEAM_CLASS[role.equipo];
+    lynchRevealName.textContent = state.playerNames[idx];
+    lynchRevealRole.textContent = role.nombre;
+    lynchRevealRole.className = 'card-modal-team ' + TEAM_CLASS[role.equipo];
+    lynchRevealContinueCallback = onContinue || null;
+    lynchRevealBackdrop.classList.remove('hidden');
+  }
+  lynchRevealContinueBtn.addEventListener('click', function(){
+    lynchRevealBackdrop.classList.add('hidden');
+    var cb = lynchRevealContinueCallback;
+    lynchRevealContinueCallback = null;
+    if (cb) cb();
+  });
+
+  var deathCtx = null;
+  var deathChainShootIdx = null; // who the Cazador picks to shoot, tapped from the button list below
+
+  // presetCause: when the cause is already implied by context (a wolf kill, a
+  // day vote), skip asking and go straight to the guidance/confirm step —
+  // and if there's nothing special to say or decide either, skip the modal
+  // entirely and resolve immediately (see isTrivialGuidance below).
+  function openDeathModal(idx, presetCause){
+    var role = roleOf(idx);
+
+    if (presetCause){
+      var g = computeDeathGuidance(idx, role, presetCause);
+      if (g.msgs.length === 0 && g.chainPrompt === null){
+        finalizeDeath(idx, role, presetCause, { survives: g.survives, chainPrompt: g.chainPrompt }, g.loverPartner, null);
+        renderDeathLists();
+        if (afterDeathModalResolve){
+          var cb = afterDeathModalResolve;
+          afterDeathModalResolve = null;
+          cb();
+        }
+        return;
+      }
+    }
+
+    deathCtx = { idx: idx, role: role, cause: null, guidance: null };
+    deathModalName.textContent = state.playerNames[idx];
+    deathModalRole.textContent = role.nombre;
+    deathModalRole.className = 'card-modal-team ' + TEAM_CLASS[role.equipo];
+    deathGuidanceEl.classList.add('hidden');
+    deathChainShootWrap.classList.add('hidden');
+    deathConfirmBtn.classList.add('hidden');
+    Array.prototype.forEach.call(deathCauseChips.children, function(c){ c.classList.remove('selected'); });
+    deathModalBackdrop.classList.remove('hidden');
+
+    if (presetCause){
+      deathCauseChips.classList.add('hidden');
+      deathCauseAssumedEl.textContent = (CAUSE_ICONS[presetCause] || '') + ' ' + (CAUSE_LABELS[presetCause] || '');
+      deathCauseAssumedEl.classList.remove('hidden');
+      deathCtx.cause = presetCause;
+      applyDeathGuidance();
+    } else {
+      deathCauseChips.classList.remove('hidden');
+      deathCauseAssumedEl.classList.add('hidden');
+    }
+  }
+  function hideDeathModal(){
+    deathModalBackdrop.classList.add('hidden');
+    deathCtx = null;
+  }
+  // the ✕ / backdrop tap used to just dismiss the modal without applying
+  // anything — harmless for the manual "pick a cause" flow (nothing was
+  // decided yet), but for a preset cause (a dawn kill or a day vote) the
+  // death is already a fact, not optional: dismissing it that way silently
+  // left the voted/killed player alive. Route both paths through the same
+  // resolution used by the confirm button, so a cause already set always finalizes.
+  function closeDeathModal(){
+    if (deathCtx && deathCtx.cause){
+      resolveDeathModal();
+      return;
+    }
+    hideDeathModal();
+    if (afterDeathModalResolve){
+      var cb = afterDeathModalResolve;
+      afterDeathModalResolve = null;
+      cb(); // always proceed (dawn → vote, or vote → continue): the vote still gets to happen even if the dawn kill alone already reached a tie/ending
+    }
+  }
+  deathModalClose.addEventListener('click', closeDeathModal);
+  deathModalBackdrop.addEventListener('click', function(e){
+    if (e.target === deathModalBackdrop) closeDeathModal();
+  });
+
+  function getDeathGuidance(role, cause){
+    var msgs = [];
+    var survives = false;
+    var chainPrompt = null;
+
+    switch (role.id){
+      case 'cazador':
+        // a night death is only revealed at the dawn announcement screen —
+        // the shot is chosen there too, not mid-resolution (see finalizeDeath
+        // / renderDeathAnnouncement). A day-vote (or manually marked) death
+        // is already public at the table, so it still resolves immediately.
+        if (cause === 'lobos'){
+          msgs.push('Al amanecer, en la pantalla de anuncio de muertes, elegirá a quién dispara.');
+        } else {
+          msgs.push('Debe disparar de inmediato: elige a otro jugador para eliminarlo también.');
+          chainPrompt = 'shoot';
+        }
+        break;
+      case 'anciano':
+        if (cause === 'lobos'){
+          if (!state.ancianoSurvived){
+            survives = true;
+            msgs.push('Resiste el primer ataque de los lobos: no muere esta vez.');
+          }
+          // the second attack just kills him normally — no extra guidance needed
+        } else if (cause === 'votacion'){
+          msgs.push('Si el pueblo lo lincha, todos los jugadores con poder especial pierden su poder inmediatamente.');
+        }
+        break;
+      case 'tonto_de_la_aldea':
+        if (cause === 'votacion'){
+          survives = true;
+          msgs.push('Se revela su carta y sobrevive, pero pierde el derecho a voto el resto de la partida.');
+        }
+        break;
+      case 'angel':
+        if (state.round <= 2){
+          msgs.push('¡Gana la partida en solitario al morir durante las 2 primeras rondas!');
+        }
+        break;
+      case 'caballero_espada_oxidada':
+        if (cause === 'lobos'){
+          msgs.push('Infecta de óxido al primer lobo a su izquierda: ese jugador morirá en la próxima luna llena.');
+        }
+        break;
+    }
+
+    return { survives: survives, messages: msgs, chainPrompt: chainPrompt };
+  }
+
+  deathCauseChips.addEventListener('click', function(e){
+    var chip = e.target.closest('.chip');
+    if (!chip || !deathCtx) return;
+    Array.prototype.forEach.call(deathCauseChips.children, function(c){ c.classList.remove('selected'); });
+    chip.classList.add('selected');
+    deathCtx.cause = chip.getAttribute('data-cause');
+    applyDeathGuidance();
+  });
+
+  // pure computation shared by the modal (applyDeathGuidance) and the
+  // headless auto-resolve path (openDeathModal's trivial-case shortcut)
+  function computeDeathGuidance(idx, role, cause){
+    var result = getDeathGuidance(role, cause);
+    var msgs = result.messages.slice();
+    var loverPartner;
+
+    if (state.lovers && state.lovers.indexOf(idx) !== -1){
+      var partnerIdx = state.lovers[0] === idx ? state.lovers[1] : state.lovers[0];
+      // deliberately no message here: the partner still dies of heartbreak
+      // automatically (see finalizeDeath), but the narrator only learns why
+      // at the dawn announcement screen, not mid-resolution
+      if (state.alive[partnerIdx]) loverPartner = partnerIdx;
+    }
+
+    var sirvientaAlive = state.playerNames.some(function(n, i){
+      return state.alive[i] && i !== idx && state.roleIds[i] === 'abnegada_sirvienta';
+    });
+    if (sirvientaAlive){
+      msgs.push('👤 La Abnegada Sirvienta sigue viva: puede revelarse ahora y ocupar el lugar de la víctima.');
+    }
+
+    if (cause === 'lobos' && idx === state.protectedIdx){
+      result.survives = true;
+      msgs.push('🛡️ Bloqueado: está protegido esta noche por El Protector, los lobos no pueden matarlo. Elige otra causa de muerte si murió de otra forma.');
+    }
+
+    if (idx === state.wildChildModelIdx){
+      msgs.push('🐺 Era el modelo del Niño Salvaje: a partir de ahora se convierte en Hombre Lobo.');
+    }
+
+    return { msgs: msgs, survives: result.survives, chainPrompt: result.chainPrompt, loverPartner: loverPartner };
+  }
+
+  // applies a fully-resolved death (and its chain reactions) to state —
+  // shared by the modal's confirm button and the headless auto-resolve path
+  function finalizeDeath(idx, role, cause, guidance, loverPartner, chainShootIdx){
+    // only night deaths (the pack's, Lobo Albino's, and their own chain
+    // reactions) need the pre-vote announcement — a vote's own victim (and
+    // whatever chain reaction it triggers) is already public, everyone just
+    // watched it happen
+    var announce = cause === 'lobos';
+    if (!guidance.survives){
+      state.alive[idx] = false;
+      state.deathCause[idx] = cause;
+      if (announce) state.deathsThisRound.push(idx);
+      if (cause === 'lobos') logEvent('🐺 Los lobos mataron a ' + state.playerNames[idx] + ' (' + role.nombre + ').');
+      else if (cause === 'votacion') logEvent('🗳️ El pueblo votó a ' + state.playerNames[idx] + ' (' + role.nombre + ').');
+      else logEvent('☠️ ' + state.playerNames[idx] + ' (' + role.nombre + ') murió (otra causa).');
+    } else if (role.id === 'anciano' && cause === 'lobos'){
+      state.ancianoSurvived = true;
+    }
+
+    if (guidance.chainPrompt === 'shoot' && chainShootIdx !== null && chainShootIdx !== undefined){
+      state.alive[chainShootIdx] = false;
+      state.deathCause[chainShootIdx] = 'disparo';
+      if (announce) state.deathsThisRound.push(chainShootIdx);
+      logEvent('🔫 El Cazador (' + state.playerNames[idx] + ') disparó a ' +
+        state.playerNames[chainShootIdx] + ' (' + roleOf(chainShootIdx).nombre + ') al morir.');
+    }
+
+    // night death: the shot is chosen later, on the dawn announcement screen
+    if (role.id === 'cazador' && cause === 'lobos' && !guidance.survives){
+      state.pendingCazadorShootIdx = idx;
+    }
+
+    if (!guidance.survives && loverPartner !== undefined && state.alive[loverPartner]){
+      state.alive[loverPartner] = false;
+      state.deathCause[loverPartner] = 'amor';
+      if (announce) state.deathsThisRound.push(loverPartner);
+      logEvent('💔 ' + state.playerNames[loverPartner] + ' (' + roleOf(loverPartner).nombre + ') murió de pena por amor.');
+    }
+
+    if (role.id === 'caballero_espada_oxidada' && cause === 'lobos' && !guidance.survives){
+      addReminder('El lobo infectado de óxido por el Caballero de la Espada Oxidada morirá en la próxima luna llena.');
+    }
+
+    if (role.id === 'anciano' && cause === 'lobos' && !guidance.survives && state.ancianoSurvived){
+      addReminder('El Anciano ha muerto: ya había resistido un ataque antes, pero anúncialo como una muerte normal, sin dar ese detalle en voz alta.');
+    }
+
+    if (role.id === 'anciano' && cause === 'votacion' && !state.villagePowersLost){
+      state.villagePowersLost = true; // buildNightSteps() picks this up starting next round
+      addReminder('El pueblo linchó al Anciano: todos los poderes especiales del PUEBLO dejan de funcionar (los lobos no se ven afectados).');
+    }
+
+    if (idx === state.wildChildModelIdx && !guidance.survives){
+      var wildChildIdx = wildChildIndex();
+      if (wildChildIdx !== -1 && state.alive[wildChildIdx]){
+        state.roleIds[wildChildIdx] = 'lobo_comun';
+        state.wildChildTransformed = true;
+        addReminder('El Niño Salvaje (' + escapeHtml(state.playerNames[wildChildIdx]) + ') se ha convertido en Hombre Lobo: murió su modelo a seguir.');
+      }
+    }
+  }
+
+  function applyDeathGuidance(){
+    var g = computeDeathGuidance(deathCtx.idx, deathCtx.role, deathCtx.cause);
+    deathCtx.guidance = { survives: g.survives, chainPrompt: g.chainPrompt };
+    deathCtx.loverPartner = g.loverPartner;
+
+    deathGuidanceEl.innerHTML = g.msgs.length ?
+      g.msgs.map(function(m){ return '<p>' + m + '</p>'; }).join('') :
+      '<p>Sin indicaciones especiales: puede morir con normalidad.</p>';
+    deathGuidanceEl.classList.remove('hidden');
+
+    deathChainShootWrap.classList.toggle('hidden', g.chainPrompt !== 'shoot');
+    deathChainShootIdx = null;
+    if (g.chainPrompt === 'shoot'){
+      deathChainShootListEl.innerHTML = state.playerNames.map(function(n, i){
+        return (state.alive[i] && i !== deathCtx.idx) ?
+          '<button type="button" class="chip" data-action="chain-shoot-pick" data-idx="' + i + '">' + escapeHtml(n) + '</button>' : '';
+      }).join('');
+    }
+
+    deathConfirmBtn.classList.remove('hidden');
+    deathConfirmBtn.textContent = g.survives ? 'Marcar como resuelto (sigue vivo)' : 'Confirmar muerte';
+  }
+
+  deathChainShootListEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.chip');
+    if (!btn) return;
+    deathChainShootIdx = parseInt(btn.getAttribute('data-idx'), 10);
+    Array.prototype.forEach.call(deathChainShootListEl.children, function(c){ c.classList.remove('selected'); });
+    btn.classList.add('selected');
+  });
+
+  function resolveDeathModal(){
+    if (!deathCtx || !deathCtx.cause) return;
+    var chainShootIdx = (deathCtx.guidance.chainPrompt === 'shoot') ? deathChainShootIdx : null;
+    finalizeDeath(deathCtx.idx, deathCtx.role, deathCtx.cause, deathCtx.guidance, deathCtx.loverPartner, chainShootIdx);
+    hideDeathModal();
+    renderDeathLists();
+    var cb = afterDeathModalResolve;
+    afterDeathModalResolve = null;
+    if (chainShootIdx !== null && chainShootIdx !== undefined){
+      // the Cazador just chose his victim — show that player's card too, before moving on
+      showLynchReveal(chainShootIdx, cb || function(){});
+    } else if (cb){
+      cb();
+    }
+  }
+  deathConfirmBtn.addEventListener('click', resolveDeathModal);
+
+  // ---------- unguided mode: players/roles reference + manual alive/dead tracking ----------
+  var rosterListEl = document.getElementById('roster-list');
+  var rosterSubtitleEl = document.getElementById('roster-subtitle');
+  var rosterNewRoundBtn = document.getElementById('roster-new-round-btn');
+
+  function enterRoster(){
+    state.alive = state.playerNames.map(function(){ return true; });
+    renderRoster();
+  }
+
+  function renderRoster(){
+    var aliveCount = state.alive.filter(Boolean).length;
+    rosterSubtitleEl.textContent = 'Modo no guiado: toca a un jugador para marcarlo como eliminado o revivirlo. Vivos: ' +
+      aliveCount + ' / ' + state.players + '.';
+    rosterListEl.innerHTML = state.playerNames.map(function(name, idx){
+      var role = ROLES.filter(function(r){ return r.id === state.roleIds[idx]; })[0];
+      var dead = !state.alive[idx];
+      return (
+        '<div class="role-row roster-row' + (dead ? ' is-dead' : '') + '" data-index="' + idx + '">' +
+          '<img class="role-thumb" src="' + role.imagen + '" alt="" loading="lazy">' +
+          '<div class="role-info">' +
+            '<div class="roster-name">' + escapeHtml(name) + '</div>' +
+            '<div class="role-name">' + escapeHtml(role.nombre) + '</div>' +
+            '<div class="role-team-tag">' + TEAM_LABELS[role.equipo] + '</div>' +
+          '</div>' +
+          '<span class="roster-status-icon">' + (dead ? '💀' : '✅') + '</span>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  rosterListEl.addEventListener('click', function(e){
+    var row = e.target.closest('.roster-row');
+    if (!row) return;
+    var idx = parseInt(row.getAttribute('data-index'), 10);
+    state.alive[idx] = !state.alive[idx];
+    renderRoster();
+  });
+
+  rosterNewRoundBtn.addEventListener('click', function(){
+    enterSetup();
+  });
+
+  // ---------- enter narrator screen ----------
+  function enterNarrator(){
+    stopVoteTimer();
+    state.alive = state.playerNames.map(function(){ return true; });
+    state.deathCause = {};
+    state.round = 1;
+    state.lovers = null;
+    state.ancianoSurvived = false;
+    state.villagePowersLost = false;
+    state.reminders = [];
+    reminderSeq = 1;
+    state.nightIdx = 0;
+    state.protectedIdx = null;
+    state.lastProtectedIdx = null;
+    state.brujaLifeUsed = false;
+    state.brujaDeathUsed = false;
+    state.brujaActedThisRound = false;
+    state.brujaLifeUsedThisRound = false;
+    state.brujaDeathUsedThisRound = false;
+    state.brujaLifeSavedIdx = null;
+    state.brujaLifeSavedSource = null;
+    state.brujaDeathPoisonedIdx = null;
+    state.wildChildModelIdx = null;
+    state.wildChildTransformed = false;
+    state.perroLoboChoice = null;
+    state.perroLoboPlayerIdx = null;
+    state.ladronPlayerIdx = null;
+    state.ravenMark = null;
+    state.pyroSoaked = [];
+    state.pendingNightKillIdx = null;
+    state.pendingAlbinoKillIdx = null;
+    state.pendingCazadorShootIdx = null;
+    state.zorroPowerLost = false;
+    state.deathsThisRound = [];
+    state.eventLog = [];
+    state.nightActionDone = {};
+    state.judgeUsed = false;
+    state.gitanaUsed = false;
+    state.comedianteChoiceId = null;
+    state.comedianteChoiceMade = false;
+    selectedVoteIdx = null;
+    afterDeathModalResolve = null;
+    suppressGameOverCheck = false;
+    brujaActiveTab = 'life';
+    cupidoSelection = [];
+    zorroSelection = [];
+    zorroConfirmed = false;
+    videntePickIdx = null;
+
+    buildNightSteps();
+    setNarratorTab('night');
+    renderNightStep();
+    nightDots.build(nightSteps.length);
+    nightDots.update(0);
+    updateAliveBalance();
+    updateGameOverUI();
+  }
+
+  gameOverNewRoundBtn.addEventListener('click', function(){
+    gameOverBackdrop.classList.add('hidden');
+    enterSetup();
+  });
+
+  // ---------- init ----------
+  renderRows();
+  loadRoles();
+})();
+</script>
+</body>
+</html>

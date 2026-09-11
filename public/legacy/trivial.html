@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="analytics.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Trivial Pursuit · Game Hub</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="78" font-size="72" text-anchor="middle">%F0%9F%A7%A0</text></svg>'>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root{
+    --accent:#7a9e4a;
+    --accent2:#b7e07a;
+    --reveal-b:#b7e07a;
+  }
+  html,body{
+    /* flat solid fill — a multi-layer gradient here used to leave gaps of
+       the raw background color showing on some viewports/scroll ranges */
+    background-color:var(--bg2);
+  }
+
+  .team-color-0{background:#5b8fe0;}
+  .team-color-1{background:#c9525c;}
+  .team-color-2{background:#4fbf7a;}
+  .team-color-3{background:#f2c94c;}
+
+  /* ---- team boxes (setup): tap-and-drag a player's chip to another team, identical to Time's Up / Mímica ---- */
+  .team-boxes-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:10px 0 14px;
+  }
+  .team-box{
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  .team-box-header{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:0.85rem;
+    margin-bottom:8px;
+  }
+  .team-box-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .team-box-chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .team-box-chip{
+    padding:6px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid var(--glass-border);
+    color:var(--text);
+    font-size:0.85rem;
+    font-weight:600;
+    cursor:grab;
+    touch-action:none;
+  }
+  .team-box-chip:active{transform:scale(0.94);}
+  .team-box-chip.dragging{
+    position:fixed;
+    z-index:999;
+    box-shadow:0 8px 20px rgba(0,0,0,0.45);
+    cursor:grabbing;
+    pointer-events:none;
+  }
+  .team-box.team-color-0{border-color:rgba(91,143,224,0.5); background:rgba(91,143,224,0.14);}
+  .team-box.team-color-1{border-color:rgba(201,82,92,0.5); background:rgba(201,82,92,0.14);}
+  .team-box.team-color-2{border-color:rgba(79,191,122,0.5); background:rgba(79,191,122,0.14);}
+  .team-box.team-color-3{border-color:rgba(242,201,76,0.5); background:rgba(242,201,76,0.14);}
+  .team-box-chip.team-color-0{background:#5b8fe0; border-color:#5b8fe0; color:#fff;}
+  .team-box-chip.team-color-1{background:#c9525c; border-color:#c9525c; color:#fff;}
+  .team-box-chip.team-color-2{background:#4fbf7a; border-color:#4fbf7a; color:#fff;}
+  .team-box-chip.team-color-3{background:#f2c94c; border-color:#f2c94c; color:#333;}
+  .mini-score-pill.team-color-3, .team-turn-badge.team-color-3{color:#3a2f00;}
+  .team-box.drag-over{
+    border-color:var(--accent);
+    background:rgba(255,255,255,0.1);
+  }
+  .team-box-empty{color:var(--text-dim); font-size:0.8rem; font-style:italic;}
+
+  .packages-dropdown-btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    font-size:0.88rem;
+    font-weight:600;
+    cursor:pointer;
+    text-align:left;
+  }
+  .packages-dropdown-btn:active{transform:scale(0.98);}
+  .packages-dropdown-summary{
+    color:var(--text-dim);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .packages-dropdown-chevron{
+    flex-shrink:0;
+    color:var(--text-dim);
+    transition:transform .2s;
+  }
+  .packages-dropdown-btn[aria-expanded="true"] .packages-dropdown-chevron{
+    transform:rotate(180deg);
+  }
+  .packages-dropdown-panel{
+    margin-top:10px;
+  }
+
+  .team-turn-badge{
+    display:inline-block;
+    margin:0 0 10px;
+    padding:6px 16px;
+    border-radius:999px;
+    color:#fff;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:0.9rem;
+    letter-spacing:0.5px;
+  }
+  /* ---- persistent team bar: every team's insignia progress, always visible on screen-game ---- */
+  .tv-team-bar{
+    position:sticky;
+    top:0;
+    z-index:5;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 10px;
+    justify-content:center;
+    padding:10px 22px;
+    margin:-26px -22px 16px;
+    border-radius:24px 24px 0 0;
+    background:var(--glass);
+    border-bottom:1px solid var(--glass-border);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+  }
+  .tv-team-bar-item{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:5px 10px;
+    border-radius:999px;
+    border:1px solid transparent;
+  }
+  .tv-team-bar-item.team-color-0{background:rgba(91,143,224,0.14); border-color:rgba(91,143,224,0.5);}
+  .tv-team-bar-item.team-color-1{background:rgba(201,82,92,0.14); border-color:rgba(201,82,92,0.5);}
+  .tv-team-bar-item.team-color-2{background:rgba(79,191,122,0.14); border-color:rgba(79,191,122,0.5);}
+  .tv-team-bar-item.team-color-3{background:rgba(242,201,76,0.14); border-color:rgba(242,201,76,0.5);}
+  .tv-team-bar-wedges{display:flex; gap:2px;}
+  .tv-team-bar-wedge{
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.62rem;
+    line-height:1;
+    opacity:0.85;
+    filter:grayscale(1) brightness(0.35);
+  }
+  .tv-team-bar-wedge.won{opacity:1; filter:none;}
+  .tv-team-bar-wedge.wedge-pop{animation:wedgePop 0.6s ease;}
+  @keyframes wedgePop{
+    0%{ transform:scale(0.3); box-shadow:0 0 0 0 rgba(255,255,255,0.9); }
+    50%{ transform:scale(1.4); box-shadow:0 0 12px 4px rgba(255,255,255,0.75); }
+    100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(255,255,255,0); }
+  }
+  .wedge-fly{
+    position:fixed;
+    z-index:2000;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    line-height:1;
+    pointer-events:none;
+    box-shadow:0 8px 32px rgba(0,0,0,0.45);
+  }
+
+  .wedge-won-msg{
+    text-align:center;
+    font-weight:700;
+    color:var(--accent2);
+    margin:0 0 10px;
+  }
+  .wedge-won-msg.pop{animation:tada 0.7s ease;}
+
+  .tv-question{
+    font-family:var(--font-display);
+    font-size:1.3rem;
+    font-weight:700;
+    text-align:center;
+    margin:10px 0 18px;
+    min-height:2.6em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    word-break:break-word;
+  }
+  .tv-options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .tv-option{
+    padding:14px 16px;
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.06);
+    color:var(--text);
+    font-size:0.95rem;
+    font-weight:600;
+    text-align:left;
+    cursor:pointer;
+    transition:background .15s, border-color .15s, transform .1s;
+  }
+  .tv-option:active{transform:scale(0.98);}
+  .tv-option.correct{
+    background:linear-gradient(135deg, var(--safe), #6fb6ff);
+    color:#04121f;
+    border-color:transparent;
+  }
+  .tv-option.incorrect{
+    background:linear-gradient(135deg, var(--danger), #7a2e35);
+    color:#fff;
+    border-color:transparent;
+  }
+  .tv-option.disabled{cursor:default; opacity:0.6;}
+  .tv-option.disabled.correct, .tv-option.disabled.incorrect{opacity:1;}
+
+  .tv-wedge-tracker{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin:0 0 14px;
+  }
+  .tv-wedge{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1rem;
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--glass-border);
+    opacity:0.85;
+    filter:grayscale(1) brightness(0.35);
+  }
+  .tv-wedge.won{
+    opacity:1;
+    filter:none;
+    color:#fff;
+  }
+  .tv-wedge-banner{
+    text-align:center;
+    font-weight:700;
+    font-size:0.9rem;
+    color:var(--accent2);
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--accent);
+    border-radius:14px;
+    padding:10px 12px;
+    margin-bottom:14px;
+  }
+  .tv-category-options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .tv-category-option{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px;
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.06);
+    color:var(--text);
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:background .15s, border-color .15s, transform .1s;
+  }
+  .tv-category-option:active{transform:scale(0.97);}
+  .tv-category-option-icon{font-size:1.4rem; line-height:1;}
+
+  #next-turn-modal.insignia-round{
+    background:linear-gradient(160deg, rgba(242,201,76,0.28), var(--glass) 65%);
+    border-color:#f2c94c;
+    box-shadow:0 0 0 1px rgba(242,201,76,0.4), 0 8px 32px rgba(242,201,76,0.22);
+    transition:background .3s, border-color .3s, box-shadow .3s;
+  }
+  .tv-category-current{
+    text-align:center;
+    font-weight:700;
+    font-size:0.85rem;
+    color:var(--text-dim);
+    margin-bottom:4px;
+  }
+
+  .team-score-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--glass-border);
+    margin-bottom:8px;
+    text-align:left;
+  }
+  .team-score-row.winner{
+    border-color:var(--accent);
+    background:rgba(255,255,255,0.1);
+  }
+  .team-score-name{display:flex; align-items:center; gap:8px; font-weight:700;}
+  .team-score-value{font-family:var(--font-display); font-weight:800; font-size:1.1rem;}
+  .mini-score-pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:22px;
+    height:22px;
+    padding:0 6px;
+    border-radius:999px;
+    color:#fff;
+    font-weight:800;
+    font-size:0.72rem;
+  }
+</style>
+</head>
+<body data-landscape-recommended>
+<div id="app">
+
+  <!-- SETUP -->
+  <div class="screen" id="screen-setup">
+    <div class="card">
+      <div class="setup-header">
+        <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <h1>TRIVIAL PURSUIT</h1>
+
+      <div id="setup-step-players">
+        <label><span class="label-icon">👥</span>Jugadores</label>
+        <div id="players-list"></div>
+        <div class="error-msg" id="players-error"></div>
+      </div>
+
+      <div id="setup-step-teams" class="hidden">
+        <label><span class="label-icon">🎯</span>Equipos</label>
+        <div class="stepper">
+          <button type="button" id="team-count-minus">−</button>
+          <div class="value" id="team-count-value">2</div>
+          <button type="button" id="team-count-plus">+</button>
+        </div>
+        <div class="team-boxes-header">
+          <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
+        </div>
+        <div id="team-boxes"></div>
+        <div class="error-msg" id="teams-error"></div>
+
+        <div class="error-msg" id="setup-error"></div>
+
+        <div class="final-nav">
+          <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button class="btn-main" id="start-btn">Iniciar partida</button>
+        </div>
+      </div>
+
+      <div class="night-nav" id="setup-nav">
+        <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+        <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY GUIDE -->
+  <div class="guide-modal-backdrop hidden" id="guide-modal-backdrop">
+    <div class="guide-modal">
+      <button type="button" class="guide-modal-close" id="guide-modal-close">✕</button>
+      <h2>Cómo se juega</h2>
+
+      <h3>Objetivo</h3>
+      <p>Formad equipos. Las categorías son siempre las mismas: 🏛️ Historia, 🔬 Ciencia, 🌍 Geografía, 🎬 Cine y música, 🏅 Deportes y 🎨 Arte y literatura. Gana el primer equipo que consiga una insignia de cada categoría.</p>
+
+      <h3>Turno</h3>
+      <p>En cada turno, un miembro distinto del equipo (rotando por orden) sostiene el móvil. Antes de ver la pregunta, el equipo elige entre 2 categorías propuestas al azar. Luego lee la pregunta en voz alta para que todo el equipo decida la respuesta.</p>
+
+      <h3>Rachas</h3>
+      <p>Si acertáis, seguís jugando: os toca otra vez, con otras 2 categorías para elegir. Si falláis, el turno pasa al equipo siguiente. La app siempre muestra cuál era la respuesta correcta después de contestar.</p>
+
+      <h3>Insignias</h3>
+      <p>Cada 3-5 rondas la carta se pone dorada: es una ronda de insignia. Si acertáis esa pregunta, os lleváis la insignia de la categoría elegida (una vez por categoría). El marcador de tu equipo muestra qué insignias lleváis ya.</p>
+
+      <h3>Fin de la partida</h3>
+      <p>Gana el primer equipo en completar las 6 insignias. Si la partida se alarga demasiado sin que nadie las complete, gana quien tenga más insignias; en caso de empate, decide la puntuación.</p>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN: team turn, question + options -->
+  <div class="screen hidden" id="screen-game">
+    <div class="card">
+      <div class="tv-team-bar" id="tv-team-bar"></div>
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+          <span class="back-btn" style="cursor:default;">TRIVIAL PURSUIT</span>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+
+      <!-- ACTIVE PLAY: question + options -->
+      <div id="turn-play" class="hidden">
+        <div class="tv-category-current" id="tv-category-current"></div>
+        <div class="tv-question" id="tv-question">Pregunta</div>
+        <div class="tv-options" id="tv-options"></div>
+        <button class="btn-main hidden" id="turn-continue-btn">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEXT TURN MODAL: who's up next, with the category choice built right in -->
+  <div class="guide-modal-backdrop hidden" id="next-turn-modal-backdrop">
+    <div class="guide-modal" id="next-turn-modal" style="text-align:center;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+        <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+        <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+      </div>
+      <div class="team-turn-badge" id="turn-team-badge">ROJO</div>
+      <div class="player-name" id="turn-player-name">Nombre</div>
+      <p class="wedge-won-msg hidden" id="wedge-won-msg"></p>
+      <div class="tv-wedge-banner hidden" id="wedge-banner">¡Ronda de insignia! Acierta y te llevas la categoría elegida.</div>
+      <p class="pass-hint">Selecciona una categoría</p>
+      <div class="tv-category-options" id="category-options"></div>
+    </div>
+  </div>
+
+  <!-- END SCREEN: final results -->
+  <div class="screen hidden" id="screen-end">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <div class="end-icon">🏆</div>
+      <h1 style="font-size:1.6rem;" id="end-title">RESULTADOS</h1>
+      <p class="subtitle" id="end-subtitle"></p>
+      <div id="end-scoreboard"></div>
+      <button class="btn-main" id="new-round-btn">Nueva partida</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="shared.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var MIN_PLAYERS = 2, MAX_PLAYERS = 30;
+  var MIN_TEAMS = 2, MAX_TEAMS = 4;
+  var MAX_ROUNDS = 72; // safety cap so a match always ends even if wedges are unlucky
+  var MIN_WEDGE_GAP = 3, MAX_WEDGE_GAP = 5; // a wedge round every 3-5 questions
+  var TEAM_NAMES = ['Azul', 'Rojo', 'Verde', 'Amarillo'];
+  var TEAM_HEX = ['#5b8fe0', '#c9525c', '#4fbf7a', '#f2c94c'];
+
+  // classic Trivial Pursuit wedge colors, one per category
+  var CATEGORY_COLOR = {
+    historia: '#f2c94c',
+    ciencia: '#8fd9ac',
+    geografia: '#5b8fe0',
+    cine_y_musica: '#e05d9c',
+    deportes: '#f0954f',
+    arte_y_literatura: '#a970e0'
+  };
+  function categoryColor(id){ return CATEGORY_COLOR[id] || '#9dc9ff'; }
+
+  var config = {
+    numTeams: 2,
+    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n, team: 0 }; })
+  };
+
+  var CATEGORIES = null;
+  var CATEGORIES_FALLBACK = [
+    { "id": "historia", "nombre": "Historia", "icono": "🏛️", "preguntas": [
+      { "pregunta": "¿En qué año llegó Cristóbal Colón a América?", "opciones": ["1492", "1500", "1453", "1348"], "correcta": 0 },
+      { "pregunta": "¿Quién fue el primer emperador de Roma?", "opciones": ["Julio César", "Augusto", "Nerón", "Trajano"], "correcta": 1 },
+      { "pregunta": "¿En qué año cayó el Muro de Berlín?", "opciones": ["1989", "1991", "1985", "1993"], "correcta": 0 },
+      { "pregunta": "¿Qué civilización construyó Machu Picchu?", "opciones": ["Los mayas", "Los incas", "Los aztecas", "Los olmecas"], "correcta": 1 },
+      { "pregunta": "¿Quién pintó los frescos de la Capilla Sixtina?", "opciones": ["Leonardo da Vinci", "Rafael", "Miguel Ángel", "Donatello"], "correcta": 2 },
+      { "pregunta": "¿En qué año terminó la Segunda Guerra Mundial?", "opciones": ["1943", "1945", "1939", "1950"], "correcta": 1 },
+      { "pregunta": "¿Cuál era la lengua oficial del Imperio Romano en su parte occidental?", "opciones": ["El griego", "El latín", "El etrusco", "El fenicio"], "correcta": 1 },
+      { "pregunta": "¿Cómo se llama el periodo histórico entre la caída del Imperio Romano de Occidente y el Renacimiento?", "opciones": ["Edad Antigua", "Edad Media", "Edad Moderna", "Edad Contemporánea"], "correcta": 1 }
+    ] },
+    { "id": "ciencia", "nombre": "Ciencia", "icono": "🔬", "preguntas": [
+      { "pregunta": "¿Cuál es el planeta más cercano al Sol?", "opciones": ["Venus", "Mercurio", "Marte", "Tierra"], "correcta": 1 },
+      { "pregunta": "¿Cuál es el hueso más largo del cuerpo humano?", "opciones": ["El fémur", "La tibia", "El húmero", "El radio"], "correcta": 0 },
+      { "pregunta": "¿Qué elemento químico tiene el símbolo \"O\"?", "opciones": ["Oro", "Oxígeno", "Osmio", "Óxido"], "correcta": 1 },
+      { "pregunta": "¿Qué órgano bombea la sangre por todo el cuerpo?", "opciones": ["El hígado", "Los pulmones", "El corazón", "El riñón"], "correcta": 2 },
+      { "pregunta": "¿Qué científico formuló la teoría de la relatividad?", "opciones": ["Isaac Newton", "Albert Einstein", "Galileo Galilei", "Nikola Tesla"], "correcta": 1 },
+      { "pregunta": "¿Cuántos planetas tiene el sistema solar?", "opciones": ["7", "8", "9", "10"], "correcta": 1 },
+      { "pregunta": "¿Cuál es el símbolo químico del oro?", "opciones": ["Ag", "Au", "Go", "Or"], "correcta": 1 },
+      { "pregunta": "¿Qué planeta es conocido como \"el planeta rojo\"?", "opciones": ["Júpiter", "Marte", "Saturno", "Venus"], "correcta": 1 }
+    ] }
+  ];
+
+  function loadCategories(){
+    return fetch('trivial.json')
+      .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
+      .then(function(data){ CATEGORIES = data.categorias; })
+      .catch(function(){ CATEGORIES = CATEGORIES_FALLBACK; })
+      .then(function(){
+        validateSetup();
+      });
+  }
+
+  function persistPlayers(){
+    savePlayerNames(config.rows.map(function(r){ return r.name.trim(); }).filter(function(n){ return n !== ""; }));
+  }
+
+  var state = {
+    playerNames: [],
+    playerTeams: [],
+    teams: [], // { score, memberIdxs, nextMemberPointer, wedges: [categoryId, ...] }
+    categoryQueues: {}, // categoryId -> shuffled queue of question objects, refilled when emptied
+    round: 0, // questions resolved so far this match (safety cap only, see MAX_ROUNDS)
+    turnTeamPointer: 0,
+    currentActorIdx: null,
+    currentCategoryChoices: [], // [categoryId, categoryId] offered this question
+    currentCategoryId: null, // the one the team picked
+    isWedgeRound: false, // whether the CURRENT question is a wedge opportunity
+    currentOptions: [], // [{ text, isCorrect }], shuffled for display
+    answered: false,
+    winnerTeamIdx: null, // set once a team completes all wedges
+    wedgeWonMsg: null // pending "you won an insignia" message, shown on the next-turn modal
+  };
+
+  var screenSetup = document.getElementById('screen-setup');
+  var screenGame = document.getElementById('screen-game');
+  var screenEnd = document.getElementById('screen-end');
+  var ALL_SCREENS = [screenSetup, screenGame, screenEnd];
+
+  function switchScreen(target){
+    ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
+    target.classList.remove('hidden');
+  }
+
+  // ---------- setup: players ----------
+  var rowsContainer = document.getElementById('players-list');
+  var playersErrorEl = document.getElementById('players-error');
+  var teamsErrorEl = document.getElementById('teams-error');
+  var setupError = document.getElementById('setup-error');
+  var startBtn = document.getElementById('start-btn');
+  var setupStepPlayersEl = document.getElementById('setup-step-players');
+  var setupStepTeamsEl = document.getElementById('setup-step-teams');
+  var setupNavEl = document.getElementById('setup-nav');
+  var setupPrevBtn = document.getElementById('setup-prev-btn');
+  var setupNextBtn = document.getElementById('setup-next-btn');
+  var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
+
+  // 0 = jugadores, 1 = equipos (última: incluye el botón de iniciar partida)
+  var setupStep = 0;
+  function renderSetupStep(){
+    setupStepPlayersEl.classList.toggle('hidden', setupStep !== 0);
+    setupStepTeamsEl.classList.toggle('hidden', setupStep !== 1);
+    setupNavEl.classList.toggle('hidden', setupStep === 1);
+    setupPrevBtn.classList.toggle('hidden', setupStep === 0);
+    if (setupStep === 1) renderTeamBoxes();
+  }
+  setupPrevBtn.addEventListener('click', function(){
+    if (setupStep > 0){ setupStep--; renderSetupStep(); validateSetup(); }
+  });
+  setupNextBtn.addEventListener('click', function(){
+    if (setupStep < 1 && !setupNextBtn.disabled){ setupStep++; renderSetupStep(); validateSetup(); }
+  });
+  setupFinalBackBtn.addEventListener('click', function(){
+    setupStep = 0;
+    renderSetupStep();
+    validateSetup();
+  });
+  renderSetupStep();
+
+  function effectivePlayerCount(rows){
+    var n = rows.length;
+    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
+    return n;
+  }
+  function realPlayerCount(){ return effectivePlayerCount(config.rows); }
+
+  function rowHtml(row, idx, rows){
+    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
+    if (isTrailingSlot){
+      return (
+        '<div class="player-row">' +
+          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
+            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="">' +
+        '</div>'
+      );
+    }
+    return (
+      '<div class="player-row">' +
+        '<input type="text" class="player-name-input" data-index="' + idx + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
+        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
+          (realPlayerCount() <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+      '</div>'
+    );
+  }
+
+  function renderPlayerRows(){
+    var rows = config.rows;
+    rowsContainer.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
+  }
+
+  function leastPopulatedTeam(){
+    var counts = [];
+    for (var t = 0; t < config.numTeams; t++) counts.push(0);
+    config.rows.forEach(function(r){
+      if (r.name.trim()) counts[clamp(r.team || 0, 0, config.numTeams - 1)]++;
+    });
+    var minIdx = 0;
+    for (var t = 1; t < config.numTeams; t++){ if (counts[t] < counts[minIdx]) minIdx = t; }
+    return minIdx;
+  }
+
+  function normalizeTrailingSlot(){
+    var rows = config.rows;
+    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
+      rows.pop();
+    }
+    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
+      rows.push({ name: "", team: leastPopulatedTeam() });
+    }
+  }
+
+  rowsContainer.addEventListener('input', function(e){
+    var target = e.target;
+    if (!target.classList.contains('player-name-input')) return;
+    var idx = parseInt(target.getAttribute('data-index'), 10);
+    config.rows[idx].name = target.value;
+    normalizeTrailingSlot();
+    persistPlayers();
+
+    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+    renderPlayerRows();
+    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
+    if (restored){
+      restored.focus();
+      restored.setSelectionRange(selStart, selEnd);
+    }
+    validateSetup();
+  });
+
+  rowsContainer.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.row-remove-btn');
+    if (!removeBtn || removeBtn.disabled) return;
+    var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
+    config.rows.splice(rIdx, 1);
+    normalizeTrailingSlot();
+    renderPlayerRows();
+    persistPlayers();
+    validateSetup();
+  });
+
+  // ---------- setup: teams ----------
+  var teamCountValueEl = document.getElementById('team-count-value');
+  var teamCountMinusBtn = document.getElementById('team-count-minus');
+  var teamCountPlusBtn = document.getElementById('team-count-plus');
+  var teamBoxesEl = document.getElementById('team-boxes');
+  var randomizeTeamsBtn = document.getElementById('randomize-teams-btn');
+
+  function renderTeamCount(){ teamCountValueEl.textContent = config.numTeams; }
+
+  function autoBalanceAllTeams(){
+    var players = [];
+    config.rows.forEach(function(r, idx){ if (r.name.trim()) players.push(idx); });
+    players.forEach(function(idx, i){ config.rows[idx].team = i % config.numTeams; });
+  }
+
+  function randomizeAllTeams(){
+    var realIdxs = [];
+    config.rows.forEach(function(r, idx){ if (r.name.trim()) realIdxs.push(idx); });
+    shuffle(realIdxs);
+    realIdxs.forEach(function(idx, i){ config.rows[idx].team = i % config.numTeams; });
+    renderTeamBoxes();
+    persistPlayers();
+    validateSetup();
+  }
+  randomizeTeamsBtn.addEventListener('click', randomizeAllTeams);
+
+  function renderTeamBoxes(){
+    var rows = config.rows;
+    var html = '';
+    for (var t = 0; t < config.numTeams; t++){
+      var members = [];
+      rows.forEach(function(r, idx){
+        if (r.name.trim() && clamp(r.team || 0, 0, config.numTeams - 1) === t) members.push({ idx: idx, name: r.name });
+      });
+      html +=
+        '<div class="team-box team-color-' + t + '" data-team="' + t + '">' +
+          '<div class="team-box-header"><span class="team-box-dot team-color-' + t + '"></span>' + escapeHtml(TEAM_NAMES[t]) + '</div>' +
+          '<div class="team-box-chips">' +
+            (members.length ?
+              members.map(function(m){ return '<button type="button" class="team-box-chip team-color-' + t + '" data-index="' + m.idx + '">' + escapeHtml(m.name) + '</button>'; }).join('') :
+              '<span class="team-box-empty">Sin jugadores</span>') +
+          '</div>' +
+        '</div>';
+    }
+    teamBoxesEl.innerHTML = html;
+  }
+
+  // ---------- team boxes: drag a player's chip into another team's box ----------
+  var teamDragState = null;
+
+  function onTeamDragMove(e){
+    if (!teamDragState) return;
+    e.preventDefault();
+    var s = teamDragState;
+    s.chip.style.left = (e.clientX - s.offsetX) + 'px';
+    s.chip.style.top = (e.clientY - s.offsetY) + 'px';
+
+    var elUnder = document.elementFromPoint(e.clientX, e.clientY);
+    var box = elUnder ? elUnder.closest('.team-box') : null;
+    if (s.hoverBox && s.hoverBox !== box) s.hoverBox.classList.remove('drag-over');
+    if (box) box.classList.add('drag-over');
+    s.hoverBox = box;
+  }
+
+  function onTeamDragEnd(){
+    if (!teamDragState) return;
+    var s = teamDragState;
+    window.removeEventListener('pointermove', onTeamDragMove);
+    window.removeEventListener('pointerup', onTeamDragEnd);
+    window.removeEventListener('pointercancel', onTeamDragEnd);
+
+    if (s.hoverBox){
+      s.hoverBox.classList.remove('drag-over');
+      config.rows[s.idx].team = parseInt(s.hoverBox.getAttribute('data-team'), 10);
+      persistPlayers();
+    }
+    teamDragState = null;
+    renderTeamBoxes();
+    validateSetup();
+  }
+
+  teamBoxesEl.addEventListener('pointerdown', function(e){
+    var chip = e.target.closest('.team-box-chip');
+    if (!chip) return;
+    e.preventDefault();
+    var rect = chip.getBoundingClientRect();
+    teamDragState = {
+      idx: parseInt(chip.getAttribute('data-index'), 10),
+      chip: chip,
+      offsetX: e.clientX - rect.left,
+      offsetY: e.clientY - rect.top,
+      hoverBox: null
+    };
+    chip.classList.add('dragging');
+    chip.style.width = rect.width + 'px';
+    chip.style.left = rect.left + 'px';
+    chip.style.top = rect.top + 'px';
+    window.addEventListener('pointermove', onTeamDragMove, { passive: false });
+    window.addEventListener('pointerup', onTeamDragEnd);
+    window.addEventListener('pointercancel', onTeamDragEnd);
+  });
+
+  function reassignTeamsAfterCountChange(){
+    autoBalanceAllTeams();
+    var rows = config.rows;
+    if (rows.length && !rows[rows.length - 1].name.trim()) rows[rows.length - 1].team = leastPopulatedTeam();
+    renderTeamBoxes();
+    persistPlayers();
+    validateSetup();
+  }
+  teamCountMinusBtn.addEventListener('click', function(){
+    config.numTeams = clamp(config.numTeams - 1, MIN_TEAMS, MAX_TEAMS);
+    renderTeamCount();
+    popValue(teamCountValueEl);
+    reassignTeamsAfterCountChange();
+  });
+  teamCountPlusBtn.addEventListener('click', function(){
+    config.numTeams = clamp(config.numTeams + 1, MIN_TEAMS, MAX_TEAMS);
+    renderTeamCount();
+    popValue(teamCountValueEl);
+    reassignTeamsAfterCountChange();
+  });
+
+  // ---------- categories: fixed set, no selection — always all of them ----------
+  function drawQuestion(categoryId){
+    var queue = state.categoryQueues[categoryId];
+    if (!queue || queue.length === 0){
+      var category = CATEGORIES.filter(function(c){ return c.id === categoryId; })[0];
+      queue = shuffle(category.preguntas.slice());
+      state.categoryQueues[categoryId] = queue;
+    }
+    return queue.shift();
+  }
+
+  function categoryById(id){
+    return CATEGORIES.filter(function(c){ return c.id === id; })[0];
+  }
+
+  function validateSetup(){
+    var rows = config.rows;
+    var playerMsgs = [];
+    if (realPlayerCount() < MIN_PLAYERS) playerMsgs.push("Necesitas al menos " + MIN_PLAYERS + " jugadores.");
+    var playersValid = playerMsgs.length === 0;
+
+    var teamMsgs = [];
+    if (playersValid){
+      var teamCounts = [];
+      for (var t = 0; t < config.numTeams; t++) teamCounts.push(0);
+      rows.forEach(function(r){
+        if (!r.name.trim()) return;
+        teamCounts[clamp(r.team || 0, 0, config.numTeams - 1)]++;
+      });
+      var emptyTeamIdx = teamCounts.indexOf(0);
+      if (emptyTeamIdx !== -1) teamMsgs.push(TEAM_NAMES[emptyTeamIdx] + " no tiene jugadores.");
+    }
+    var teamsValid = playersValid && teamMsgs.length === 0;
+
+    var settingsMsgs = [];
+    if (!CATEGORIES) settingsMsgs.push("Cargando categorías…");
+    var settingsValid = settingsMsgs.length === 0;
+
+    playersErrorEl.textContent = playerMsgs[0] || "";
+    teamsErrorEl.textContent = teamMsgs[0] || "";
+    setupError.textContent = settingsMsgs[0] || "";
+    setupNextBtn.disabled = (setupStep === 0 && !playersValid);
+    startBtn.disabled = !(playersValid && teamsValid && settingsValid);
+    if (setupStep === 1) renderTeamBoxes();
+    return playersValid && teamsValid && settingsValid;
+  }
+
+  function enterSetup(){
+    renderTeamCount();
+    renderPlayerRows();
+    renderTeamBoxes();
+    setupStep = 0;
+    renderSetupStep();
+    validateSetup();
+    switchScreen(screenSetup);
+  }
+
+  function wedgeSpanHtml(c, won){
+    var style = won ? ' style="background:' + categoryColor(c.id) + '; border-color:' + categoryColor(c.id) + ';"' : '';
+    return '<span class="tv-wedge' + (won ? ' won' : '') + '"' + style + ' title="' + escapeHtml(c.nombre) + '">' + c.icono + '</span>';
+  }
+
+  // ---------- scoreboard rows (reused by end screen) ----------
+  function renderScoreboardRows(container, highlightWinner, showRank){
+    var scoresDesc = state.teams.map(function(t){ return t.score; }).sort(function(a, b){ return b - a; });
+    var maxScore = scoresDesc[0];
+    container.innerHTML = state.teams.map(function(team, t){
+      var isTop = highlightWinner && team.score === maxScore;
+      var pillLabel = showRank ? (scoresDesc.indexOf(team.score) + 1) + 'º' : (t + 1);
+      var wedgesHtml = CATEGORIES.map(function(c){
+        var won = team.wedges.indexOf(c.id) !== -1;
+        return wedgeSpanHtml(c, won);
+      }).join('');
+      return '<div class="team-score-row' + (isTop ? ' winner' : '') + '" style="flex-direction:column; align-items:stretch; gap:8px;">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+          '<span class="team-score-name"><span class="mini-score-pill team-color-' + t + '">' + pillLabel + '</span>' + escapeHtml(TEAM_NAMES[t]) + '</span>' +
+          '<span class="team-score-value">' + team.score + '</span>' +
+        '</div>' +
+        '<div class="tv-wedge-tracker" style="margin:0; justify-content:flex-start;">' + wedgesHtml + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ---------- game screen ----------
+  var tvTeamBarEl = document.getElementById('tv-team-bar');
+  var turnTeamBadgeEl = document.getElementById('turn-team-badge');
+  var turnPlayerNameEl = document.getElementById('turn-player-name');
+  var nextTurnModalBackdrop = document.getElementById('next-turn-modal-backdrop');
+  var nextTurnModalBox = document.getElementById('next-turn-modal');
+  var wedgeWonMsgEl = document.getElementById('wedge-won-msg');
+  var wedgeBannerEl = document.getElementById('wedge-banner');
+  var categoryOptionsEl = document.getElementById('category-options');
+  var turnPlayEl = document.getElementById('turn-play');
+  var tvCategoryCurrentEl = document.getElementById('tv-category-current');
+  var tvQuestionEl = document.getElementById('tv-question');
+  var tvOptionsEl = document.getElementById('tv-options');
+  var turnContinueBtn = document.getElementById('turn-continue-btn');
+
+  function randomInt(min, max){
+    return min + Math.floor(Math.random() * (max - min + 1));
+  }
+
+  function renderWedgeTracker(container, team){
+    container.innerHTML = CATEGORIES.map(function(c){
+      var won = team.wedges.indexOf(c.id) !== -1;
+      return wedgeSpanHtml(c, won);
+    }).join('');
+  }
+
+  // every team's insignia progress, always visible on screen-game.
+  function renderTeamBar(){
+    tvTeamBarEl.innerHTML = state.teams.map(function(team, t){
+      var wedgesHtml = CATEGORIES.map(function(c){
+        var won = team.wedges.indexOf(c.id) !== -1;
+        var style = won ? ' style="background:' + categoryColor(c.id) + ';"' : '';
+        return '<span class="tv-team-bar-wedge' + (won ? ' won' : '') + '"' + style + ' data-category-id="' + c.id + '" title="' + escapeHtml(c.nombre) + '">' + c.icono + '</span>';
+      }).join('');
+      return '<div class="tv-team-bar-item team-color-' + t + '" data-team="' + t + '">' +
+        '<span class="tv-team-bar-wedges">' + wedgesHtml + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  // FLIP-style win animation: the category icon appears big and centered, holds
+  // briefly, then flies to the exact position/size of its slot in the team bar
+  // (already rendered in its final "won" look, hidden until the icon lands there).
+  function animateWedgeWin(teamIdx, categoryId){
+    var targetEl = tvTeamBarEl.querySelector('.tv-team-bar-item[data-team="' + teamIdx + '"] .tv-team-bar-wedge[data-category-id="' + categoryId + '"]');
+    if (!targetEl) return;
+    targetEl.style.visibility = 'hidden';
+
+    var cat = categoryById(categoryId);
+    var rect = targetEl.getBoundingClientRect();
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var bigSize = Math.min(vw, vh) * 0.34;
+    var bigX = vw / 2 - bigSize / 2, bigY = vh / 2 - bigSize / 2;
+    var endX = rect.left, endY = rect.top, endSize = rect.width;
+
+    var fly = document.createElement('div');
+    fly.className = 'wedge-fly';
+    fly.style.background = categoryColor(categoryId);
+    fly.textContent = cat.icono;
+    document.body.appendChild(fly);
+
+    var anim = fly.animate([
+      { left: bigX + 'px', top: bigY + 'px', width: bigSize + 'px', height: bigSize + 'px', fontSize: (bigSize * 0.5) + 'px', opacity: 0, offset: 0 },
+      { left: bigX + 'px', top: bigY + 'px', width: bigSize + 'px', height: bigSize + 'px', fontSize: (bigSize * 0.5) + 'px', opacity: 1, offset: 0.15 },
+      { left: bigX + 'px', top: bigY + 'px', width: bigSize + 'px', height: bigSize + 'px', fontSize: (bigSize * 0.5) + 'px', opacity: 1, offset: 0.55 },
+      { left: endX + 'px', top: endY + 'px', width: endSize + 'px', height: endSize + 'px', fontSize: (endSize * 0.5) + 'px', opacity: 1, offset: 1 }
+    ], { duration: 1200, easing: 'cubic-bezier(.32,.78,.32,1)', fill: 'forwards' });
+
+    anim.onfinish = function(){
+      fly.remove();
+      targetEl.style.visibility = '';
+      targetEl.classList.add('wedge-pop');
+    };
+  }
+
+  function startTurn(rotateActor){
+    var teamIdx = state.turnTeamPointer;
+    var team = state.teams[teamIdx];
+    var actorIdx;
+    if (rotateActor === false && state.currentActorIdx !== null){
+      actorIdx = state.currentActorIdx;
+    } else {
+      actorIdx = team.memberIdxs[team.nextMemberPointer % team.memberIdxs.length];
+      team.nextMemberPointer++;
+    }
+    state.currentActorIdx = actorIdx;
+    state.answered = false;
+
+    turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
+    turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
+    turnPlayerNameEl.textContent = state.playerNames[actorIdx];
+    turnPlayerNameEl.style.color = TEAM_HEX[teamIdx];
+    renderTeamBar();
+
+    turnPlayEl.classList.add('hidden');
+    showCategoryChoice();
+  }
+
+  function showCategoryChoice(){
+    var team = state.teams[state.turnTeamPointer];
+    state.isWedgeRound = (team.turnsPlayed + 1) === team.nextWedgeTurn;
+
+    var pool = CATEGORIES.slice();
+    shuffle(pool);
+    var choices;
+    if (state.isWedgeRound){
+      var missing = pool.filter(function(c){ return team.wedges.indexOf(c.id) === -1; });
+      choices = missing.slice(0, 2);
+      if (choices.length < 2){
+        pool.forEach(function(c){
+          if (choices.length < 2 && choices.indexOf(c) === -1) choices.push(c);
+        });
+      }
+    } else {
+      choices = pool.slice(0, 2);
+    }
+    state.currentCategoryChoices = choices.map(function(c){ return c.id; });
+
+    nextTurnModalBox.classList.toggle('insignia-round', state.isWedgeRound);
+    wedgeBannerEl.classList.toggle('hidden', !state.isWedgeRound);
+    if (state.wedgeWonMsg){
+      wedgeWonMsgEl.textContent = state.wedgeWonMsg;
+      wedgeWonMsgEl.classList.remove('hidden');
+      wedgeWonMsgEl.classList.add('pop');
+      state.wedgeWonMsg = null;
+    } else {
+      wedgeWonMsgEl.classList.add('hidden');
+      wedgeWonMsgEl.classList.remove('pop');
+    }
+    categoryOptionsEl.innerHTML = choices.map(function(c){
+      var color = categoryColor(c.id);
+      return '<button type="button" class="tv-category-option" data-category-id="' + c.id + '" style="border-color:' + color + '55; background:' + color + '22;">' +
+        '<span class="tv-category-option-icon">' + c.icono + '</span>' +
+        '<span>' + escapeHtml(c.nombre) + '</span>' +
+      '</button>';
+    }).join('');
+
+    nextTurnModalBackdrop.classList.remove('hidden');
+  }
+
+  function showQuestion(categoryId){
+    var category = categoryById(categoryId);
+    var q = drawQuestion(categoryId);
+    state.currentQuestion = q;
+
+    tvCategoryCurrentEl.textContent = category.icono + ' ' + category.nombre;
+    tvQuestionEl.textContent = q.pregunta;
+
+    state.currentOptions = q.opciones.map(function(text, i){
+      return { text: text, isCorrect: i === q.correcta };
+    });
+    shuffle(state.currentOptions);
+
+    tvOptionsEl.innerHTML = state.currentOptions.map(function(opt, i){
+      return '<button type="button" class="tv-option" data-index="' + i + '">' + escapeHtml(opt.text) + '</button>';
+    }).join('');
+    turnContinueBtn.classList.add('hidden');
+    state.answered = false;
+
+    turnPlayEl.classList.remove('hidden');
+  }
+
+  categoryOptionsEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.tv-category-option');
+    if (!btn) return;
+    state.currentCategoryId = btn.getAttribute('data-category-id');
+    nextTurnModalBackdrop.classList.add('hidden');
+    showQuestion(state.currentCategoryId);
+  });
+
+  tvOptionsEl.addEventListener('click', function(e){
+    if (state.answered) return;
+    var btn = e.target.closest('.tv-option');
+    if (!btn) return;
+    state.answered = true;
+
+    var idx = parseInt(btn.getAttribute('data-index'), 10);
+    var picked = state.currentOptions[idx];
+    var teamIdx = state.turnTeamPointer;
+    var team = state.teams[teamIdx];
+
+    var wedgeWon = false;
+    if (picked.isCorrect){
+      team.score++;
+      if (state.isWedgeRound && team.wedges.indexOf(state.currentCategoryId) === -1){
+        team.wedges.push(state.currentCategoryId);
+        wedgeWon = true;
+        if (team.wedges.length === CATEGORIES.length) state.winnerTeamIdx = teamIdx;
+      }
+    }
+
+    var optionBtns = tvOptionsEl.querySelectorAll('.tv-option');
+    optionBtns.forEach(function(b, i){
+      b.classList.add('disabled');
+      if (state.currentOptions[i].isCorrect) b.classList.add('correct');
+      else if (i === idx) b.classList.add('incorrect');
+    });
+
+    // the option colors already say correct/incorrect — only the wedge win needs
+    // a message of its own, and it's shown on the next-turn modal instead
+    state.wedgeWonMsg = wedgeWon ? '¡Ganaste la insignia de ' + categoryById(state.currentCategoryId).nombre + '!' : null;
+
+    state.round++;
+    team.turnsPlayed++;
+    if (state.isWedgeRound){
+      team.nextWedgeTurn = team.turnsPlayed + randomInt(MIN_WEDGE_GAP, MAX_WEDGE_GAP);
+    }
+    state.lastAnswerCorrect = picked.isCorrect;
+
+    turnContinueBtn.textContent = state.winnerTeamIdx !== null ? 'Ver resultado' : 'Siguiente';
+    turnContinueBtn.classList.remove('hidden');
+
+    // layout must be fully settled (continue button shown, card re-centered) before
+    // measuring the team bar slot — otherwise the fly animation targets a stale
+    // position and lands off by however much the card shifts afterwards.
+    if (wedgeWon){
+      renderTeamBar();
+      animateWedgeWin(teamIdx, state.currentCategoryId);
+    }
+  });
+
+  turnContinueBtn.addEventListener('click', function(){
+    if (state.winnerTeamIdx !== null || state.round >= MAX_ROUNDS){ showGameEnd(); return; }
+    if (state.lastAnswerCorrect){
+      startTurn(false); // same player keeps playing on a correct streak
+    } else {
+      state.turnTeamPointer = (state.turnTeamPointer + 1) % state.teams.length;
+      startTurn();
+    }
+  });
+
+  // ---------- final screen ----------
+  var endTitleEl = document.getElementById('end-title');
+  var endSubtitleEl = document.getElementById('end-subtitle');
+  var endScoreboardEl = document.getElementById('end-scoreboard');
+  var newRoundBtn = document.getElementById('new-round-btn');
+
+  function showGameEnd(){
+    if (state.winnerTeamIdx !== null){
+      endTitleEl.textContent = '¡' + TEAM_NAMES[state.winnerTeamIdx].toUpperCase() + ' GANA!';
+      endSubtitleEl.textContent = 'Ha conseguido las ' + CATEGORIES.length + ' insignias.';
+    } else {
+      // safety-cap ending: most wedges wins, score breaks the tie
+      var maxWedges = Math.max.apply(null, state.teams.map(function(t){ return t.wedges.length; }));
+      var contenders = state.teams.map(function(t, i){ return i; }).filter(function(i){ return state.teams[i].wedges.length === maxWedges; });
+      var winners = contenders;
+      if (contenders.length > 1){
+        var maxScoreAmongContenders = Math.max.apply(null, contenders.map(function(i){ return state.teams[i].score; }));
+        winners = contenders.filter(function(i){ return state.teams[i].score === maxScoreAmongContenders; });
+      }
+      endTitleEl.textContent = winners.length > 1 ? '¡VICTORIA COMPARTIDA!' : '¡' + TEAM_NAMES[winners[0]].toUpperCase() + ' GANA!';
+      endSubtitleEl.textContent = 'La partida se alargó demasiado — gana quien más insignias consiguió.';
+    }
+    renderScoreboardRows(endScoreboardEl, true, true);
+    switchScreen(screenEnd);
+  }
+
+  newRoundBtn.addEventListener('click', enterSetup);
+
+  startBtn.addEventListener('click', function(){
+    if (!validateSetup()) return;
+    config.rows.forEach(function(r){ r.name = r.name.trim(); });
+    var realRows = config.rows.filter(function(r){ return r.name !== ""; });
+
+    state.playerNames = realRows.map(function(r){ return r.name; });
+    state.playerTeams = realRows.map(function(r){ return clamp(r.team || 0, 0, config.numTeams - 1); });
+
+    state.teams = [];
+    for (var t = 0; t < config.numTeams; t++){
+      var memberIdxs = [];
+      state.playerTeams.forEach(function(teamIdx, idx){ if (teamIdx === t) memberIdxs.push(idx); });
+      shuffle(memberIdxs); // who within the team goes first is random too
+      state.teams.push({
+        score: 0, memberIdxs: memberIdxs, nextMemberPointer: 0, wedges: [],
+        turnsPlayed: 0, nextWedgeTurn: randomInt(MIN_WEDGE_GAP, MAX_WEDGE_GAP) // own wedge cadence, independent per team
+      });
+    }
+    state.turnTeamPointer = Math.floor(Math.random() * state.teams.length); // random starting team
+
+    state.categoryQueues = {};
+    state.round = 0;
+    state.winnerTeamIdx = null;
+
+    switchScreen(screenGame);
+    startTurn();
+  });
+
+  // ---------- how-to-play guide ----------
+  setupModal(
+    document.querySelectorAll('.ayuda-trigger'),
+    document.getElementById('guide-modal-backdrop'),
+    document.getElementById('guide-modal-close')
+  );
+
+  // ---------- back to setup ----------
+  initBackToSetupConfirm(enterSetup);
+
+  // ---------- init ----------
+  autoBalanceAllTeams();
+  normalizeTrailingSlot();
+  renderTeamCount();
+  renderPlayerRows();
+  renderTeamBoxes();
+  loadCategories();
+})();
+</script>
+</body>
+</html>

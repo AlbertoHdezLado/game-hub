@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="analytics.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>¿Quién es más probable? · Game Hub</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="78" font-size="72" text-anchor="middle">%F0%9F%A4%B7</text></svg>'>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root{
+    --accent:#d9c14f;
+    --accent2:#f0e2a0;
+    --reveal-b:#f0e2a0;
+  }
+  html,body{
+    /* flat solid fill — a multi-layer gradient here used to leave gaps of
+       the raw background color showing on some viewports/scroll ranges */
+    background-color:var(--bg2);
+  }
+
+  .qp-phrase{
+    text-align:center;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.5rem;
+    line-height:1.4;
+    margin:10px 0 20px;
+    max-height:38vh;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    word-break:break-word;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SETUP: no players — this is a read-it-aloud icebreaker, everyone just points -->
+  <div class="screen" id="screen-setup">
+    <div class="card">
+      <div class="setup-header">
+        <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <h1>¿QUIÉN ES MÁS PROBABLE?</h1>
+
+      <details class="setup-optional">
+        <summary>Ajustes adicionales</summary>
+        <div class="setup-optional-content">
+          <label><span class="label-icon">🏷️</span>Categorías</label>
+          <button type="button" class="chip-toggle-all" id="category-toggle-all-btn">Seleccionar todas</button>
+          <div class="chip-list" id="category-list"></div>
+        </div>
+      </details>
+
+      <div class="error-msg" id="setup-error"></div>
+
+      <button class="btn-main" id="start-btn">Iniciar partida</button>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY GUIDE -->
+  <div class="guide-modal-backdrop hidden" id="guide-modal-backdrop">
+    <div class="guide-modal">
+      <button type="button" class="guide-modal-close" id="guide-modal-close">✕</button>
+      <h2>Cómo se juega</h2>
+
+      <h3>Objetivo</h3>
+      <p>Un juego para romper el hielo, sin ganadores ni puntos. Aparece una pregunta tipo "¿Quién es más probable que...?". Leedla en voz alta, discutid entre todos y señalad a quien encaja mejor.</p>
+
+      <h3>Usar la app</h3>
+      <ol>
+        <li>Elige las categorías que queráis usar.</li>
+        <li>En cada pregunta, todos la ven a la vez — no hay nada que ocultar.</li>
+        <li>Cuando el grupo se decida, pulsa "Siguiente" para pasar a la próxima. Las preguntas no se acaban nunca.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- PROMPT SCREEN -->
+  <div class="screen hidden" id="screen-game">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <div class="qp-phrase" id="qp-phrase"></div>
+
+      <button class="btn-main" id="next-btn">Siguiente</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="shared.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var config = {
+    selectedCategories: []
+  };
+
+  var CATEGORIAS = null;
+  var QUIEN_FALLBACK = [
+    { "id": "clasicas", "nombre": "Clásicas", "icono": "🏅", "frases": ["¿Quién es más probable que se pierda usando el GPS?", "¿Quién es más probable que llore viendo un anuncio?", "¿Quién es más probable que se quede dormido en el cine?", "¿Quién es más probable que hable solo en voz alta?", "¿Quién es más probable que olvide dónde dejó las llaves?", "¿Quién es más probable que se ría en el peor momento?", "¿Quién es más probable que llegue tarde a su propia boda?", "¿Quién es más probable que gane la lotería y siga trabajando igual?", "¿Quién es más probable que se disfrace mejor en Halloween?", "¿Quién es más probable que se pierda en su propio barrio?"] },
+    { "id": "fiesta", "nombre": "Fiesta", "icono": "🥳", "frases": ["¿Quién es más probable que acabe bailando encima de una mesa?", "¿Quién es más probable que organice la fiesta más loca del grupo?", "¿Quién es más probable que se quede dormido antes de medianoche?", "¿Quién es más probable que pierda el móvil en una fiesta?", "¿Quién es más probable que le cante una serenata a alguien random?", "¿Quién es más probable que convenza a todos de ir a por churros a las 5 de la mañana?", "¿Quién es más probable que sea el alma de la fiesta?", "¿Quién es más probable que organice un juego de beber improvisado?", "¿Quién es más probable que se le olvide dónde aparcó?", "¿Quién es más probable que termine la fiesta antes de que empiece de verdad?"] }
+  ];
+
+  function loadCategories(){
+    return fetch('quien-es-mas-probable.json')
+      .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
+      .then(function(data){ CATEGORIAS = data.categorias; })
+      .catch(function(){ CATEGORIAS = QUIEN_FALLBACK; })
+      .then(function(){
+        if (config.selectedCategories.length === 0){
+          config.selectedCategories = CATEGORIAS.map(function(c){ return c.id; });
+        }
+        renderCategoryList();
+        validateSetup();
+      });
+  }
+
+  var state = {
+    deck: [],
+    index: 0
+  };
+
+  var screenSetup = document.getElementById('screen-setup');
+  var screenGame = document.getElementById('screen-game');
+  var ALL_SCREENS = [screenSetup, screenGame];
+
+  function switchScreen(target){
+    ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
+    target.classList.remove('hidden');
+  }
+
+  // ---------- categories (multiple choice) ----------
+  var categoryListEl = document.getElementById('category-list');
+  var categoryToggleAllBtn = document.getElementById('category-toggle-all-btn');
+  var setupError = document.getElementById('setup-error');
+  var startBtn = document.getElementById('start-btn');
+
+  function renderToggleAllLabel(){
+    if (!CATEGORIAS){ categoryToggleAllBtn.textContent = 'Seleccionar todas'; return; }
+    categoryToggleAllBtn.textContent = config.selectedCategories.length === CATEGORIAS.length ? 'Quitar todas' : 'Seleccionar todas';
+  }
+
+  function renderCategoryList(){
+    if (!CATEGORIAS || CATEGORIAS.length === 0){
+      categoryListEl.innerHTML = '<p class="chip-loading">Cargando categorías…</p>';
+      renderToggleAllLabel();
+      return;
+    }
+    categoryListEl.innerHTML = CATEGORIAS.map(function(c){
+      var selected = config.selectedCategories.indexOf(c.id) !== -1;
+      return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-category-id="' + c.id + '">' +
+        '<span class="chip-icon">' + escapeHtml(c.icono || '📦') + '</span>' +
+        '<span class="chip-name">' + escapeHtml(c.nombre) + '</span>' +
+      '</button>';
+    }).join('');
+    renderToggleAllLabel();
+  }
+
+  categoryListEl.addEventListener('click', function(e){
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    var id = chip.getAttribute('data-category-id');
+    var idx = config.selectedCategories.indexOf(id);
+    if (idx === -1) config.selectedCategories.push(id);
+    else config.selectedCategories.splice(idx, 1);
+    renderCategoryList();
+    validateSetup();
+  });
+
+  categoryToggleAllBtn.addEventListener('click', function(){
+    if (!CATEGORIAS) return;
+    if (config.selectedCategories.length === CATEGORIAS.length){
+      config.selectedCategories = [];
+    } else {
+      config.selectedCategories = CATEGORIAS.map(function(c){ return c.id; });
+    }
+    renderCategoryList();
+    validateSetup();
+  });
+
+  function buildDeck(){
+    var pool = [];
+    CATEGORIAS.forEach(function(c){
+      if (config.selectedCategories.indexOf(c.id) !== -1) pool = pool.concat(c.frases);
+    });
+    return shuffle(pool.slice());
+  }
+
+  function validateSetup(){
+    var msgs = [];
+    if (!CATEGORIAS) msgs.push("Cargando categorías…");
+    else if (config.selectedCategories.length === 0) msgs.push("Selecciona al menos una categoría.");
+    setupError.textContent = msgs[0] || "";
+    startBtn.disabled = msgs.length !== 0;
+    return msgs.length === 0;
+  }
+
+  function enterSetup(){
+    renderCategoryList();
+    validateSetup();
+    switchScreen(screenSetup);
+  }
+
+  // ---------- prompt screen (infinite: reshuffles and keeps going, no round count) ----------
+  var phraseEl = document.getElementById('qp-phrase');
+  var nextBtn = document.getElementById('next-btn');
+
+  function fitPhraseText(){
+    var maxSize = 1.5, minSize = 0.85, step = 0.05;
+    var size = maxSize;
+    phraseEl.style.fontSize = size + 'rem';
+    while (size > minSize && phraseEl.scrollHeight > phraseEl.clientHeight + 1){
+      size -= step;
+      phraseEl.style.fontSize = size + 'rem';
+    }
+  }
+
+  function showRound(i){
+    phraseEl.textContent = state.deck[i];
+    fitPhraseText();
+  }
+
+  var phraseResizeTimer = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(phraseResizeTimer);
+    phraseResizeTimer = setTimeout(fitPhraseText, 150);
+  });
+
+  nextBtn.addEventListener('click', function(){
+    state.index++;
+    if (state.index >= state.deck.length){
+      state.deck = buildDeck(); // reshuffle and keep going — the deck never runs out
+      state.index = 0;
+    }
+    showRound(state.index);
+  });
+
+  startBtn.addEventListener('click', function(){
+    if (!validateSetup()) return;
+
+    state.deck = buildDeck();
+    state.index = 0;
+
+    showRound(0);
+    switchScreen(screenGame);
+  });
+
+  // ---------- how-to-play guide ----------
+  setupModal(
+    document.querySelectorAll('.ayuda-trigger'),
+    document.getElementById('guide-modal-backdrop'),
+    document.getElementById('guide-modal-close')
+  );
+
+  // ---------- back to setup ----------
+  initBackToSetupConfirm(enterSetup);
+
+  // ---------- init ----------
+  loadCategories();
+})();
+</script>
+</body>
+</html>
