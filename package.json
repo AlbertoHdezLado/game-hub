@@ -11,14 +11,12 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "@tailwindcss/vite": "latest",
     "vite": "latest",
     "vite-plugin-pwa": "latest",
     "typescript": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-router-dom": "latest",
-    "tailwindcss": "latest"
+    "react-router-dom": "latest"
   },
   "devDependencies": {
     "@types/react": "latest",

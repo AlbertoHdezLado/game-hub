@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import type { GameDefinition } from '@/types/game';
 
@@ -8,19 +7,21 @@ interface GameCardProps {
 }
 
 export function GameCard({ game, onInfo }: GameCardProps) {
+  const iconUrl = `/resources/images/hub/${game.icon}`;
   return (
-    <article className={`game-card ${game.disabled ? 'disabled' : ''}`} style={{ '--card-accent': `var(--theme-${game.theme})` } as CSSProperties}>
-      <button className="info-button" type="button" aria-label={`Descripción de ${game.title}`} onClick={() => onInfo(game)}>i</button>
-      {game.disabled ? <div className="game-card-link" aria-label={`${game.title}, próximamente`}>
-        <span className="game-icon" style={{ maskImage: `url(/resources/images/hub/${game.icon})`, WebkitMaskImage: `url(/resources/images/hub/${game.icon})` }} aria-hidden="true" />
-        <strong>{game.title}</strong>
-        <span className="game-players">{game.players}</span>
-        <span className="coming-soon-badge">Próximamente</span>
-      </div> : <Link className="game-card-link" to={`/juegos/${game.slug}`}>
-        <span className="game-icon" style={{ maskImage: `url(/resources/images/hub/${game.icon})`, WebkitMaskImage: `url(/resources/images/hub/${game.icon})` }} aria-hidden="true" />
-        <strong>{game.title}</strong>
-        <span className="game-players">{game.players}</span>
-      </Link>}
-    </article>
+    <div className={`card mode-card theme-${game.theme}${game.disabled ? ' disabled' : ''}`}>
+      <button type="button" className="mode-info-btn" aria-label="Descripción" onClick={() => onInfo(game)}>ⓘ</button>
+      {game.disabled ? (
+        <span className="mode-card-link" aria-label={`${game.title}, próximamente`}>
+          <span className="mode-icon-badge" style={{ maskImage: `url('${iconUrl}')`, WebkitMaskImage: `url('${iconUrl}')` }} />
+          <span className="coming-soon-badge">Próximamente</span>
+        </span>
+      ) : (
+        <Link to={`/juegos/${game.slug}`} className="mode-card-link" aria-label={game.title}>
+          <span className="mode-icon-badge" style={{ maskImage: `url('${iconUrl}')`, WebkitMaskImage: `url('${iconUrl}')` }} />
+        </Link>
+      )}
+    </div>
   );
 }
+

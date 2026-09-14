@@ -1,0 +1,117 @@
+.reveal-close-hint{
+  text-align:center;
+  color:var(--text-dim);
+  font-size:0.82rem;
+  margin:14px 0 0;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s ease;
+}
+.reveal-wrap.revealed ~ .reveal-close-hint{opacity:1;}
+.start-player-line{
+  text-align:center;
+  color:var(--text-dim);
+  font-size:1.1rem;
+  font-weight:600;
+  margin:0 0 20px;
+}
+.start-player-line strong{color:var(--text); font-size:1.2em;}
+.debate-title{transition:color .2s;}
+.debate-title.game-over-impostores{
+  background:none;
+  -webkit-background-clip:unset;
+  background-clip:unset;
+  -webkit-text-fill-color:currentColor;
+  color:var(--danger);
+}
+.debate-title.game-over-civiles{
+  background:none;
+  -webkit-background-clip:unset;
+  background-clip:unset;
+  -webkit-text-fill-color:currentColor;
+  color:var(--safe);
+}
+.debate-timer{
+  display:flex;
+  justify-content:center;
+  align-items:baseline;
+  font-family:var(--font-display);
+  font-size:3rem;
+  font-weight:800;
+  margin:6px 0 10px;
+  letter-spacing:1px;
+  font-variant-numeric:tabular-nums;
+}
+.debate-timer-part{
+  display:inline-block;
+  width:2ch;
+  text-align:center;
+}
+.debate-timer-colon{
+  display:inline-block;
+}
+@keyframes debateTimerBlink{
+  0%, 100%{ color:var(--danger); opacity:1; }
+  50%{ color:var(--danger); opacity:0.25; }
+}
+.debate-timer-wrap.time-up .debate-timer{
+  animation:debateTimerBlink 0.5s steps(1) infinite;
+}
+.vote-row{
+  display:flex;
+  align-items:center;
+  padding:12px 14px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--glass-border);
+  margin-bottom:8px;
+  cursor:pointer;
+  font-weight:600;
+  transition:background .15s, border-color .15s, transform .1s;
+}
+.vote-row:active{transform:scale(0.98);}
+.vote-row.selected{
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  border-color:transparent;
+  color:#fff;
+}
+.vote-result-icon{
+  text-align:center;
+  font-size:3rem;
+  margin-bottom:8px;
+}
+.vote-result-title{
+  text-align:center;
+  font-family:var(--font-display);
+  font-size:1.3rem;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.vote-result-title.reveal-civil{color:var(--safe);}
+.vote-result-title.reveal-impostor{color:var(--danger);}
+.vote-result-title.suspense{
+  color:var(--text-dim);
+  animation:voteSuspenseFade 0.6s ease-in-out infinite;
+}
+@keyframes voteSuspenseFade{
+  0%, 100%{ opacity:1; }
+  50%{ opacity:0.35; }
+}
+@keyframes voteRevealPulse{
+  0%, 100%{ transform:scale(1); }
+  50%{ transform:scale(1.1); }
+}
+@keyframes voteGlowImpostor{
+  0%, 100%{ text-shadow:0 0 0 rgba(156,63,71,0); }
+  50%{ text-shadow:0 0 22px rgba(156,63,71,1); }
+}
+@keyframes voteGlowCivil{
+  0%, 100%{ text-shadow:0 0 0 rgba(157,201,255,0); }
+  50%{ text-shadow:0 0 22px rgba(157,201,255,1); }
+}
+.vote-result-title.pulse-impostor{
+  animation:voteRevealPulse 0.5s ease-in-out 3, voteGlowImpostor 0.5s ease-in-out 3;
+}
+.vote-result-title.pulse-civil{
+  animation:voteRevealPulse 0.5s ease-in-out 3, voteGlowCivil 0.5s ease-in-out 3;
+}

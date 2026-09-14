@@ -1,0 +1,14 @@
+.qp-phrase{
+  text-align:center;
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:1.5rem;
+  line-height:1.4;
+  margin:10px 0 20px;
+  max-height:38vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  word-break:break-word;
+}

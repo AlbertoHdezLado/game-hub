@@ -1,32 +1,203 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { MainButton } from '@/components/ui/MainButton';
-import { PlayerInput } from '@/components/ui/PlayerInput';
-import { getGame } from '@/data/games';
-import { loadContent, pickRandom } from '@/lib/content';
-import { usePersistentNames } from '@/hooks/usePersistentNames';
+import { ScreenHeader } from '@/components/legacy/ScreenHeader';
+import { GuideModal } from '@/components/legacy/GuideModal';
+import { PlayerNameRows } from '@/components/legacy/PlayerNameRows';
+import { loadContent } from '@/lib/content';
+import { shuffle } from '@/lib/random';
+import { effectivePlayerCount, effectivePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/legacy';
+import '@/styles/games/picolo.css';
 
-interface PicoloCard { tipo: string; texto: string }
-interface PicoloContent { cartas: PicoloCard[] }
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 30;
 
-const typeIcons: Record<string, string> = { trago: '🥃', reparte: '🍹', reto: '😈', pregunta: '🤔', interaccion: '🤝', interacción: '🤝', grupo: '👥', decision: '🙋', decisión: '🙋' };
+interface PicoloCard {
+  tipo: string;
+  texto?: string;
+  prompt?: string;
+  opciones?: string[];
+}
+
+const CATEGORY_META: Record<string, { label: string; icon: string; color: string }> = {
+  trago: { label: 'Trago', icon: '🥃', color: '#e0663f' },
+  reparte: { label: 'Reparte', icon: '🍹', color: '#f2c94c' },
+  reto: { label: 'Reto', icon: '😈', color: '#a970e0' },
+  pregunta: { label: 'Pregunta', icon: '🤔', color: '#5b8fe0' },
+  interaccion: { label: 'Interacción', icon: '🤝', color: '#e05d9c' },
+  grupo: { label: 'Grupo', icon: '👥', color: '#52c77a' },
+  decision: { label: 'Decisión', icon: '🙋', color: '#4fc3d9' },
+};
+
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function readableTextColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luma = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luma > 0.7 ? '#2b2b2b' : '#fff';
+}
+
+function fillTemplate(tpl: string, playerNames: string[]): string {
+  if (tpl.includes('{P1}') || tpl.includes('{P2}')) {
+    const idx1 = Math.floor(Math.random() * playerNames.length);
+    let idx2 = idx1;
+    while (idx2 === idx1 && playerNames.length > 1) idx2 = Math.floor(Math.random() * playerNames.length);
+    return tpl.replace(/\{P1\}/g, playerNames[idx1]).replace(/\{P2\}/g, playerNames[idx2]);
+  }
+  if (tpl.includes('{P}')) {
+    const idx = Math.floor(Math.random() * playerNames.length);
+    return tpl.replace(/\{P\}/g, playerNames[idx]);
+  }
+  return tpl;
+}
 
 export function PicoloPage() {
-  const game = getGame('picolo');
-  const [names, setNames] = usePersistentNames(['Jugador 1', 'Jugador 2', 'Jugador 3']);
-  const [card, setCard] = useState<PicoloCard | null>(null);
-  const [error, setError] = useState('');
+  const [rows, setRows] = useState<string[]>(() => normalizeTrailingSlot(loadSavedPlayerNames().slice(0, MAX_PLAYERS), MAX_PLAYERS));
+  const [cards, setCards] = useState<PicoloCard[] | null>(null);
+  const [started, setStarted] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  const [playerNames, setPlayerNames] = useState<string[]>([]);
+  const [deck, setDeck] = useState<PicoloCard[]>([]);
+  const [index, setIndex] = useState(0);
+  const [text, setText] = useState('');
+  const [decisionResolved, setDecisionResolved] = useState(false);
+  const [pulse, setPulse] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadContent<PicoloContent>('picolo.json').then((data) => setCard(pickRandom(data.cartas))).catch(() => setError('No se pudo cargar el contenido.'));
+    loadContent<{ cartas: PicoloCard[] }>('picolo.json').then((data) => setCards(data.cartas));
   }, []);
 
-  function nextCard() {
-    loadContent<PicoloContent>('picolo.json').then((data) => setCard(pickRandom(data.cartas))).catch(() => setError('No se pudo cargar el contenido.'));
+  const card = deck[index];
+  const meta = card ? (CATEGORY_META[card.tipo] ?? CATEGORY_META.trago) : CATEGORY_META.trago;
+
+  useLayoutEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.style.fontSize = '';
+    let size = 1.4;
+    el.style.fontSize = `${size}rem`;
+    while (size > 0.85 && (el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth)) {
+      size -= 0.1;
+      el.style.fontSize = `${size.toFixed(2)}rem`;
+    }
+  }, [text]);
+
+  function updateRows(next: string[]) {
+    setRows(next);
+    savePlayerNames(effectivePlayerNames(next));
   }
 
-  if (!game) return <p className="error-state">Juego no encontrado. <Link to="/">Volver al hub</Link></p>;
-  const text = card?.texto.replaceAll('{P1}', names[0] ?? 'Alguien').replaceAll('{P2}', names[1] ?? names[0] ?? 'Alguien').replaceAll('{P}', names[0] ?? 'Alguien') ?? 'Cargando…';
-  return <GameThemeProvider theme={game.theme}><main className="game-shell"><header className="game-header"><Link className="icon-button" to="/" aria-label="Volver al hub">⌂</Link><span>{game.title}</span><Link className="icon-button" to="/" aria-label="Ayuda">?</Link></header><section className="game-panel infinite-panel"><span className="eyebrow">Carta nueva</span><h1>{game.title}</h1><PlayerInput label="Jugadores" names={names} onChange={setNames} min={2} /><div className="infinite-card picolo-card"><span className="picolo-badge">{typeIcons[card?.tipo ?? ''] ?? '🎲'} {card?.tipo ?? 'Carta'}</span><strong>{text}</strong></div>{error && <p className="form-message">{error}</p>}<MainButton onClick={nextCard}>Siguiente carta</MainButton></section></main></GameThemeProvider>;
+  const playerCount = effectivePlayerCount(rows);
+  const hasEmptyName = rows.some((name, idx) => idx !== rows.length - 1 && !name.trim());
+  const canStart = !hasEmptyName && playerCount >= MIN_PLAYERS && cards !== null;
+
+  function showRound(nextDeck: PicoloCard[], i: number, names: string[]) {
+    const c = nextDeck[i];
+    setDecisionResolved(false);
+    setText(c.tipo === 'decision' ? (c.prompt ?? '') : fillTemplate(c.texto ?? '', names));
+  }
+
+  function handleNext() {
+    let nextDeck = deck;
+    let nextIndex = index + 1;
+    if (nextIndex >= deck.length) { nextDeck = shuffle(cards!); nextIndex = 0; setDeck(nextDeck); }
+    setIndex(nextIndex);
+    showRound(nextDeck, nextIndex, playerNames);
+  }
+
+  function resolveDecision() {
+    if (!card?.opciones?.length) return;
+    const chosen = card.opciones[Math.floor(Math.random() * card.opciones.length)];
+    setText(`¡Beben los que eligieron «${chosen}»!`);
+    setPulse((p) => p + 1);
+    setDecisionResolved(true);
+  }
+
+  function handleStart() {
+    if (!canStart) return;
+    const names = effectivePlayerNames(rows);
+    const initialDeck = shuffle(cards!);
+    setPlayerNames(names);
+    setDeck(initialDeck);
+    setIndex(0);
+    showRound(initialDeck, 0, names);
+    setStarted(true);
+  }
+
+  return (
+    <GameThemeProvider slug="picolo">
+      <div id="app">
+        <div className="screen" id="screen-setup" hidden={started}>
+          <div className="card">
+            <ScreenHeader onHelp={() => setHelpOpen(true)} />
+            <h1>PICOLO</h1>
+            <label><span className="label-icon">👥</span>Jugadores</label>
+            <PlayerNameRows rows={rows} onChange={updateRows} min={MIN_PLAYERS} max={MAX_PLAYERS} />
+            <div className="error-msg">{hasEmptyName ? 'Todos los jugadores necesitan un nombre.' : playerCount < MIN_PLAYERS ? `Necesitas al menos ${MIN_PLAYERS} jugadores.` : !cards ? 'Cargando cartas…' : ''}</div>
+            <button type="button" className="btn-main" disabled={!canStart} onClick={handleStart}>Iniciar partida</button>
+          </div>
+        </div>
+
+        <div className="screen" id="screen-game" hidden={!started}>
+          <div className="card">
+            <ScreenHeader variant="game" onBackToSetup={() => setStarted(false)} onHelp={() => setHelpOpen(true)} />
+
+            <div
+              className="reveal-wrap revealed"
+              style={{
+                cursor: 'default',
+                borderColor: meta.color,
+                background: `linear-gradient(160deg, ${hexToRgba(meta.color, 0.3)}, rgba(0,0,0,0.3))`,
+                boxShadow: `0 0 0 1px ${hexToRgba(meta.color, 0.35)} inset, 0 8px 24px ${hexToRgba(meta.color, 0.25)}`,
+              }}
+            >
+              <div className="reveal-content picolo" style={{ color: meta.color }} ref={contentRef}>
+                <span className="picolo-badge" style={{ background: meta.color, color: readableTextColor(meta.color) }}>{meta.icon} {meta.label}</span>
+                <span key={pulse} className={`picolo-text${decisionResolved ? ' pulse' : ''}`}>{text}</span>
+              </div>
+            </div>
+
+            {card?.tipo === 'decision' && !decisionResolved ? (
+              <button type="button" className="btn-main" onClick={resolveDecision}>👀 Revelar quién bebe</button>
+            ) : (
+              <button type="button" className="btn-main" onClick={handleNext}>🥃 Siguiente carta</button>
+            )}
+          </div>
+        </div>
+
+        <GuideModal open={helpOpen} onClose={() => setHelpOpen(false)}>
+          <h2>Cómo se juega</h2>
+          <h3>Objetivo</h3>
+          <p>El clásico juego de beber. Van saliendo cartas al azar con retos, preguntas, tragos que repartir e interacciones entre jugadores. Vosotros decidís y gestionáis quién bebe qué — la app no lleva la cuenta de nada.</p>
+          <h3>Usar la app</h3>
+          <ol>
+            <li>Añade a los jugadores por su nombre.</li>
+            <li>Pulsa "Iniciar partida" y lee cada carta en voz alta para todo el grupo.</li>
+            <li>Pulsa "Siguiente carta" para pasar a la próxima. No hay rondas ni final: jugad tanto como queráis y parad cuando queráis.</li>
+          </ol>
+          <h3>Tipos de carta</h3>
+          <p>Cada carta muestra su temática arriba con un color, para saber de un vistazo qué tipo de carta es:</p>
+          <ul>
+            <li><strong>🥃 Trago:</strong> alguien bebe directamente.</li>
+            <li><strong>🍹 Reparte:</strong> alguien reparte tragos entre el resto.</li>
+            <li><strong>😈 Reto:</strong> cumple el reto o bebes.</li>
+            <li><strong>🤔 Pregunta:</strong> responde con sinceridad o bebes.</li>
+            <li><strong>🤝 Interacción:</strong> dos jugadores hacen algo juntos (un gesto, un pulso, beber a la vez...) o ambos beben.</li>
+            <li><strong>👥 Grupo:</strong> quien cumpla una condición bebe (llevar cierto color, nombre con cierta letra, ser el más joven...).</li>
+            <li><strong>🙋 Decisión:</strong> todos eligen en secreto entre dos opciones (mano arriba o abajo, por ejemplo) y luego se revela cuál de las dos bebe.</li>
+          </ul>
+          <h3>Honestidad</h3>
+          <p>Como en cualquier juego de beber, todo se basa en la sinceridad y las ganas de jugar de cada uno. Bebed con responsabilidad.</p>
+        </GuideModal>
+      </div>
+    </GameThemeProvider>
+  );
 }

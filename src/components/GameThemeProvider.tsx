@@ -1,24 +1,21 @@
 import type { CSSProperties, PropsWithChildren } from 'react';
-import { appGamePalette } from '@/data/themes';
+import { defaultGameTheme, gameThemeColors } from '@/data/themes';
 import type { ThemeName } from '@/types/game';
 
 interface GameThemeProviderProps extends PropsWithChildren {
+  slug?: string;
+  /** @deprecated kept optional while remaining feature pages are still being ported to per-slug legacy colors */
   theme?: ThemeName;
 }
 
-export function GameThemeProvider({ children }: Readonly<GameThemeProviderProps>) {
-  const palette = appGamePalette;
+// applies the same --accent/--accent2/--reveal-b overrides each legacy <juego>.html sets in its own <style>
+export function GameThemeProvider({ slug, children }: Readonly<GameThemeProviderProps>) {
+  const palette = (slug && gameThemeColors[slug as keyof typeof gameThemeColors]) || defaultGameTheme;
   const style = {
     '--accent': palette.accent,
     '--accent2': palette.accent2,
-    '--reveal-a': palette.accent2,
-    '--reveal-b': palette.accent,
-    '--accent-soft': palette.accentSoft,
-    '--surface': palette.surface,
-    '--surface-raised': palette.surfaceRaised,
-    '--accent-border': palette.border,
-    '--on-accent': palette.onAccent,
+    ...(palette.revealB ? { '--reveal-b': palette.revealB } : {}),
   } as CSSProperties;
 
-  return <div className="game-theme" style={style}>{children}</div>;
+  return <div style={style}>{children}</div>;
 }

@@ -1,0 +1,19 @@
+/* no tap-to-reveal gesture here: the card is meant to be read aloud the instant it's shown */
+.reveal-content.picolo{color:var(--accent2); gap:10px; transition:color .3s ease;}
+.picolo-badge{
+  font-family:var(--font-body);
+  font-size:0.7rem;
+  font-weight:800;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  padding:5px 14px;
+  border-radius:999px;
+  color:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,0.25);
+}
+.picolo-text{font-size:1em;}
+@keyframes picoloRevealPulse{
+  0%, 100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); }
+}
+.picolo-text.pulse{animation:picoloRevealPulse 0.4s ease-in-out 2;}
