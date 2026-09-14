@@ -364,7 +364,10 @@
       <div class="scr-body">
         <div id="setup-step-players">
           <label><span class="label-icon">👥</span>Jugadores</label>
-          <div id="players-list"></div>
+          <div class="player-chips-list" id="players-chips"></div>
+          <div class="player-input-row">
+            <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
+          </div>
           <div class="error-msg" id="players-error"></div>
         </div>
 
@@ -582,7 +585,8 @@
   }
 
   // ---------- setup: players ----------
-  var rowsContainer = document.getElementById('players-list');
+  var playersChipsList = document.getElementById('players-chips');
+  var playersDraftInput = document.getElementById('players-draft');
   var playersErrorEl = document.getElementById('players-error');
   var teamsErrorEl = document.getElementById('teams-error');
   var setupError = document.getElementById('setup-error');
@@ -619,35 +623,9 @@
   renderSetupStep();
 
   function effectivePlayerCount(rows){
-    var n = rows.length;
-    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
-    return n;
+    return rows.length;
   }
   function realPlayerCount(){ return effectivePlayerCount(config.rows); }
-
-  function rowHtml(row, idx, rows){
-    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
-    if (isTrailingSlot){
-      return (
-        '<div class="player-row">' +
-          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="">' +
-        '</div>'
-      );
-    }
-    return (
-      '<div class="player-row">' +
-        '<input type="text" class="player-name-input" data-index="' + idx + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
-          (realPlayerCount() <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
-      '</div>'
-    );
-  }
-
-  function renderPlayerRows(){
-    var rows = config.rows;
-    rowsContainer.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
-  }
 
   function leastPopulatedTeam(){
     var counts = [];
@@ -660,40 +638,41 @@
     return minIdx;
   }
 
-  function normalizeTrailingSlot(){
+  function renderPlayerRows(){
     var rows = config.rows;
-    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
-      rows.pop();
-    }
-    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
-      rows.push({ name: "", team: leastPopulatedTeam() });
-    }
+    playersChipsList.innerHTML = rows.map(function(row, idx){
+      return (
+        '<div class="player-chip">' +
+          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
+            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+        '</div>'
+      );
+    }).join('');
+    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
+    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
   }
 
-  rowsContainer.addEventListener('input', function(e){
-    var target = e.target;
-    if (!target.classList.contains('player-name-input')) return;
-    var idx = parseInt(target.getAttribute('data-index'), 10);
-    config.rows[idx].name = target.value;
-    normalizeTrailingSlot();
-    persistPlayers();
-
-    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+  function addPlayerFromDraft(){
+    var trimmed = playersDraftInput.value.trim();
+    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    config.rows.push({ name: trimmed, team: leastPopulatedTeam() });
+    playersDraftInput.value = '';
     renderPlayerRows();
-    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
-    if (restored){
-      restored.focus();
-      restored.setSelectionRange(selStart, selEnd);
-    }
+    persistPlayers();
     validateSetup();
+    playersDraftInput.focus();
+  }
+
+  playersDraftInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
   });
 
-  rowsContainer.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.row-remove-btn');
+  playersChipsList.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.player-chip-remove');
     if (!removeBtn || removeBtn.disabled) return;
     var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
     config.rows.splice(rIdx, 1);
-    normalizeTrailingSlot();
     renderPlayerRows();
     persistPlayers();
     validateSetup();
@@ -803,8 +782,6 @@
 
   function reassignTeamsAfterCountChange(){
     autoBalanceAllTeams();
-    var rows = config.rows;
-    if (rows.length && !rows[rows.length - 1].name.trim()) rows[rows.length - 1].team = leastPopulatedTeam();
     renderTeamBoxes();
     persistPlayers();
     validateSetup();
@@ -1204,7 +1181,6 @@
 
   // ---------- init ----------
   autoBalanceAllTeams();
-  normalizeTrailingSlot();
   renderTeamCount();
   renderPlayerRows();
   renderTeamBoxes();
