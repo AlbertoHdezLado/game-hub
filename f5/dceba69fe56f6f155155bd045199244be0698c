@@ -1,0 +1,14 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 288-291,699-700,708,724-725,758-760,768-770,773-777,779,781-785,788-789
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f5dceba69fe56f6f155155bd045199244be0698c",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
