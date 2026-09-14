@@ -1,0 +1,19 @@
+public/games/detective-club/index.html
+  s_b1ff257cae98fd::t_6f579bf0bbe2ff 141-151,167-171,173-190,192-194,256-259,261-263,265-267,283-285,287-289,318-324,328-336,351-354,356,358-360,362-364,378-381,383-385,387-389,422,457-458,464-465,467,470-472,474-477,480-482,514,527-531,533,535-539,542-543
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "eaf99a4f023d1148a416c37b3e113f1739846e2e",
+  "prompts": {},
+  "sessions": {
+    "s_b1ff257cae98fd": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "41c2c35d-6eba-44ac-acac-588ac6303e1c",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
