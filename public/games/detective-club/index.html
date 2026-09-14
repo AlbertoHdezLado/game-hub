@@ -138,6 +138,17 @@
   /* ---- pass-to-vote gate (mirrors the reveal card's "tap to see" gesture,
      but for a per-detective private vote instead of a static role reveal) ---- */
   #vote-gate .btn-main{margin-top:6px;}
+
+  /* screen-vote has two toggleable sub-stages, each with its own
+     scr-body/scr-dock pair — chain the flex column so the dock stays
+     pinned to the bottom of the screen instead of sitting right under
+     whichever content happens to be short */
+  #vote-reveal-stage, #vote-result-stage{
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+  }
 </style>
 </head>
 <body>
@@ -153,27 +164,34 @@
       <h1>DETECTIVE CLUB</h1>
       <p class="subtitle">Necesitas una baraja de cartas Dixit físicas para jugar</p>
 
-      <label><span class="label-icon">🕵️</span>Jugadores</label>
-      <div id="dc-players-list"></div>
-      <div class="error-msg" id="dc-players-error"></div>
-
-      <div class="count-info" id="dc-count-info"></div>
-      <div class="warn-note hidden" id="dc-players-warn">Se recomiendan hasta 8 jugadores para partidas más dinámicas.</div>
-
-      <details class="setup-optional">
-        <summary>Ajustes adicionales</summary>
-        <div class="setup-optional-content">
-          <label><span class="label-icon">🔁</span>Vueltas</label>
-          <div class="stepper">
-            <button type="button" id="laps-minus">−</button>
-            <div class="value" id="laps-value">1</div>
-            <button type="button" id="laps-plus">+</button>
-          </div>
-          <p class="count-info">Cuántas veces es cada jugador el jugador activo.</p>
+      <div class="scr-body">
+        <label><span class="label-icon">🕵️</span>Jugadores</label>
+        <div class="player-chips-list" id="dc-players-chips"></div>
+        <div class="player-input-row">
+          <input type="text" class="player-name-input" id="dc-players-draft" placeholder="Nombre del jugador..." maxlength="20">
         </div>
-      </details>
+        <div class="error-msg" id="dc-players-error"></div>
 
-      <button class="btn-main" id="dc-start-btn" disabled>Iniciar partida</button>
+        <div class="count-info" id="dc-count-info"></div>
+        <div class="warn-note hidden" id="dc-players-warn">Se recomiendan hasta 8 jugadores para partidas más dinámicas.</div>
+
+        <details class="setup-optional">
+          <summary>Ajustes adicionales</summary>
+          <div class="setup-optional-content">
+            <label><span class="label-icon">🔁</span>Vueltas</label>
+            <div class="stepper">
+              <button type="button" id="laps-minus">−</button>
+              <div class="value" id="laps-value">1</div>
+              <button type="button" id="laps-plus">+</button>
+            </div>
+            <p class="count-info">Cuántas veces es cada jugador el jugador activo.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="scr-dock">
+        <button class="btn-main" id="dc-start-btn" disabled>Iniciar partida</button>
+      </div>
     </div>
   </div>
 
@@ -235,14 +253,18 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <div class="player-badge" id="word-badge">TU TURNO</div>
-      <div class="player-name" id="word-name">1</div>
-      <div class="pass-hint">Pasa el dispositivo a este jugador. Solo debe mirarlo él o ella.</div>
+      <div class="scr-body">
+        <div class="player-badge" id="word-badge">TU TURNO</div>
+        <div class="player-name" id="word-name">1</div>
+        <div class="pass-hint">Pasa el dispositivo a este jugador. Solo debe mirarlo él o ella.</div>
 
-      <label><span class="label-icon">🎴</span>Elige una carta de Dixit y escribe una palabra o pista que la describa</label>
-      <input type="text" id="word-input" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
+        <label><span class="label-icon">🎴</span>Elige una carta de Dixit y escribe una palabra o pista que la describa</label>
+        <input type="text" id="word-input" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
+      </div>
 
-      <button class="btn-main" id="word-confirm-btn" disabled>Confirmar y empezar ronda</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="word-confirm-btn" disabled>Confirmar y empezar ronda</button>
+      </div>
     </div>
   </div>
 
@@ -258,9 +280,13 @@
       </div>
       <p class="subtitle">Toca tu nombre para ver tu carta. Nadie más debe mirar.</p>
 
-      <div class="roster-list" id="reveal-roster"></div>
+      <div class="scr-body">
+        <div class="roster-list" id="reveal-roster"></div>
+      </div>
 
-      <button class="btn-main" id="reveal-continue-btn" disabled>Continuar</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="reveal-continue-btn" disabled>Continuar</button>
+      </div>
     </div>
   </div>
 
@@ -289,17 +315,25 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div id="vote-reveal-stage">
-        <p class="subtitle">Debatid en voz alta y votad a mano alzada</p>
-        <p class="pass-hint">Cuando el grupo termine de votar, revela al conspirador.</p>
-        <button class="btn-main" id="vote-reveal-conspirador-btn">🔎 Revelar conspirador</button>
+        <div class="scr-body">
+          <p class="subtitle">Debatid en voz alta y votad a mano alzada</p>
+          <p class="pass-hint">Cuando el grupo termine de votar, revela al conspirador.</p>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main" id="vote-reveal-conspirador-btn">🔎 Revelar conspirador</button>
+        </div>
       </div>
 
       <div id="vote-result-stage" class="hidden">
-        <div class="result-icon">🎭</div>
-        <div class="result-title" id="vote-conspirador-name"></div>
-        <label><span class="label-icon">🗳️</span>¿Quién votó por el conspirador?</label>
-        <div class="chip-list" id="voter-select-list"></div>
-        <button class="btn-main" id="voter-select-confirm-btn">Confirmar votos</button>
+        <div class="scr-body">
+          <div class="result-icon">🎭</div>
+          <div class="result-title" id="vote-conspirador-name"></div>
+          <label><span class="label-icon">🗳️</span>¿Quién votó por el conspirador?</label>
+          <div class="chip-list" id="voter-select-list"></div>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main" id="voter-select-confirm-btn">Confirmar votos</button>
+        </div>
       </div>
     </div>
   </div>
@@ -314,16 +348,20 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <div class="result-icon" id="result-icon">🕵️</div>
-      <div class="result-title" id="result-title"></div>
-      <p class="subtitle" id="result-detail" style="margin-bottom:14px;"></p>
+      <div class="scr-body">
+        <div class="result-icon" id="result-icon">🕵️</div>
+        <div class="result-title" id="result-title"></div>
+        <p class="subtitle" id="result-detail" style="margin-bottom:14px;"></p>
 
-      <div class="result-deltas" id="result-deltas"></div>
+        <div class="result-deltas" id="result-deltas"></div>
 
-      <label><span class="label-icon">🏆</span>Marcador</label>
-      <div id="result-scoreboard"></div>
+        <label><span class="label-icon">🏆</span>Marcador</label>
+        <div id="result-scoreboard"></div>
+      </div>
 
-      <button class="btn-main" id="result-next-btn">Siguiente ronda</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="result-next-btn">Siguiente ronda</button>
+      </div>
     </div>
   </div>
 
@@ -337,14 +375,18 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <div class="end-icon">🏆</div>
-      <h1 style="font-size:1.6rem;">PARTIDA TERMINADA</h1>
-      <p class="subtitle" id="final-detail"></p>
+      <div class="scr-body">
+        <div class="end-icon">🏆</div>
+        <h1 style="font-size:1.6rem;">PARTIDA TERMINADA</h1>
+        <p class="subtitle" id="final-detail"></p>
 
-      <label><span class="label-icon">🏆</span>Marcador final</label>
-      <div id="final-scoreboard"></div>
+        <label><span class="label-icon">🏆</span>Marcador final</label>
+        <div id="final-scoreboard"></div>
+      </div>
 
-      <button class="btn-main" id="final-restart-btn">Nueva partida</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="final-restart-btn">Nueva partida</button>
+      </div>
     </div>
   </div>
 
@@ -377,7 +419,7 @@
 
   var config = {
     laps: 1,
-    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; }).concat([{ name: "" }])
+    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; })
   };
 
   function persistPlayers(){
@@ -412,51 +454,32 @@
   }
 
   // ---------- setup screen ----------
-  var rowsContainer = document.getElementById('dc-players-list');
+  var playersChipsList = document.getElementById('dc-players-chips');
+  var playersDraftInput = document.getElementById('dc-players-draft');
   var playersErrorEl = document.getElementById('dc-players-error');
   var countInfoEl = document.getElementById('dc-count-info');
   var playersWarnEl = document.getElementById('dc-players-warn');
   var startBtn = document.getElementById('dc-start-btn');
 
+  // players are only added once a non-empty name is committed from the draft input;
+  // config.rows never carries an empty slot, so effectivePlayerCount is just rows.length.
   function effectivePlayerCount(rows){
-    var n = rows.length;
-    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
-    return n;
-  }
-
-  function rowHtml(row, idx, rows){
-    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
-    if (isTrailingSlot){
-      return (
-        '<div class="player-row">' +
-          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '</div>'
-      );
-    }
-    return (
-      '<div class="player-row">' +
-        '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-          'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
-          (effectivePlayerCount(rows) <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
-      '</div>'
-    );
+    return rows.length;
   }
 
   function renderRows(){
     var rows = config.rows;
-    rowsContainer.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
-  }
-
-  function normalizeTrailingSlot(){
-    var rows = config.rows;
-    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
-      rows.pop();
-    }
-    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
-      rows.push({ name: "" });
-    }
+    playersChipsList.innerHTML = rows.map(function(row, idx){
+      return (
+        '<div class="player-chip">' +
+          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
+            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+        '</div>'
+      );
+    }).join('');
+    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
+    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
   }
 
   function describeSetup(n){
@@ -488,9 +511,7 @@
   function validateSetup(){
     var rows = config.rows;
     var msgs = [];
-    var hasEmptyName = rows.some(function(r, idx){ return idx !== rows.length - 1 && !r.name.trim(); });
-    if (hasEmptyName) msgs.push("Todos los jugadores necesitan un nombre.");
-    else if (hasDuplicatePlayerNames(rows)) msgs.push("No puede haber dos jugadores con el mismo nombre.");
+    if (hasDuplicatePlayerNames(rows)) msgs.push("No puede haber dos jugadores con el mismo nombre.");
 
     var players = effectivePlayerCount(rows);
     if (players < MIN_PLAYERS || players > MAX_PLAYERS) msgs.push("Necesitas entre " + MIN_PLAYERS + " y " + MAX_PLAYERS + " jugadores.");
@@ -503,30 +524,26 @@
     return valid;
   }
 
-  rowsContainer.addEventListener('input', function(e){
-    var target = e.target;
-    if (!target.classList.contains('player-name-input')) return;
-    var idx = parseInt(target.getAttribute('data-index'), 10);
-    config.rows[idx].name = target.value;
-    normalizeTrailingSlot();
-    persistPlayers();
-
-    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+  function addPlayerFromDraft(){
+    var trimmed = playersDraftInput.value.trim();
+    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    config.rows.push({ name: trimmed });
+    playersDraftInput.value = '';
     renderRows();
-    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
-    if (restored){
-      restored.focus();
-      restored.setSelectionRange(selStart, selEnd);
-    }
+    persistPlayers();
     validateSetup();
+    playersDraftInput.focus();
+  }
+
+  playersDraftInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
   });
 
-  rowsContainer.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.row-remove-btn');
+  playersChipsList.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.player-chip-remove');
     if (removeBtn && !removeBtn.disabled){
       var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
       config.rows.splice(rIdx, 1);
-      normalizeTrailingSlot();
       renderRows();
       persistPlayers();
       validateSetup();

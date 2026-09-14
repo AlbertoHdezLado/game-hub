@@ -180,6 +180,12 @@
     font-size:0.85rem;
     margin:0 0 10px;
   }
+  #vote-section, #vote-result{
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+  }
 </style>
 </head>
 <body>
@@ -194,83 +200,89 @@
       </div>
       <h1>IMPOSTOR</h1>
 
-      <div id="setup-step-players">
-        <label><span class="label-icon">👥</span>Jugadores</label>
-        <div id="impostor-players-list"></div>
-        <div class="error-msg" id="impostor-players-error"></div>
-      </div>
-
-      <div class="night-nav" id="setup-nav">
-        <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
-        <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
-      </div>
-
-      <div id="setup-step-settings" class="hidden">
-        <div class="submode-toggle">
-          <button type="button" class="submode-btn" id="submode-random-btn">Aleatoria</button>
-          <button type="button" class="submode-btn" id="submode-custom-btn">Personalizada</button>
-        </div>
-
-        <div id="custom-word-wrap">
-          <label for="word-input-imp"><span class="label-icon">🗣️</span>Palabra secreta</label>
-          <input type="text" id="word-input-imp" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
-          <p class="count-info">🎲 La app asigna el impostor al azar entre los jugadores.</p>
-
-          <div id="custom-random-count-wrap" class="hidden">
-            <label><span class="label-icon">🎭</span>Número de impostores</label>
-            <div class="stepper">
-              <button type="button" id="custom-impostors-minus">−</button>
-              <div class="value" id="custom-impostors-value">1</div>
-              <button type="button" id="custom-impostors-plus">+</button>
-            </div>
+      <div class="scr-body">
+        <div id="setup-step-players">
+          <label><span class="label-icon">👥</span>Jugadores</label>
+          <div class="player-chips-list" id="impostor-players-chips"></div>
+          <div class="player-input-row">
+            <input type="text" class="player-name-input" id="impostor-players-draft" placeholder="Nombre del jugador..." maxlength="20">
           </div>
+          <div class="error-msg" id="impostor-players-error"></div>
         </div>
 
-        <details class="setup-optional">
-          <summary>Ajustes adicionales</summary>
-          <div class="setup-optional-content">
-            <div id="random-config-wrap" class="hidden">
-              <label><span class="label-icon">📦</span>Paquetes</label>
-              <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
-                <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona paquetes</span>
-                <span class="packages-dropdown-chevron">▾</span>
-              </button>
-              <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
-                <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todos</button>
-                <div class="chip-list" id="package-list"></div>
+        <div id="setup-step-settings" class="hidden">
+          <div class="submode-toggle">
+            <button type="button" class="submode-btn" id="submode-random-btn">Aleatoria</button>
+            <button type="button" class="submode-btn" id="submode-custom-btn">Personalizada</button>
+          </div>
+
+          <div id="custom-word-wrap">
+            <label for="word-input-imp"><span class="label-icon">🗣️</span>Palabra secreta</label>
+            <input type="text" id="word-input-imp" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
+            <p class="count-info">🎲 La app asigna el impostor al azar entre los jugadores.</p>
+
+            <div id="custom-random-count-wrap" class="hidden">
+              <label><span class="label-icon">🎭</span>Número de impostores</label>
+              <div class="stepper">
+                <button type="button" id="custom-impostors-minus">−</button>
+                <div class="value" id="custom-impostors-value">1</div>
+                <button type="button" id="custom-impostors-plus">+</button>
               </div>
             </div>
+          </div>
 
-            <label><span class="label-icon">⏱️</span>Tiempo para debatir</label>
-            <div class="stepper">
-              <button type="button" id="debate-minutes-minus">−</button>
-              <div class="value" id="debate-minutes-value">Sin límite</div>
-              <button type="button" id="debate-minutes-plus">+</button>
+          <details class="setup-optional">
+            <summary>Ajustes adicionales</summary>
+            <div class="setup-optional-content">
+              <div id="random-config-wrap" class="hidden">
+                <label><span class="label-icon">📦</span>Paquetes</label>
+                <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
+                  <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona paquetes</span>
+                  <span class="packages-dropdown-chevron">▾</span>
+                </button>
+                <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
+                  <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todos</button>
+                  <div class="chip-list" id="package-list"></div>
+                </div>
+              </div>
+
+              <label><span class="label-icon">⏱️</span>Tiempo para debatir</label>
+              <div class="stepper">
+                <button type="button" id="debate-minutes-minus">−</button>
+                <div class="value" id="debate-minutes-value">Sin límite</div>
+                <button type="button" id="debate-minutes-plus">+</button>
+              </div>
             </div>
-          </div>
-        </details>
+          </details>
 
-        <div id="random-impostors-wrap" class="hidden">
-          <label><span class="label-icon">🎭</span>Número de impostores</label>
-          <div class="stepper">
-            <button type="button" id="random-impostors-minus">−</button>
-            <div class="value" id="random-impostors-value">1</div>
-            <button type="button" id="random-impostors-plus">+</button>
+          <div id="random-impostors-wrap" class="hidden">
+            <label><span class="label-icon">🎭</span>Número de impostores</label>
+            <div class="stepper">
+              <button type="button" id="random-impostors-minus">−</button>
+              <div class="value" id="random-impostors-value">1</div>
+              <button type="button" id="random-impostors-plus">+</button>
+            </div>
+
+            <label><span class="label-icon">💡</span>Modo de juego</label>
+            <div class="submode-toggle" id="impostor-mode-toggle">
+              <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
+              <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
+              <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">Mr. Blanco</button>
+            </div>
+            <p class="count-info" id="impostor-mode-desc"></p>
           </div>
 
-          <label><span class="label-icon">💡</span>Modo de juego</label>
-          <div class="submode-toggle" id="impostor-mode-toggle">
-            <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
-            <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
-            <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">Mr. Blanco</button>
-          </div>
-          <p class="count-info" id="impostor-mode-desc"></p>
+          <div class="count-info" id="impostor-count-info"></div>
+          <div class="error-msg" id="impostor-setup-error"></div>
         </div>
+      </div>
 
-        <div class="count-info" id="impostor-count-info"></div>
-        <div class="error-msg" id="impostor-setup-error"></div>
-
-        <div class="final-nav">
+      <div class="scr-dock">
+        <div class="night-nav" id="setup-nav">
+          <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
+        </div>
+        <div class="final-nav hidden" id="setup-final-nav">
           <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
           <button class="btn-main" id="impostor-start-btn">Iniciar partida</button>
         </div>
@@ -324,9 +336,13 @@
       </div>
       <p class="subtitle">Toca tu nombre para ver tu rol. Nadie más debe mirar.</p>
 
-      <div class="roster-list" id="reveal-roster"></div>
+      <div class="scr-body">
+        <div class="roster-list" id="reveal-roster"></div>
+      </div>
 
-      <button class="btn-main" id="reveal-continue-btn" disabled>Empezar debate</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="reveal-continue-btn" disabled>Empezar debate</button>
+      </div>
     </div>
   </div>
 
@@ -377,16 +393,24 @@
       </div>
 
       <div id="vote-section">
-        <label>¿Quién creéis que es el impostor?</label>
-        <div id="vote-players-list"></div>
-        <button class="btn-main" id="confirm-vote-btn" disabled>Comprobar</button>
+        <div class="scr-body">
+          <label>¿Quién creéis que es el impostor?</label>
+          <div id="vote-players-list"></div>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main" id="confirm-vote-btn" disabled>Comprobar</button>
+        </div>
       </div>
 
       <div id="vote-result" class="hidden">
-        <div class="vote-result-icon" id="vote-result-icon">🎭</div>
-        <div class="vote-result-title" id="vote-result-title"></div>
-        <p class="subtitle" id="vote-result-detail"></p>
-        <button class="btn-main" id="vote-next-btn">Siguiente</button>
+        <div class="scr-body">
+          <div class="vote-result-icon" id="vote-result-icon">🎭</div>
+          <div class="vote-result-title" id="vote-result-title"></div>
+          <p class="subtitle" id="vote-result-detail"></p>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main" id="vote-next-btn">Siguiente</button>
+        </div>
       </div>
     </div>
   </div>
@@ -421,7 +445,7 @@
     impostorMode: "none", // 'none' | 'hint' | 'mrblanco'
     debateMinutes: 0, // 0 = sin límite
     selectedPackages: [],
-    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; }).concat([{ name: "" }])
+    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; })
   };
 
   function persistPlayers(){
@@ -502,7 +526,8 @@
   var customImpostorsMinus = document.getElementById('custom-impostors-minus');
   var customImpostorsPlus = document.getElementById('custom-impostors-plus');
   var customImpostorsValue = document.getElementById('custom-impostors-value');
-  var rowsContainer = document.getElementById('impostor-players-list');
+  var playersChipsList = document.getElementById('impostor-players-chips');
+  var playersDraftInput = document.getElementById('impostor-players-draft');
   var impostorCountInfo = document.getElementById('impostor-count-info');
   var setupError = document.getElementById('impostor-setup-error');
   var playersErrorEl = document.getElementById('impostor-players-error');
@@ -513,6 +538,7 @@
   var setupPrevBtn = document.getElementById('setup-prev-btn');
   var setupNextBtn = document.getElementById('setup-next-btn');
   var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
+  var setupFinalNavEl = document.getElementById('setup-final-nav');
 
   // 0 = jugadores, 1 = resto de ajustes — separate steps with explicit
   // forward/back navigation instead of one long scrolling form
@@ -521,6 +547,7 @@
     setupStepPlayersEl.classList.toggle('hidden', setupStep !== 0);
     setupStepSettingsEl.classList.toggle('hidden', setupStep !== 1);
     setupNavEl.classList.toggle('hidden', setupStep === 1);
+    setupFinalNavEl.classList.toggle('hidden', setupStep !== 1);
     setupPrevBtn.classList.toggle('hidden', setupStep === 0);
   }
   setupPrevBtn.addEventListener('click', function(){
@@ -587,78 +614,49 @@
     popValue(debateMinutesValue);
   });
 
-  // No "add player" button: the last row is always an empty slot, and
-  // filling it grows the list automatically (see normalizeTrailingSlot).
+  // players are only added once a non-empty name is committed from the draft input;
+  // config.rows never carries an empty slot, so effectivePlayerCount is just rows.length.
   function effectivePlayerCount(rows){
-    var n = rows.length;
-    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
-    return n;
-  }
-
-  function rowHtml(row, idx, rows){
-    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
-    if (isTrailingSlot){
-      return (
-        '<div class="player-row">' +
-          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '</div>'
-      );
-    }
-    return (
-      '<div class="player-row">' +
-        '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-          'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
-          (effectivePlayerCount(rows) <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
-      '</div>'
-    );
+    return rows.length;
   }
 
   function renderRows(){
     var rows = config.rows;
-    rowsContainer.innerHTML = rows.map(function(row, idx){
-      return rowHtml(row, idx, rows);
+    playersChipsList.innerHTML = rows.map(function(row, idx){
+      return (
+        '<div class="player-chip">' +
+          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
+            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+        '</div>'
+      );
     }).join('');
+    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
+    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
   }
 
-  // keeps exactly one empty row at the end, ready for the next player
-  function normalizeTrailingSlot(){
-    var rows = config.rows;
-    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
-      rows.pop();
-    }
-    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
-      rows.push({ name: "" });
-    }
-  }
-
-  rowsContainer.addEventListener('input', function(e){
-    var target = e.target;
-    if (!target.classList.contains('player-name-input')) return;
-    var idx = parseInt(target.getAttribute('data-index'), 10);
-    config.rows[idx].name = target.value;
-    normalizeTrailingSlot();
-    persistPlayers();
-
-    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+  function addPlayerFromDraft(){
+    var trimmed = playersDraftInput.value.trim();
+    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    config.rows.push({ name: trimmed });
+    playersDraftInput.value = '';
     renderRows();
     refreshRandomImpostorBounds();
     refreshCustomImpostorBounds();
-    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
-    if (restored){
-      restored.focus();
-      restored.setSelectionRange(selStart, selEnd);
-    }
+    persistPlayers();
     validateSetup();
+    playersDraftInput.focus();
+  }
+
+  playersDraftInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
   });
 
-  rowsContainer.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.row-remove-btn');
+  playersChipsList.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.player-chip-remove');
     if (removeBtn && !removeBtn.disabled){
       var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
       config.rows.splice(rIdx, 1);
-      normalizeTrailingSlot();
       renderRows();
       refreshRandomImpostorBounds();
       refreshCustomImpostorBounds();
@@ -836,9 +834,7 @@
   function validateSetup(){
     var rows = config.rows;
     var playerMsgs = [];
-    var hasEmptyName = rows.some(function(r, idx){ return idx !== rows.length - 1 && !r.name.trim(); });
-    if (hasEmptyName) playerMsgs.push("Todos los jugadores necesitan un nombre.");
-    else if (hasDuplicatePlayerNames(rows)) playerMsgs.push("No puede haber dos jugadores con el mismo nombre.");
+    if (hasDuplicatePlayerNames(rows)) playerMsgs.push("No puede haber dos jugadores con el mismo nombre.");
 
     var players = effectivePlayerCount(rows);
     if (players < MIN_PLAYERS) playerMsgs.push("Necesitas al menos " + MIN_PLAYERS + " jugadores.");

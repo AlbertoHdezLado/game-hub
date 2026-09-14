@@ -133,22 +133,18 @@
     font-size:0.9rem;
     letter-spacing:0.5px;
   }
-  /* ---- persistent team bar: every team's insignia progress, always visible on screen-game ---- */
+  /* ---- persistent team bar: every team's insignia progress, always visible
+     on screen-game — sits right below the app bar as its own fixed strip,
+     never scrolls away with the question ---- */
   .tv-team-bar{
-    position:sticky;
-    top:0;
-    z-index:5;
+    flex:0 0 auto;
     display:flex;
     flex-wrap:wrap;
     gap:6px 10px;
     justify-content:center;
-    padding:10px 22px;
-    margin:-26px -22px 16px;
-    border-radius:24px 24px 0 0;
-    background:var(--glass);
+    padding:0 0 12px;
+    margin-bottom:6px;
     border-bottom:1px solid var(--glass-border);
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
   }
   .tv-team-bar-item{
     display:flex;
@@ -177,6 +173,12 @@
   }
   .tv-team-bar-wedge.won{opacity:1; filter:none;}
   .tv-team-bar-wedge.wedge-pop{animation:wedgePop 0.6s ease;}
+  #turn-play{
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+  }
   @keyframes wedgePop{
     0%{ transform:scale(0.3); box-shadow:0 0 0 0 rgba(255,255,255,0.9); }
     50%{ transform:scale(1.4); box-shadow:0 0 12px 4px rgba(255,255,255,0.75); }
@@ -359,36 +361,39 @@
       </div>
       <h1>TRIVIAL PURSUIT</h1>
 
-      <div id="setup-step-players">
-        <label><span class="label-icon">👥</span>Jugadores</label>
-        <div id="players-list"></div>
-        <div class="error-msg" id="players-error"></div>
+      <div class="scr-body">
+        <div id="setup-step-players">
+          <label><span class="label-icon">👥</span>Jugadores</label>
+          <div id="players-list"></div>
+          <div class="error-msg" id="players-error"></div>
+        </div>
+
+        <div id="setup-step-teams" class="hidden">
+          <label><span class="label-icon">🎯</span>Equipos</label>
+          <div class="stepper">
+            <button type="button" id="team-count-minus">−</button>
+            <div class="value" id="team-count-value">2</div>
+            <button type="button" id="team-count-plus">+</button>
+          </div>
+          <div class="team-boxes-header">
+            <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
+          </div>
+          <div id="team-boxes"></div>
+          <div class="error-msg" id="teams-error"></div>
+
+          <div class="error-msg" id="setup-error"></div>
+        </div>
       </div>
 
-      <div id="setup-step-teams" class="hidden">
-        <label><span class="label-icon">🎯</span>Equipos</label>
-        <div class="stepper">
-          <button type="button" id="team-count-minus">−</button>
-          <div class="value" id="team-count-value">2</div>
-          <button type="button" id="team-count-plus">+</button>
+      <div class="scr-dock">
+        <div class="night-nav" id="setup-nav">
+          <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
         </div>
-        <div class="team-boxes-header">
-          <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
-        </div>
-        <div id="team-boxes"></div>
-        <div class="error-msg" id="teams-error"></div>
-
-        <div class="error-msg" id="setup-error"></div>
-
-        <div class="final-nav">
+        <div class="final-nav hidden" id="setup-final-nav">
           <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
           <button class="btn-main" id="start-btn">Iniciar partida</button>
         </div>
-      </div>
-
-      <div class="night-nav" id="setup-nav">
-        <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
-        <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
       </div>
     </div>
   </div>
@@ -419,7 +424,6 @@
   <!-- GAME SCREEN: team turn, question + options -->
   <div class="screen hidden" id="screen-game">
     <div class="card">
-      <div class="tv-team-bar" id="tv-team-bar"></div>
       <div class="setup-header">
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
@@ -428,13 +432,18 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
+      <div class="tv-team-bar" id="tv-team-bar"></div>
 
       <!-- ACTIVE PLAY: question + options -->
       <div id="turn-play" class="hidden">
-        <div class="tv-category-current" id="tv-category-current"></div>
-        <div class="tv-question" id="tv-question">Pregunta</div>
-        <div class="tv-options" id="tv-options"></div>
-        <button class="btn-main hidden" id="turn-continue-btn">Continuar</button>
+        <div class="scr-body">
+          <div class="tv-category-current" id="tv-category-current"></div>
+          <div class="tv-question" id="tv-question">Pregunta</div>
+          <div class="tv-options" id="tv-options"></div>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main hidden" id="turn-continue-btn">Continuar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -467,9 +476,13 @@
       </div>
       <div class="end-icon">🏆</div>
       <h1 style="font-size:1.6rem;" id="end-title">RESULTADOS</h1>
-      <p class="subtitle" id="end-subtitle"></p>
-      <div id="end-scoreboard"></div>
-      <button class="btn-main" id="new-round-btn">Nueva partida</button>
+      <div class="scr-body">
+        <p class="subtitle" id="end-subtitle"></p>
+        <div id="end-scoreboard"></div>
+      </div>
+      <div class="scr-dock">
+        <button class="btn-main" id="new-round-btn">Nueva partida</button>
+      </div>
     </div>
   </div>
 
@@ -577,6 +590,7 @@
   var setupStepPlayersEl = document.getElementById('setup-step-players');
   var setupStepTeamsEl = document.getElementById('setup-step-teams');
   var setupNavEl = document.getElementById('setup-nav');
+  var setupFinalNavEl = document.getElementById('setup-final-nav');
   var setupPrevBtn = document.getElementById('setup-prev-btn');
   var setupNextBtn = document.getElementById('setup-next-btn');
   var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
@@ -587,6 +601,7 @@
     setupStepPlayersEl.classList.toggle('hidden', setupStep !== 0);
     setupStepTeamsEl.classList.toggle('hidden', setupStep !== 1);
     setupNavEl.classList.toggle('hidden', setupStep === 1);
+    setupFinalNavEl.classList.toggle('hidden', setupStep !== 1);
     setupPrevBtn.classList.toggle('hidden', setupStep === 0);
     if (setupStep === 1) renderTeamBoxes();
   }

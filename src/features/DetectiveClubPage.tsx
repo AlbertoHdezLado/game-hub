@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
 import { ScreenHeader } from '@/components/shared/ScreenHeader';
 import { GuideModal } from '@/components/shared/GuideModal';
-import { PlayerNameRows } from '@/components/shared/PlayerNameRows';
+import { PlayerInput } from '@/components/ui/PlayerInput';
 import { RevealCard, RevealButton } from '@/components/shared/RevealCard';
-import { effectivePlayerCount, effectivePlayerNames, hasDuplicatePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/shared';
+import { hasDuplicatePlayerNames, loadSavedPlayerNames, savePlayerNames } from '@/lib/shared';
 import { pickRandom, randomInt } from '@/lib/random';
 import '@/styles/games/detective-club.css';
 
@@ -35,7 +35,7 @@ function describeSetup(n: number, laps: number): string {
 }
 
 export function DetectiveClubPage() {
-  const [rows, setRows] = useState<string[]>(() => normalizeTrailingSlot(loadSavedPlayerNames().slice(0, MAX_PLAYERS), MAX_PLAYERS));
+  const [names, setNames] = useState<string[]>(() => loadSavedPlayerNames().slice(0, MAX_PLAYERS));
   const [laps, setLaps] = useState(1);
   const [helpOpen, setHelpOpen] = useState(false);
   const [screen, setScreen] = useState<Screen>('setup');
@@ -61,15 +61,14 @@ export function DetectiveClubPage() {
 
   const [resultData, setResultData] = useState<{ caught: boolean; detail: string; deltas: Record<number, number>; isLast: boolean } | null>(null);
 
-  function updateRows(next: string[]) {
-    setRows(next);
-    savePlayerNames(effectivePlayerNames(next));
+  function updateNames(next: string[]) {
+    setNames(next);
+    savePlayerNames(next);
   }
 
-  const playerCount = effectivePlayerCount(rows);
-  const hasEmptyName = rows.some((name, idx) => idx !== rows.length - 1 && !name.trim());
-  const hasDuplicates = hasDuplicatePlayerNames(rows);
-  const playersValid = !hasEmptyName && !hasDuplicates && playerCount >= MIN_PLAYERS && playerCount <= MAX_PLAYERS;
+  const playerCount = names.length;
+  const hasDuplicates = hasDuplicatePlayerNames(names);
+  const playersValid = !hasDuplicates && playerCount >= MIN_PLAYERS && playerCount <= MAX_PLAYERS;
 
   function startRound(sched: number[], r: number, names: string[]) {
     const n = names.length;
@@ -87,7 +86,6 @@ export function DetectiveClubPage() {
 
   function handleStart() {
     if (!playersValid) return;
-    const names = effectivePlayerNames(rows);
     const sched = buildActiveSchedule(names.length, laps);
     setPlayerNames(names);
     setScores(names.map(() => 0));
@@ -200,8 +198,8 @@ export function DetectiveClubPage() {
             <p className="subtitle">Necesitas una baraja de cartas Dixit físicas para jugar</p>
 
             <label><span className="label-icon">🕵️</span>Jugadores</label>
-            <PlayerNameRows rows={rows} onChange={updateRows} min={MIN_PLAYERS} max={MAX_PLAYERS} />
-            <div className="error-msg">{hasEmptyName ? 'Todos los jugadores necesitan un nombre.' : hasDuplicates ? 'No puede haber dos jugadores con el mismo nombre.' : (playerCount < MIN_PLAYERS || playerCount > MAX_PLAYERS) ? `Necesitas entre ${MIN_PLAYERS} y ${MAX_PLAYERS} jugadores.` : ''}</div>
+            <PlayerInput names={names} onChange={updateNames} min={MIN_PLAYERS} max={MAX_PLAYERS} />
+            <div className="error-msg">{hasDuplicates ? 'No puede haber dos jugadores con el mismo nombre.' : (playerCount < MIN_PLAYERS || playerCount > MAX_PLAYERS) ? `Necesitas entre ${MIN_PLAYERS} y ${MAX_PLAYERS} jugadores.` : ''}</div>
             <div className="count-info">{describeSetup(playerCount, laps)}</div>
             {playerCount > RECOMMENDED_MAX_PLAYERS && <div className="warn-note">Se recomiendan hasta 8 jugadores para partidas más dinámicas.</div>}
 

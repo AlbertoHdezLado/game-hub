@@ -2,10 +2,10 @@ import { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
 import { ScreenHeader } from '@/components/shared/ScreenHeader';
 import { GuideModal } from '@/components/shared/GuideModal';
-import { PlayerNameRows } from '@/components/shared/PlayerNameRows';
+import { PlayerInput } from '@/components/ui/PlayerInput';
 import { loadContent } from '@/lib/content';
 import { randomInt, shuffle } from '@/lib/random';
-import { effectivePlayerCount, effectivePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/shared';
+import { loadSavedPlayerNames, savePlayerNames } from '@/lib/shared';
 import '@/styles/games/picolo.css';
 
 const MIN_PLAYERS = 2;
@@ -58,7 +58,7 @@ function fillTemplate(tpl: string, playerNames: string[]): string {
 }
 
 export function PicoloPage() {
-  const [rows, setRows] = useState<string[]>(() => normalizeTrailingSlot(loadSavedPlayerNames().slice(0, MAX_PLAYERS), MAX_PLAYERS));
+  const [names, setNames] = useState<string[]>(() => loadSavedPlayerNames().slice(0, MAX_PLAYERS));
   const [cards, setCards] = useState<PicoloCard[] | null>(null);
   const [started, setStarted] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -90,14 +90,13 @@ export function PicoloPage() {
     }
   }, [text]);
 
-  function updateRows(next: string[]) {
-    setRows(next);
-    savePlayerNames(effectivePlayerNames(next));
+  function updateNames(next: string[]) {
+    setNames(next);
+    savePlayerNames(next);
   }
 
-  const playerCount = effectivePlayerCount(rows);
-  const hasEmptyName = rows.some((name, idx) => idx !== rows.length - 1 && !name.trim());
-  const canStart = !hasEmptyName && playerCount >= MIN_PLAYERS && cards !== null;
+  const playerCount = names.length;
+  const canStart = playerCount >= MIN_PLAYERS && cards !== null;
 
   function showRound(nextDeck: PicoloCard[], i: number, names: string[]) {
     const c = nextDeck[i];
@@ -123,7 +122,6 @@ export function PicoloPage() {
 
   function handleStart() {
     if (!canStart) return;
-    const names = effectivePlayerNames(rows);
     const initialDeck = shuffle(cards!);
     setPlayerNames(names);
     setDeck(initialDeck);
@@ -140,8 +138,8 @@ export function PicoloPage() {
             <ScreenHeader onHelp={() => setHelpOpen(true)} />
             <h1>PICOLO</h1>
             <label><span className="label-icon">👥</span>Jugadores</label>
-            <PlayerNameRows rows={rows} onChange={updateRows} min={MIN_PLAYERS} max={MAX_PLAYERS} />
-            <div className="error-msg">{hasEmptyName ? 'Todos los jugadores necesitan un nombre.' : playerCount < MIN_PLAYERS ? `Necesitas al menos ${MIN_PLAYERS} jugadores.` : !cards ? 'Cargando cartas…' : ''}</div>
+            <PlayerInput names={names} onChange={updateNames} min={MIN_PLAYERS} max={MAX_PLAYERS} />
+            <div className="error-msg">{playerCount < MIN_PLAYERS ? `Necesitas al menos ${MIN_PLAYERS} jugadores.` : !cards ? 'Cargando cartas…' : ''}</div>
             <button type="button" className="btn-main" disabled={!canStart} onClick={handleStart}>Iniciar partida</button>
           </div>
         </div>

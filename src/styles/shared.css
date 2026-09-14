@@ -47,6 +47,7 @@ img{
 }
 html{
   background-color:var(--bg2);
+  overflow-x:hidden;
 }
 html,body{
   height:100%;
@@ -210,7 +211,7 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
   margin-top:16px;
   border:none;
   border-radius:16px;
-  background:linear-gradient(90deg, var(--accent2), var(--accent));
+  background:var(--accent);
   color:#fff;
   font-size:1.05rem;
   font-weight:700;
@@ -959,43 +960,72 @@ button:focus-visible, input:focus-visible{
 }
 .suggestion-link:active{opacity:0.6;}
 
-/* ---- bare icon action buttons (correct/skip/foul: Taboo, Time's Up, Mímica)
-   — the svg itself is the tappable button, no boxed background around it ---- */
+/* ---- icon action buttons (correct/skip/foul: Taboo, Time's Up, Mímica)
+   — elongated pill/bar buttons spanning the dock for easy thumb-tapping ---- */
 .icon-action-row{
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+  gap:12px;
+  width:100%;
+}
+.icon-action-btn{
+  flex:1;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:32px;
-}
-.icon-action-btn{
-  border:none;
-  background:none;
-  padding:10px;
+  min-height:68px;
+  padding:12px 20px;
+  border-radius:18px;
+  border:1px solid var(--glass-border);
+  background:rgba(255,255,255,0.06);
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
+  transition:transform .12s, background-color .15s, border-color .15s;
 }
-.icon-action-btn:active{transform:scale(0.86);}
+.icon-action-btn:active{transform:scale(0.97);}
 .icon-action-icon{
   display:block;
-  width:52px;
-  height:52px;
+  width:42px;
+  height:42px;
   mask-repeat:no-repeat;
   mask-position:center;
   mask-size:contain;
   -webkit-mask-repeat:no-repeat;
   -webkit-mask-position:center;
   -webkit-mask-size:contain;
-  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+}
+.icon-action-correct{
+  background:rgba(143,217,172,0.14);
+  border-color:rgba(143,217,172,0.4);
+}
+.icon-action-correct:active{
+  background:rgba(143,217,172,0.26);
 }
 .icon-action-correct .icon-action-icon{
   background-color:#8fd9ac;
   mask-image:url('/resources/images/common/check.svg');
   -webkit-mask-image:url('/resources/images/common/check.svg');
 }
+.icon-action-error{
+  background:rgba(232,146,156,0.14);
+  border-color:rgba(232,146,156,0.4);
+}
+.icon-action-error:active{
+  background:rgba(232,146,156,0.26);
+}
 .icon-action-error .icon-action-icon{
   background-color:#e8929c;
   mask-image:url('/resources/images/common/error.svg');
   -webkit-mask-image:url('/resources/images/common/error.svg');
+}
+.icon-action-skip{
+  background:rgba(242,201,76,0.14);
+  border-color:rgba(242,201,76,0.4);
+}
+.icon-action-skip:active{
+  background:rgba(242,201,76,0.26);
 }
 .icon-action-skip .icon-action-icon{
   background-color:#f2c94c;

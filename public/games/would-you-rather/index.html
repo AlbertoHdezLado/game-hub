@@ -43,6 +43,11 @@
     margin:10px 0;
     letter-spacing:1px;
   }
+  #screen-setup .scr-body, #screen-game .scr-body{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
 </style>
 </head>
 <body>
@@ -56,9 +61,13 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <h1>¿QUÉ PREFERIRÍAS?</h1>
-      <p class="subtitle">Dos opciones al azar, sin ganadores ni puntos. Elige una en voz alta y debatid por qué.</p>
+      <div class="scr-body">
+        <p class="subtitle">Dos opciones al azar, sin ganadores ni puntos. Elige una en voz alta y debatid por qué.</p>
+      </div>
 
-      <button class="btn-main" id="start-btn">Iniciar partida</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="start-btn">Iniciar partida</button>
+      </div>
     </div>
   </div>
 
@@ -92,11 +101,15 @@
       </div>
       <p class="subtitle" style="margin-top:0;">¿Qué preferirías...?</p>
 
-      <div class="qpref-option qpref-option-a" id="qpref-option-a"></div>
-      <div class="qpref-divider">O</div>
-      <div class="qpref-option qpref-option-b" id="qpref-option-b"></div>
+      <div class="scr-body">
+        <div class="qpref-option qpref-option-a" id="qpref-option-a"></div>
+        <div class="qpref-divider">O</div>
+        <div class="qpref-option qpref-option-b" id="qpref-option-b"></div>
+      </div>
 
-      <button class="btn-main" id="next-btn">Siguiente</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="next-btn">Siguiente</button>
+      </div>
     </div>
   </div>
 

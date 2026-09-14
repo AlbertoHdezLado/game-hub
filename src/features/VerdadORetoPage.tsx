@@ -3,12 +3,12 @@ import { GameThemeProvider } from '@/components/GameThemeProvider';
 import { ScreenHeader } from '@/components/shared/ScreenHeader';
 import { GuideModal } from '@/components/shared/GuideModal';
 import { CategorySelector, type SelectableCategory } from '@/components/shared/CategorySelector';
-import { PlayerNameRows } from '@/components/shared/PlayerNameRows';
+import { PlayerInput } from '@/components/ui/PlayerInput';
 import { RevealCard } from '@/components/shared/RevealCard';
 import { ProgressDots } from '@/components/shared/ProgressDots';
 import { loadContent } from '@/lib/content';
 import { pickRandom } from '@/lib/random';
-import { effectivePlayerCount, effectivePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/shared';
+import { loadSavedPlayerNames, savePlayerNames } from '@/lib/shared';
 import '@/styles/games/verdad-o-reto.css';
 
 const MIN_PLAYERS = 2;
@@ -24,7 +24,7 @@ type Screen = 'setup' | 'game' | 'end';
 export function VerdadORetoPage() {
   const [categories, setCategories] = useState<TruthOrDareCategory[] | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [rows, setRows] = useState<string[]>(() => normalizeTrailingSlot(loadSavedPlayerNames().slice(0, MAX_PLAYERS), MAX_PLAYERS));
+  const [names, setNames] = useState<string[]>(() => loadSavedPlayerNames().slice(0, MAX_PLAYERS));
   const [setupStep, setSetupStep] = useState(0);
   const [screen, setScreen] = useState<Screen>('setup');
   const [helpOpen, setHelpOpen] = useState(false);
@@ -42,14 +42,13 @@ export function VerdadORetoPage() {
     });
   }, []);
 
-  function updateRows(next: string[]) {
-    setRows(next);
-    savePlayerNames(effectivePlayerNames(next));
+  function updateNames(next: string[]) {
+    setNames(next);
+    savePlayerNames(next);
   }
 
-  const playerCount = effectivePlayerCount(rows);
-  const hasEmptyName = rows.some((name, index) => index !== rows.length - 1 && !name.trim());
-  const playersValid = !hasEmptyName && playerCount >= MIN_PLAYERS;
+  const playerCount = names.length;
+  const playersValid = playerCount >= MIN_PLAYERS;
   const settingsValid = categories !== null && selectedIds.length > 0;
   const canStart = playersValid && settingsValid;
 
@@ -80,7 +79,6 @@ export function VerdadORetoPage() {
 
   function handleStart() {
     if (!canStart) return;
-    const names = effectivePlayerNames(rows);
     setPlayerNames(names);
     showPlayer(0);
     setScreen('game');
@@ -101,8 +99,8 @@ export function VerdadORetoPage() {
 
             <div hidden={setupStep !== 0}>
               <label><span className="label-icon">👥</span>Jugadores</label>
-              <PlayerNameRows rows={rows} onChange={updateRows} min={MIN_PLAYERS} max={MAX_PLAYERS} />
-              <div className="error-msg">{hasEmptyName ? 'Todos los jugadores necesitan un nombre.' : playerCount < MIN_PLAYERS ? `Necesitas al menos ${MIN_PLAYERS} jugadores.` : ''}</div>
+              <PlayerInput names={names} onChange={updateNames} min={MIN_PLAYERS} max={MAX_PLAYERS} />
+              <div className="error-msg">{playerCount < MIN_PLAYERS ? `Necesitas al menos ${MIN_PLAYERS} jugadores.` : ''}</div>
             </div>
 
             {setupStep === 0 && (

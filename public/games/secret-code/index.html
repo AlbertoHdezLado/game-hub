@@ -132,8 +132,6 @@
      dark instead of just washed-out */
   .cs-cell.cs-cell-covered{opacity:0.55; filter:brightness(0.35) saturate(0.6);}
 
-  .cs-key-btns{display:flex; gap:10px; margin-bottom:14px;}
-  .cs-key-btns .btn-main{margin-top:0; margin-bottom:0;}
   .cs-key-hide-btn{
     flex:1;
     padding:16px;
@@ -180,19 +178,38 @@
   }
   .cs-share-link-row .guide-btn{width:44px; height:44px; border-radius:14px; flex-shrink:0;}
 
-  .link-icon{
+  .share-icon{
     display:block;
     width:16px;
     height:16px;
     background-color:currentColor;
-    mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>');
-    -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>');
+    mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>');
+    -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>');
     mask-repeat:no-repeat;
     mask-position:center;
     mask-size:contain;
     -webkit-mask-repeat:no-repeat;
     -webkit-mask-position:center;
     -webkit-mask-size:contain;
+  }
+  .eye-icon{
+    display:block;
+    width:16px;
+    height:16px;
+    background-color:currentColor;
+    mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>');
+    -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>');
+    mask-repeat:no-repeat;
+    mask-position:center;
+    mask-size:contain;
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    -webkit-mask-size:contain;
+  }
+  #key-toggle-btn.key-visible{background:var(--accent); color:#fff;}
+  #key-toggle-btn.key-visible .eye-icon{
+    mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>');
+    -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>');
   }
 </style>
 </head>
@@ -208,31 +225,35 @@
       </div>
       <h1>CÓDIGO SECRETO</h1>
 
-      <label><span class="label-icon">🎯</span>Equipos</label>
-      <div class="stepper">
-        <button type="button" id="team-count-minus">−</button>
-        <div class="value" id="team-count-value">2</div>
-        <button type="button" id="team-count-plus">+</button>
+      <div class="scr-body">
+        <label><span class="label-icon">🎯</span>Equipos</label>
+        <div class="stepper">
+          <button type="button" id="team-count-minus">−</button>
+          <div class="value" id="team-count-value">2</div>
+          <button type="button" id="team-count-plus">+</button>
+        </div>
+
+        <details class="setup-optional">
+          <summary>Ajustes adicionales</summary>
+          <div class="setup-optional-content">
+            <label><span class="label-icon">🏷️</span>Categorías</label>
+            <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
+              <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
+              <span class="packages-dropdown-chevron">▾</span>
+            </button>
+            <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
+              <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
+              <div class="chip-list" id="package-list"></div>
+            </div>
+          </div>
+        </details>
+
+        <div class="error-msg" id="setup-error"></div>
       </div>
 
-      <details class="setup-optional">
-        <summary>Ajustes adicionales</summary>
-        <div class="setup-optional-content">
-          <label><span class="label-icon">🏷️</span>Categorías</label>
-          <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
-            <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
-            <span class="packages-dropdown-chevron">▾</span>
-          </button>
-          <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
-            <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
-            <div class="chip-list" id="package-list"></div>
-          </div>
-        </div>
-      </details>
-
-      <div class="error-msg" id="setup-error"></div>
-
-      <button class="btn-main" id="start-btn">Iniciar partida</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="start-btn">Iniciar partida</button>
+      </div>
     </div>
   </div>
 
@@ -278,16 +299,6 @@
     </div>
   </div>
 
-  <!-- NEW ROUND CONFIRM: shown before rerolling the board mid-match -->
-  <div class="guide-modal-backdrop hidden" id="new-round-confirm-backdrop">
-    <div class="guide-modal">
-      <h2>¿Nueva partida?</h2>
-      <p>Se perderá el tablero actual.</p>
-      <button class="btn-main" id="new-round-cancel-btn" style="margin-top:10px;">Seguir con esta partida</button>
-      <button type="button" class="cs-key-hide-btn" id="new-round-confirm-btn" style="margin-top:10px; width:100%;">Nueva partida</button>
-    </div>
-  </div>
-
   <!-- SHARE BOARD: QR + link for the rest of the players (no team/key info) -->
   <div class="guide-modal-backdrop hidden" id="share-modal-backdrop">
     <div class="guide-modal">
@@ -315,21 +326,17 @@
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" class="guide-btn ayuda-trigger" id="guide-btn-game" aria-label="Ayuda">?</button>
-          <button type="button" class="guide-btn" id="share-board-btn" aria-label="Compartir tablero"><span class="link-icon"></span></button>
+          <button type="button" class="guide-btn" id="key-toggle-btn" aria-label="Ver clave" aria-pressed="false"><span class="eye-icon"></span></button>
+          <button type="button" class="guide-btn" id="share-board-btn" aria-label="Compartir tablero"><span class="share-icon"></span></button>
         </div>
       </div>
-      <div class="cs-start-line" id="cs-start-line-top"></div>
+      <div class="scr-body">
+        <div class="cs-start-line" id="cs-start-line-top"></div>
 
-      <div class="cs-board" id="cs-board"></div>
+        <div class="cs-board" id="cs-board"></div>
 
-      <div class="cs-start-line" id="cs-start-line-bottom"></div>
-
-      <div class="cs-key-btns">
-        <button type="button" class="btn-main" id="show-key-btn" style="margin-bottom:0;">🔑 Ver clave</button>
-        <button type="button" class="cs-key-hide-btn hidden" id="hide-key-btn">Ocultar clave</button>
+        <div class="cs-start-line" id="cs-start-line-bottom"></div>
       </div>
-
-      <button class="btn-main" id="new-word-btn">🔄 Nueva partida</button>
     </div>
   </div>
 
@@ -506,19 +513,13 @@
   // ---------- game screen ----------
   var startLineEls = [document.getElementById('cs-start-line-top'), document.getElementById('cs-start-line-bottom')];
   var boardEl = document.getElementById('cs-board');
-  var showKeyBtn = document.getElementById('show-key-btn');
-  var hideKeyBtn = document.getElementById('hide-key-btn');
-  var newWordBtn = document.getElementById('new-word-btn');
+  var keyToggleBtn = document.getElementById('key-toggle-btn');
   var backToSetupBtn = document.getElementById('back-to-setup-btn');
   var keyWarningBackdrop = document.getElementById('key-warning-backdrop');
   var keyWarningOkBtn = document.getElementById('key-warning-ok-btn');
   var exitConfirmBackdrop = document.getElementById('exit-confirm-backdrop');
   var exitConfirmBtn = document.getElementById('exit-confirm-btn');
   var exitCancelBtn = document.getElementById('exit-cancel-btn');
-  var newRoundConfirmBackdrop = document.getElementById('new-round-confirm-backdrop');
-  var newRoundConfirmBtn = document.getElementById('new-round-confirm-btn');
-  var newRoundCancelBtn = document.getElementById('new-round-cancel-btn');
-  var keyBtnsRow = document.querySelector('.cs-key-btns');
   var keyEverConfirmed = false;
   var viewOnly = false; // true when this page was opened from a shared board link (?w=...)
 
@@ -623,8 +624,9 @@
   function setKeyVisible(visible){
     boardEl.classList.toggle('key-visible', visible);
     startLineEls.forEach(function(el){ el.classList.toggle('revealed', visible); });
-    showKeyBtn.classList.toggle('hidden', visible);
-    hideKeyBtn.classList.toggle('hidden', !visible);
+    keyToggleBtn.classList.toggle('key-visible', visible);
+    keyToggleBtn.setAttribute('aria-pressed', String(visible));
+    keyToggleBtn.setAttribute('aria-label', visible ? 'Ocultar clave' : 'Ver clave');
   }
 
   boardEl.addEventListener('click', function(e){
@@ -633,7 +635,11 @@
     cell.classList.toggle('cs-cell-covered');
   });
 
-  showKeyBtn.addEventListener('click', function(){
+  keyToggleBtn.addEventListener('click', function(){
+    if (boardEl.classList.contains('key-visible')){
+      setKeyVisible(false);
+      return;
+    }
     if (keyEverConfirmed){
       setKeyVisible(true);
       return;
@@ -647,29 +653,9 @@
     setKeyVisible(true);
   });
 
-  hideKeyBtn.addEventListener('click', function(){
-    setKeyVisible(false);
-  });
-
-  newWordBtn.addEventListener('click', function(){
-    newRoundConfirmBackdrop.classList.remove('hidden');
-  });
-
-  newRoundCancelBtn.addEventListener('click', function(){
-    newRoundConfirmBackdrop.classList.add('hidden');
-  });
-
-  newRoundConfirmBtn.addEventListener('click', function(){
-    newRoundConfirmBackdrop.classList.add('hidden');
-    buildBoard();
-    setKeyVisible(false);
-    renderBoard();
-  });
-
   function exitViewOnly(){
     viewOnly = false;
-    keyBtnsRow.classList.remove('hidden');
-    newWordBtn.classList.remove('hidden');
+    keyToggleBtn.classList.remove('hidden');
     startLineEls.forEach(function(el){ el.style.removeProperty('display'); });
     window.history.replaceState(null, '', window.location.pathname);
     enterSetup();
@@ -704,8 +690,7 @@
     state.board = words;
     state.roles = words.map(function(){ return 'neutral'; });
     state.startingTeam = 0;
-    keyBtnsRow.classList.add('hidden');
-    newWordBtn.classList.add('hidden');
+    keyToggleBtn.classList.add('hidden');
     startLineEls.forEach(function(el){ el.style.display = 'none'; });
     switchScreen(screenGame);
     renderBoard();

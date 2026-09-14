@@ -2,16 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
 import { ScreenHeader } from '@/components/shared/ScreenHeader';
 import { GuideModal } from '@/components/shared/GuideModal';
-import { PlayerNameRows } from '@/components/shared/PlayerNameRows';
+import { PlayerInput } from '@/components/ui/PlayerInput';
 import { PackagesDropdown } from '@/components/shared/PackagesDropdown';
 import { RevealCard, RevealButton } from '@/components/shared/RevealCard';
 import { useGameAudio } from '@/hooks/useGameAudio';
 import { loadContent } from '@/lib/content';
 import { pickRandom } from '@/lib/random';
-import {
-  buildRandomShuffledRoles, effectivePlayerCount, effectivePlayerNames, hasDuplicatePlayerNames,
-  loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames,
-} from '@/lib/shared';
+import { buildRandomShuffledRoles, hasDuplicatePlayerNames, loadSavedPlayerNames, savePlayerNames } from '@/lib/shared';
 import type { WordPack, WordPackContent } from '@/types/game';
 import '@/styles/games/impostor.css';
 
@@ -44,7 +41,7 @@ function pickRandomWordWithHint(packages: WordPack[], selectedIds: string[]): { 
 }
 
 export function ImpostorPage() {
-  const [rows, setRows] = useState<string[]>(() => normalizeTrailingSlot(loadSavedPlayerNames().slice(0, MAX_PLAYERS), MAX_PLAYERS));
+  const [names, setNames] = useState<string[]>(() => loadSavedPlayerNames().slice(0, MAX_PLAYERS));
   const [setupStep, setSetupStep] = useState(0);
   const [subMode, setSubMode] = useState<SubMode>('random');
   const [customWord, setCustomWord] = useState('');
@@ -101,15 +98,14 @@ export function ImpostorPage() {
 
   useEffect(() => () => { if (voteTimeoutRef.current) window.clearTimeout(voteTimeoutRef.current); }, []);
 
-  function updateRows(next: string[]) {
-    setRows(next);
-    savePlayerNames(effectivePlayerNames(next));
+  function updateNames(next: string[]) {
+    setNames(next);
+    savePlayerNames(next);
   }
 
-  const playerCount = effectivePlayerCount(rows);
-  const hasEmptyName = rows.some((name, idx) => idx !== rows.length - 1 && !name.trim());
-  const hasDuplicates = hasDuplicatePlayerNames(rows);
-  const playersValid = !hasEmptyName && !hasDuplicates && playerCount >= MIN_PLAYERS;
+  const playerCount = names.length;
+  const hasDuplicates = hasDuplicatePlayerNames(names);
+  const playersValid = !hasDuplicates && playerCount >= MIN_PLAYERS;
   const maxImpostors = Math.max(MIN_IMPOSTORS, playerCount - 1);
 
   const settingsValid = subMode === 'custom'
@@ -119,7 +115,6 @@ export function ImpostorPage() {
 
   function handleStart() {
     if (!canStart) return;
-    const names = effectivePlayerNames(rows);
     let chosenWord = '';
     let chosenRoles: boolean[];
     let hint: string | null = null;
@@ -242,8 +237,8 @@ export function ImpostorPage() {
             {setupStep === 0 && (
               <div>
                 <label><span className="label-icon">👥</span>Jugadores</label>
-                <PlayerNameRows rows={rows} onChange={updateRows} min={MIN_PLAYERS} max={MAX_PLAYERS} />
-                <div className="error-msg">{hasEmptyName ? 'Todos los jugadores necesitan un nombre.' : hasDuplicates ? 'No puede haber dos jugadores con el mismo nombre.' : playerCount < MIN_PLAYERS ? `Necesitas al menos ${MIN_PLAYERS} jugadores.` : ''}</div>
+                <PlayerInput names={names} onChange={updateNames} min={MIN_PLAYERS} max={MAX_PLAYERS} />
+                <div className="error-msg">{hasDuplicates ? 'No puede haber dos jugadores con el mismo nombre.' : playerCount < MIN_PLAYERS ? `Necesitas al menos ${MIN_PLAYERS} jugadores.` : ''}</div>
               </div>
             )}
 

@@ -199,10 +199,21 @@
     justify-content:center;
     word-break:break-word;
   }
-  /* bigger, pushed toward the card edges — easier to hit mid-turn without looking */
-  #turn-play .icon-action-row{justify-content:space-between; gap:12px;}
-  #turn-play .icon-action-icon{width:70px; height:70px;}
   #turn-end-icon{filter:grayscale(1);}
+
+  /* each turn phase fills the remaining card height: its own content grows
+     in a scr-body, its action button stays pinned in a scr-dock */
+  #turn-intro, #turn-play, #turn-end{
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+  }
+  #turn-intro .scr-body, #turn-play .scr-body, #turn-end .scr-body{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
 
   .team-score-row{
     display:flex;
@@ -223,28 +234,82 @@
   .team-score-value{font-family:var(--font-display); font-weight:800; font-size:1.1rem;}
 
   .tu-word-pill-wrap{
-    display:flex;
-    flex-wrap:wrap;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(82px, 1fr));
     gap:6px;
-    justify-content:center;
-    margin:12px 0 18px;
+    width:100%;
+    margin:8px 0 12px;
   }
   .tu-word-pill{
-    display:inline-flex;
+    display:block;
+    min-width:0;
+    width:100%;
     padding:6px 10px;
     border-radius:999px;
     color:#fff;
-    font-size:0.78rem;
+    font-size:0.76rem;
     font-weight:700;
+    line-height:1.15;
+    text-align:center;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
   .tu-word-pill.turn-missed{background:var(--danger); opacity:.72; text-decoration:line-through;}
   button.tu-word-pill{border:0; cursor:pointer; font:inherit;}
+  #turn-end .scr-body{
+    display:grid;
+    grid-template-columns:auto minmax(0, auto);
+    grid-template-areas:
+      "icon title"
+      "words words"
+      "scores scores";
+    justify-content:center;
+    align-content:start;
+    column-gap:10px;
+  }
+  #turn-end .end-icon{
+    grid-area:icon;
+    align-self:center;
+    margin-bottom:0;
+    font-size:2.4rem;
+  }
+  #turn-end h1{
+    grid-area:title;
+    align-self:center;
+    margin-bottom:2px;
+    text-align:left;
+  }
+  #turn-end .tu-word-pill-wrap{grid-area:words;}
+  #turn-end-scoreboard{
+    grid-area:scores;
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:6px;
+    width:100%;
+  }
+  #turn-end-scoreboard .team-score-row{
+    margin-bottom:0;
+    padding:8px 10px;
+    gap:8px;
+  }
+  #turn-end-scoreboard .team-score-name{
+    min-width:0;
+  }
   .phase-rule-box{
     text-align:center;
     font-size:0.92rem;
     color:var(--text-dim);
     line-height:1.5;
     margin:10px 0 20px;
+  }
+  @media (max-height:640px){
+    #turn-end .end-icon{font-size:1.9rem;}
+    #turn-end h1{font-size:1.2rem !important;}
+    .tu-word-pill-wrap{grid-template-columns:repeat(auto-fit, minmax(72px, 1fr)); gap:5px; margin:6px 0 10px;}
+    .tu-word-pill{padding:5px 8px; font-size:0.7rem;}
+    #turn-end-scoreboard .team-score-row{padding:7px 8px;}
+    #turn-end-scoreboard .team-score-value{font-size:1rem;}
   }
 </style>
 </head>
@@ -260,64 +325,70 @@
       </div>
       <h1>TIME'S UP</h1>
 
-      <div id="setup-step-players">
-        <label><span class="label-icon">👥</span>Jugadores</label>
-        <div id="players-list"></div>
-        <div class="error-msg" id="players-error"></div>
-      </div>
-
-      <div id="setup-step-teams" class="hidden">
-        <label><span class="label-icon">🎯</span>Equipos</label>
-        <div class="stepper">
-          <button type="button" id="team-count-minus">−</button>
-          <div class="value" id="team-count-value">2</div>
-          <button type="button" id="team-count-plus">+</button>
-        </div>
-        <div class="team-boxes-header">
-          <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
-        </div>
-        <div id="team-boxes"></div>
-        <div class="error-msg" id="teams-error"></div>
-      </div>
-
-      <div class="night-nav" id="setup-nav">
-        <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
-        <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
-      </div>
-
-      <div id="setup-step-settings" class="hidden">
-        <details class="setup-optional">
-          <summary>Ajustes adicionales</summary>
-          <div class="setup-optional-content">
-            <label><span class="label-icon">🏷️</span>Categorías</label>
-            <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
-              <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
-              <span class="packages-dropdown-chevron">▾</span>
-            </button>
-            <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
-              <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
-              <div class="chip-list" id="package-list"></div>
-            </div>
-
-            <label><span class="label-icon">⏱️</span>Duración de turno</label>
-            <div class="stepper">
-              <button type="button" id="turn-seconds-minus">−</button>
-              <div class="value" id="turn-seconds-value">1:00</div>
-              <button type="button" id="turn-seconds-plus">+</button>
-            </div>
-
-            <label><span class="label-icon">⏭️</span>Segundos que resta saltar carta</label>
-            <div class="stepper">
-              <button type="button" id="skip-seconds-minus">−</button>
-              <div class="value" id="skip-seconds-value">5</div>
-              <button type="button" id="skip-seconds-plus">+</button>
-            </div>
+      <div class="scr-body">
+        <div id="setup-step-players">
+          <label><span class="label-icon">👥</span>Jugadores</label>
+          <div class="player-chips-list" id="players-chips"></div>
+          <div class="player-input-row">
+            <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
           </div>
-        </details>
+          <div class="error-msg" id="players-error"></div>
+        </div>
 
-        <div class="error-msg" id="setup-error"></div>
+        <div id="setup-step-teams" class="hidden">
+          <label><span class="label-icon">🎯</span>Equipos</label>
+          <div class="stepper">
+            <button type="button" id="team-count-minus">−</button>
+            <div class="value" id="team-count-value">2</div>
+            <button type="button" id="team-count-plus">+</button>
+          </div>
+          <div class="team-boxes-header">
+            <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
+          </div>
+          <div id="team-boxes"></div>
+          <div class="error-msg" id="teams-error"></div>
+        </div>
 
-        <div class="final-nav">
+        <div id="setup-step-settings" class="hidden">
+          <details class="setup-optional">
+            <summary>Ajustes adicionales</summary>
+            <div class="setup-optional-content">
+              <label><span class="label-icon">🏷️</span>Categorías</label>
+              <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
+                <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
+                <span class="packages-dropdown-chevron">▾</span>
+              </button>
+              <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
+                <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
+                <div class="chip-list" id="package-list"></div>
+              </div>
+
+              <label><span class="label-icon">⏱️</span>Duración de turno</label>
+              <div class="stepper">
+                <button type="button" id="turn-seconds-minus">−</button>
+                <div class="value" id="turn-seconds-value">1:00</div>
+                <button type="button" id="turn-seconds-plus">+</button>
+              </div>
+
+              <label><span class="label-icon">⏭️</span>Segundos que resta saltar carta</label>
+              <div class="stepper">
+                <button type="button" id="skip-seconds-minus">−</button>
+                <div class="value" id="skip-seconds-value">5</div>
+                <button type="button" id="skip-seconds-plus">+</button>
+              </div>
+            </div>
+          </details>
+
+          <div class="error-msg" id="setup-error"></div>
+        </div>
+      </div>
+
+      <div class="scr-dock">
+        <div class="night-nav" id="setup-nav">
+          <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
+        </div>
+        <div class="final-nav hidden" id="setup-final-nav">
           <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
           <button class="btn-main" id="start-btn">Iniciar partida</button>
         </div>
@@ -333,25 +404,25 @@
       <h2>Cómo se juega</h2>
 
       <h3>Objetivo</h3>
-      <p>Formad equipos (se recomienda de 2 en 2, sentados de forma que nunca un equipo juegue dos turnos seguidos). Por turnos, cada jugador describe la carta a su equipo durante un tiempo limitado. La partida tiene <strong>3 fases</strong> con las mismas 40 cartas (elegidas al azar de las categorías que selecciones), cada una con una regla distinta para dar las pistas.</p>
+      <p>Formad equipos (se recomienda de 2 en 2, sentados de forma que nunca un equipo juegue dos turnos seguidos). Por turnos, cada jugador describe la carta a su equipo durante un tiempo limitado. La partida tiene <strong>3 rondas</strong> con las mismas 40 cartas (elegidas al azar de las categorías que selecciones), cada una con una regla distinta para dar las pistas.</p>
 
-      <h3>Fase I — Descripción libre</h3>
+      <h3>Ronda I — Descripción libre</h3>
       <p>Describe la carta como quieras, sin decir la palabra ni derivados.</p>
 
-      <h3>Fase II — Una palabra</h3>
+      <h3>Ronda II — Una palabra</h3>
       <p>Solo puedes decir <strong>una palabra</strong> (tampoco la palabra en sí ni un derivado).</p>
 
-      <h3>Fase III — Mímica</h3>
+      <h3>Ronda III — Mímica</h3>
       <p>Solo gestos y sonidos, sin hablar.</p>
 
       <h3>Pasar</h3>
-      <p>En cualquier fase puedes pasar de carta si os atascáis: pasa al fondo del mazo y resta unos segundos al cronómetro (configurable).</p>
+      <p>En cualquier ronda puedes pasar de carta si os atascáis: pasa al fondo del mazo y resta unos segundos al cronómetro (configurable).</p>
 
-      <h3>Fin del turno y de la fase</h3>
-      <p>El turno acaba cuando se agota el tiempo; entonces pasa el dispositivo al siguiente jugador. La fase termina en cuanto se acaban las 40 cartas, aunque sea a mitad de un turno.</p>
+      <h3>Fin del turno y de la ronda</h3>
+      <p>El turno acaba cuando se agota el tiempo; entonces pasa el dispositivo al siguiente jugador. La ronda termina en cuanto se acaban las 40 cartas, aunque sea a mitad de un turno.</p>
 
       <h3>Puntuación</h3>
-      <p>Cada acierto suma un punto para el equipo. Se suman los puntos de las 3 fases; gana quien más tenga. En caso de empate, la victoria se comparte.</p>
+      <p>Cada acierto suma un punto para el equipo. Se suman los puntos de las 3 rondas; gana quien más tenga. En caso de empate, la victoria se comparte.</p>
     </div>
   </div>
 
@@ -365,7 +436,7 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <h1 style="font-size:1.6rem;" id="phase-intro-title">FASE I</h1>
+      <h1 style="font-size:1.6rem;" id="phase-intro-title">RONDA I</h1>
       <div class="phase-rule-box" id="phase-intro-rule"></div>
       <div class="phase-intro-cards-remaining"><span class="tu-cards-icon">🂠</span><span id="phase-intro-cards-value">x40</span></div>
       <div id="phase-intro-scores"></div>
@@ -380,7 +451,7 @@
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
           <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
-          <span class="back-btn" style="cursor:default;" id="phase-status">Fase 1 / 3</span>
+          <span class="back-btn" style="cursor:default;" id="phase-status">Ronda 1 / 3</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
@@ -390,31 +461,43 @@
 
       <!-- TURN INTRO: gate before the timer starts -->
       <div id="turn-intro">
-        <div class="team-turn-badge" id="turn-team-badge">ROJO</div>
-        <div class="player-name" id="turn-player-name">Nombre</div>
-        <p class="pass-hint">Pasa el dispositivo a esta persona.</p>
-        <button class="btn-main" id="turn-start-btn">Empezar mi turno ▶</button>
+        <div class="scr-body">
+          <div class="team-turn-badge" id="turn-team-badge">ROJO</div>
+          <div class="player-name" id="turn-player-name">Nombre</div>
+          <p class="pass-hint">Pasa el dispositivo a esta persona.</p>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main" id="turn-start-btn">Empezar mi turno ▶</button>
+        </div>
       </div>
 
       <!-- ACTIVE PLAY: character + timer + correct/skip -->
       <div id="turn-play" class="hidden">
-        <div class="tu-timer-wrap" id="tu-timer-wrap">
-          <div class="tu-timer" id="tu-timer">1:00</div>
+        <div class="scr-body">
+          <div class="tu-timer-wrap" id="tu-timer-wrap">
+            <div class="tu-timer" id="tu-timer">1:00</div>
+          </div>
+          <div class="tu-word" id="tu-word">Carta</div>
         </div>
-        <div class="tu-word" id="tu-word">Carta</div>
-        <div class="icon-action-row">
-          <button type="button" class="icon-action-btn icon-action-skip" id="tu-skip-btn" aria-label="Pasar"><span class="icon-action-icon"></span></button>
-          <button type="button" class="icon-action-btn icon-action-correct" id="tu-correct-btn" aria-label="Acierto"><span class="icon-action-icon"></span></button>
+        <div class="scr-dock">
+          <div class="icon-action-row">
+            <button type="button" class="icon-action-btn icon-action-skip" id="tu-skip-btn" aria-label="Pasar"><span class="icon-action-icon"></span></button>
+            <button type="button" class="icon-action-btn icon-action-correct" id="tu-correct-btn" aria-label="Acierto"><span class="icon-action-icon"></span></button>
+          </div>
         </div>
       </div>
 
       <!-- TURN END: summary before moving on -->
       <div id="turn-end" class="hidden">
-        <div class="end-icon" id="turn-end-icon">⏱️</div>
-        <h1 style="font-size:1.4rem;">¡Tiempo!</h1>
-        <div class="tu-word-pill-wrap" id="turn-end-words"></div>
-        <div id="turn-end-scoreboard"></div>
-        <button class="btn-main" id="turn-continue-btn">Continuar</button>
+        <div class="scr-body">
+          <div class="end-icon" id="turn-end-icon">⏱️</div>
+          <h1 style="font-size:1.4rem;">¡Tiempo!</h1>
+          <div class="tu-word-pill-wrap" id="turn-end-words"></div>
+          <div id="turn-end-scoreboard"></div>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main" id="turn-continue-btn">Continuar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -429,10 +512,14 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <div class="end-icon">🏁</div>
-      <h1 style="font-size:1.5rem;" id="phase-end-title">FASE I TERMINADA</h1>
-      <div id="phase-end-scoreboard"></div>
-      <button class="btn-main" id="phase-end-continue-btn">Comenzar Fase II</button>
+      <div class="scr-body">
+        <div class="end-icon">🏁</div>
+        <h1 style="font-size:1.5rem;" id="phase-end-title">RONDA I TERMINADA</h1>
+        <div id="phase-end-scoreboard"></div>
+      </div>
+      <div class="scr-dock">
+        <button class="btn-main" id="phase-end-continue-btn">Comenzar Ronda II</button>
+      </div>
     </div>
   </div>
 
@@ -446,11 +533,15 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <div class="end-icon">🏆</div>
-      <h1 style="font-size:1.6rem;" id="end-title">RESULTADOS</h1>
-      <p class="subtitle" id="end-subtitle"></p>
-      <div id="end-scoreboard"></div>
-      <button class="btn-main" id="new-round-btn">Nueva partida</button>
+      <div class="scr-body">
+        <div class="end-icon">🏆</div>
+        <h1 style="font-size:1.6rem;" id="end-title">RESULTADOS</h1>
+        <p class="subtitle" id="end-subtitle"></p>
+        <div id="end-scoreboard"></div>
+      </div>
+      <div class="scr-dock">
+        <button class="btn-main" id="new-round-btn">Nueva partida</button>
+      </div>
     </div>
   </div>
 
@@ -470,9 +561,9 @@
   var TEAM_HEX = ['#5b8fe0', '#c9525c', '#4fbf7a', '#f2c94c'];
 
   var PHASES = [
-    { title: 'FASE I', subtitle: 'DESCRIBIR', rule: 'Describe la carta como quieras, sin decir la palabra ni derivados.' },
-    { title: 'FASE II', subtitle: 'UNA PALABRA', rule: 'Solo puedes decir UNA palabra (tampoco la palabra en sí ni un derivado).' },
-    { title: 'FASE III', subtitle: 'MÍMICA', rule: 'Solo gestos y sonidos, sin hablar.' }
+    { title: 'RONDA I', subtitle: 'DESCRIBIR', rule: 'Describe la carta como quieras, sin decir la palabra ni derivados.' },
+    { title: 'RONDA II', subtitle: 'UNA PALABRA', rule: 'Solo puedes decir UNA palabra (tampoco la palabra en sí ni un derivado).' },
+    { title: 'RONDA III', subtitle: 'MÍMICA', rule: 'Solo gestos y sonidos, sin hablar.' }
   ];
 
   var config = {
@@ -570,7 +661,8 @@
   }
 
   // ---------- setup: players ----------
-  var rowsContainer = document.getElementById('players-list');
+  var playersChipsList = document.getElementById('players-chips');
+  var playersDraftInput = document.getElementById('players-draft');
   var playersErrorEl = document.getElementById('players-error');
   var teamsErrorEl = document.getElementById('teams-error');
   var setupError = document.getElementById('setup-error');
@@ -579,6 +671,7 @@
   var setupStepTeamsEl = document.getElementById('setup-step-teams');
   var setupStepSettingsEl = document.getElementById('setup-step-settings');
   var setupNavEl = document.getElementById('setup-nav');
+  var setupFinalNavEl = document.getElementById('setup-final-nav');
   var setupPrevBtn = document.getElementById('setup-prev-btn');
   var setupNextBtn = document.getElementById('setup-next-btn');
   var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
@@ -590,6 +683,7 @@
     setupStepTeamsEl.classList.toggle('hidden', setupStep !== 1);
     setupStepSettingsEl.classList.toggle('hidden', setupStep !== 2);
     setupNavEl.classList.toggle('hidden', setupStep === 2);
+    setupFinalNavEl.classList.toggle('hidden', setupStep !== 2);
     setupPrevBtn.classList.toggle('hidden', setupStep === 0);
     if (setupStep === 1) renderTeamBoxes();
   }
@@ -607,35 +701,9 @@
   renderSetupStep();
 
   function effectivePlayerCount(rows){
-    var n = rows.length;
-    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
-    return n;
+    return rows.length;
   }
   function realPlayerCount(){ return effectivePlayerCount(config.rows); }
-
-  function rowHtml(row, idx, rows){
-    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
-    if (isTrailingSlot){
-      return (
-        '<div class="player-row">' +
-          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="">' +
-        '</div>'
-      );
-    }
-    return (
-      '<div class="player-row">' +
-        '<input type="text" class="player-name-input" data-index="' + idx + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
-          (realPlayerCount() <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
-      '</div>'
-    );
-  }
-
-  function renderPlayerRows(){
-    var rows = config.rows;
-    rowsContainer.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
-  }
 
   function leastPopulatedTeam(){
     var counts = [];
@@ -648,40 +716,41 @@
     return minIdx;
   }
 
-  function normalizeTrailingSlot(){
+  function renderPlayerRows(){
     var rows = config.rows;
-    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
-      rows.pop();
-    }
-    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
-      rows.push({ name: "", team: leastPopulatedTeam() });
-    }
+    playersChipsList.innerHTML = rows.map(function(row, idx){
+      return (
+        '<div class="player-chip">' +
+          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
+            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+        '</div>'
+      );
+    }).join('');
+    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
+    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
   }
 
-  rowsContainer.addEventListener('input', function(e){
-    var target = e.target;
-    if (!target.classList.contains('player-name-input')) return;
-    var idx = parseInt(target.getAttribute('data-index'), 10);
-    config.rows[idx].name = target.value;
-    normalizeTrailingSlot();
-    persistPlayers();
-
-    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+  function addPlayerFromDraft(){
+    var trimmed = playersDraftInput.value.trim();
+    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    config.rows.push({ name: trimmed, team: leastPopulatedTeam() });
+    playersDraftInput.value = '';
     renderPlayerRows();
-    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
-    if (restored){
-      restored.focus();
-      restored.setSelectionRange(selStart, selEnd);
-    }
+    persistPlayers();
     validateSetup();
+    playersDraftInput.focus();
+  }
+
+  playersDraftInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
   });
 
-  rowsContainer.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.row-remove-btn');
+  playersChipsList.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.player-chip-remove');
     if (!removeBtn || removeBtn.disabled) return;
     var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
     config.rows.splice(rIdx, 1);
-    normalizeTrailingSlot();
     renderPlayerRows();
     persistPlayers();
     validateSetup();
@@ -791,8 +860,6 @@
 
   function reassignTeamsAfterCountChange(){
     autoBalanceAllTeams();
-    var rows = config.rows;
-    if (rows.length && !rows[rows.length - 1].name.trim()) rows[rows.length - 1].team = leastPopulatedTeam();
     renderTeamBoxes();
     persistPlayers();
     validateSetup();
@@ -1067,7 +1134,7 @@
     state.turnResults = [];
     state.timeRemaining = carriedTurn ? carriedTurn.timeRemaining : config.turnSeconds;
 
-    phaseStatusEl.textContent = PHASES[state.phase].title + ' / 3';
+    phaseStatusEl.textContent = PHASES[state.phase].title + ": " + PHASES[state.phase].subtitle;
     renderCardsRemaining();
     turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
     turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
@@ -1303,7 +1370,6 @@
 
   // ---------- init ----------
   autoBalanceAllTeams();
-  normalizeTrailingSlot();
   renderTeamCount();
   renderPlayerRows();
   renderTeamBoxes();

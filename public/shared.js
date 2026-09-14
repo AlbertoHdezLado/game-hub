@@ -101,27 +101,58 @@ function popValue(el){
 function initLandscapePrompt(){
   if (document.body.dataset.landscapeRecommended === undefined) return;
 
-  var gameScreen = document.getElementById('screen-game');
-  if (!gameScreen) return;
+  /* any in-progress screen counts as "game active" — not just #screen-game:
+     some modes (Time's Up, Charades...) also flow through phase-intro/end
+     screens that deserve the same landscape nudge, only setup and the very
+     final results screen don't need the device turned */
+  var nonGameScreenIds = { 'screen-setup': true, 'screen-end': true, 'screen-final': true };
+  var screens = Array.prototype.filter.call(
+    document.querySelectorAll('.screen'),
+    function(el){ return !nonGameScreenIds[el.id]; }
+  );
+  if (!screens.length) return;
 
   var prompt = document.createElement('div');
   prompt.className = 'landscape-prompt';
   prompt.setAttribute('role', 'status');
   prompt.setAttribute('aria-label', 'Orientación recomendada');
   prompt.innerHTML =
+    '<a href="/" class="guide-btn landscape-prompt-home" aria-label="Inicio"><span class="home-icon"></span></a>' +
     '<span class="landscape-prompt-icon" aria-hidden="true"></span>' +
     '<p class="landscape-prompt-title">Gira el móvil</p>' +
     '<p class="landscape-prompt-text">Este juego se disfruta mejor con la pantalla en horizontal.</p>';
   document.body.appendChild(prompt);
 
   function updateVisibility(){
-    document.body.classList.toggle('landscape-game-active', !gameScreen.classList.contains('hidden'));
+    var active = screens.some(function(el){ return !el.classList.contains('hidden'); });
+    document.body.classList.toggle('landscape-game-active', active);
   }
 
-  new MutationObserver(updateVisibility).observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
+  var observer = new MutationObserver(updateVisibility);
+  screens.forEach(function(el){
+    observer.observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
   updateVisibility();
 }
 initLandscapePrompt();
+
+/* the shell's height follows the real visible viewport (visualViewport when
+   available) instead of the raw window/100dvh, which on some mobile browsers
+   still includes space the address bar/keyboard is currently covering */
+function initViewportHeightSync(){
+  var vv = window.visualViewport;
+
+  function sync(){
+    var height = (vv && vv.height) || window.innerHeight;
+    document.documentElement.style.setProperty('--app-vh', height + 'px');
+  }
+
+  window.addEventListener('resize', sync);
+  window.addEventListener('orientationchange', sync);
+  if (vv) vv.addEventListener('resize', sync);
+  sync();
+}
+initViewportHeightSync();
 
 /* progress dots under the reveal card */
 function createDots(container){

@@ -51,8 +51,6 @@
   justify-content:center;
   word-break:break-word;
 }
-#turn-play .icon-action-row{justify-content:space-between; gap:12px;}
-#turn-play .icon-action-icon{width:70px; height:70px;}
 #turn-end-icon{filter:grayscale(1);}
 .tu-word-pill-wrap{
   display:flex;

@@ -32,6 +32,11 @@
     margin:10px 0 20px;
     word-break:break-word;
   }
+  #screen-game .scr-body{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
 </style>
 </head>
 <body>
@@ -46,18 +51,22 @@
       </div>
       <h1>YO NUNCA</h1>
 
-      <details class="setup-optional">
-        <summary>Ajustes adicionales</summary>
-        <div class="setup-optional-content">
-          <label><span class="label-icon">🏷️</span>Categorías</label>
-          <button type="button" class="chip-toggle-all" id="category-toggle-all-btn">Seleccionar todas</button>
-          <div class="chip-list" id="category-list"></div>
-        </div>
-      </details>
+      <div class="scr-body">
+        <details class="setup-optional">
+          <summary>Ajustes adicionales</summary>
+          <div class="setup-optional-content">
+            <label><span class="label-icon">🏷️</span>Categorías</label>
+            <button type="button" class="chip-toggle-all" id="category-toggle-all-btn">Seleccionar todas</button>
+            <div class="chip-list" id="category-list"></div>
+          </div>
+        </details>
 
-      <div class="error-msg" id="setup-error"></div>
+        <div class="error-msg" id="setup-error"></div>
+      </div>
 
-      <button class="btn-main" id="start-btn">Iniciar partida</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="start-btn">Iniciar partida</button>
+      </div>
     </div>
   </div>
 
@@ -100,9 +109,13 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <div class="yn-phrase" id="yn-phrase">Nunca he...</div>
+      <div class="scr-body">
+        <div class="yn-phrase" id="yn-phrase">Nunca he...</div>
+      </div>
 
-      <button class="btn-main" id="next-btn">Siguiente</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="next-btn">Siguiente</button>
+      </div>
     </div>
   </div>
 

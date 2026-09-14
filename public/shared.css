@@ -47,6 +47,7 @@ img{
 }
 html{
   background-color:var(--bg2);
+  overflow-x:hidden;
 }
 html,body{
   height:100%;
@@ -69,31 +70,95 @@ input[type="text"]{
   user-select:text;
 }
 button{ touch-action:manipulation; }
+/* kept in sync by shared.js (visualViewport-aware) so the shell always
+   matches the real visible height instead of the address-bar-inflated one */
+:root{ --app-vh:100dvh; }
 #app{
-  min-height:100vh;
-  min-height:100dvh;
-  padding-top:max(24px, env(safe-area-inset-top));
-  padding-bottom:max(24px, env(safe-area-inset-bottom));
-  padding-left:max(24px, env(safe-area-inset-left));
-  padding-right:max(24px, env(safe-area-inset-right));
+  height:var(--app-vh, 100dvh);
+  min-height:var(--app-vh, 100dvh);
   display:flex;
-  align-items:center;
+  align-items:stretch;
   justify-content:center;
+  overflow:hidden;
 }
+/* screen = the fullscreen "page" of the current step (setup/game/end...),
+   edge-to-edge like a native app view, no floating card boundary */
 .screen{
   width:100%;
-  max-width:420px;
+  max-width:480px;
   /* #app is a flex container, and flex items default to min-width:auto
      (sized to fit their content) — on some mobile browsers that lets wide
      content push .screen past the viewport instead of wrapping/shrinking */
   min-width:0;
-  animation:fadeIn .4s ease;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  animation:fadeIn .3s ease;
+}
+/* landscape (tablets, phones rotated, desktop): the 480px cap is a
+   portrait-phone measure and leaves large empty margins on wider
+   viewports, so let the screen grow with the available width instead of
+   staying phone-sized. Games with their own wider override (e.g. Código
+   Secreto's board) already win over this via higher selector specificity. */
+@media (orientation:landscape) and (min-width:700px){
+  .screen{ max-width:min(94vw, 900px); }
 }
 @keyframes fadeIn{
-  from{opacity:0; transform:translateY(12px);}
-  to{opacity:1; transform:translateY(0);}
+  from{opacity:0;}
+  to{opacity:1;}
 }
-.card{
+/* the outer card is flattened into a full-height flex column, edge-to-edge,
+   no boxed panel around the whole screen (request #1). Its three regions:
+   .setup-header (top, fixed) → .scr-body (middle, grows/scrolls if needed)
+   → .scr-dock (bottom, fixed) — see below. Semantic surfaces (modals, reveal
+   cards, roster rows, boards...) keep their own styling untouched. */
+.screen>.card{
+  background:none;
+  border:none;
+  border-radius:0;
+  padding:20px max(18px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-right));
+  padding-top:max(20px, env(safe-area-inset-top));
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  box-shadow:none;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+/* app bar row: home/back/help, first child of .card — stays fixed size.
+   Bleeds past the card's own horizontal padding so it always spans the
+   full screen width edge-to-edge, independent of the content below it. */
+.card>.setup-header{
+  flex:0 0 auto;
+  margin-left:calc(-1 * max(18px, env(safe-area-inset-left)));
+  margin-right:calc(-1 * max(18px, env(safe-area-inset-right)));
+  padding-left:max(18px, env(safe-area-inset-left));
+  padding-right:max(18px, env(safe-area-inset-right));
+}
+/* scrollable middle region of a screen: everything between the app bar and
+   the pinned action dock. Only actually scrolls when content can't fit —
+   most screens never trigger it. */
+.scr-body{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  /* scale-pulsing icons/text inside (revealPulse, tada...) must never force
+     a horizontal scrollbar to flicker in as they expand past the edge */
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+/* pinned action dock: the step's primary/contextual controls (start, next,
+   correct/skip...) always stay on screen instead of scrolling away */
+.scr-dock{
+  flex:0 0 auto;
+  padding-top:10px;
+}
+/* modals and other non-shell usages of .card keep the glass panel look
+   (.guide-modal/.card-modal are themselves the glass panel; .card-modal
+   wraps a nested .card for its centered-text variants — see werewolf) */
+.card-modal .card{
   background:var(--glass);
   border:1px solid var(--glass-border);
   border-radius:24px;
@@ -210,7 +275,7 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
   margin-top:16px;
   border:none;
   border-radius:16px;
-  background:linear-gradient(90deg, var(--accent2), var(--accent));
+  background:var(--accent);
   color:#fff;
   font-size:1.05rem;
   font-weight:700;
@@ -228,9 +293,9 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
 .back-btn{
   background:none;
   border:none;
-  color:var(--text-dim);
-  font-size:0.85rem;
-  font-weight:600;
+  color:var(--text);
+  font-size:0.95rem;
+  font-weight:700;
   cursor:pointer;
   padding:4px 0;
   margin-bottom:10px;
@@ -273,8 +338,8 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
 }
 .back-icon{
   display:block;
-  width:16px;
-  height:16px;
+  width:20px;
+  height:20px;
   background-color:currentColor;
   mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>');
   -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>');
@@ -297,35 +362,40 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
   flex:1;
 }
 
-/* ---- setup header row: back link + "how to play" trigger ---- */
+/* ---- setup header row: back link + "how to play" trigger — acts as the
+   screen's app bar now that the outer card is edge-to-edge. Bigger,
+   filled touch targets so it reads as a proper mobile app bar. ---- */
 .setup-header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:10px;
+  gap:10px;
+  min-height:64px;
+  margin:0 0 14px;
 }
 .setup-header .back-btn{margin-bottom:0;}
 .guide-btn{
-  width:32px;
-  height:32px;
+  width:46px;
+  height:46px;
   flex-shrink:0;
   display:flex;
   align-items:center;
   justify-content:center;
-  border-radius:50%;
+  border-radius:16px;
   border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.06);
-  color:var(--text-dim);
-  font-size:0.95rem;
+  background:rgba(255,255,255,0.09);
+  color:var(--text);
+  font-size:1.15rem;
   font-weight:700;
   cursor:pointer;
   text-decoration:none;
+  transition:background .15s, transform .1s;
 }
-.guide-btn:active{transform:scale(0.9);}
+.guide-btn:active{transform:scale(0.9); background:rgba(255,255,255,0.16);}
 .home-icon{
   display:block;
-  width:16px;
-  height:16px;
+  width:20px;
+  height:20px;
   background-color:currentColor;
   mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3z"/></svg>');
   -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3z"/></svg>');
@@ -389,6 +459,7 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
   max-width:400px;
   max-height:82vh;
   overflow-y:auto;
+  overflow-x:hidden;
   background:var(--glass);
   border:1px solid var(--glass-border);
   border-radius:24px;
@@ -658,6 +729,11 @@ button:focus-visible, input:focus-visible{
     color:var(--text);
     text-align:center;
   }
+  .landscape-prompt-home{
+    position:absolute;
+    top:max(16px, env(safe-area-inset-top));
+    left:16px;
+  }
   .landscape-prompt-icon{
     width:112px;
     height:112px;
@@ -740,6 +816,62 @@ button:focus-visible, input:focus-visible{
   cursor:pointer;
 }
 .btn-add-row:disabled{opacity:0.3; cursor:not-allowed;}
+
+/* ---- player chips (name lists as removable pills above a single add-input) ---- */
+.player-chips-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:8px;
+}
+.player-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px 6px 12px;
+  border:1px solid var(--glass-border);
+  border-radius:999px;
+  background:rgba(255,255,255,0.06);
+  color:var(--text);
+  font-size:0.88rem;
+  font-weight:600;
+  max-width:100%;
+}
+.player-chip-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  max-width:180px;
+}
+.player-chip-remove{
+  display:grid;
+  place-items:center;
+  width:22px;
+  height:22px;
+  flex-shrink:0;
+  border:0;
+  border-radius:999px;
+  background:rgba(255,255,255,0.1);
+  color:var(--text);
+  font-size:1.05rem;
+  line-height:1;
+  cursor:pointer;
+  padding:0;
+  transition:background .15s ease, transform .12s ease;
+}
+.player-chip-remove:hover:not(:disabled){background:var(--accent2); color:#fff;}
+.player-chip-remove:active:not(:disabled){transform:scale(.9);}
+.player-chip-remove:disabled{opacity:0.25; cursor:not-allowed;}
+.player-input-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:2px 4px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--glass-border);
+}
+.player-input-row .player-name-input{padding:10px 4px;}
 
 /* ---- roster reveal (Impostor / Detective Club / Hombres Lobo): a screen
    listing every player's name; tapping an unrevealed name opens their card
@@ -959,43 +1091,72 @@ button:focus-visible, input:focus-visible{
 }
 .suggestion-link:active{opacity:0.6;}
 
-/* ---- bare icon action buttons (correct/skip/foul: Taboo, Time's Up, Mímica)
-   — the svg itself is the tappable button, no boxed background around it ---- */
+/* ---- icon action buttons (correct/skip/foul: Taboo, Time's Up, Mímica)
+   — elongated pill/bar buttons spanning the dock for easy thumb-tapping ---- */
 .icon-action-row{
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+  gap:12px;
+  width:100%;
+}
+.icon-action-btn{
+  flex:1;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:32px;
-}
-.icon-action-btn{
-  border:none;
-  background:none;
-  padding:10px;
+  min-height:68px;
+  padding:12px 20px;
+  border-radius:18px;
+  border:1px solid var(--glass-border);
+  background:rgba(255,255,255,0.06);
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
+  transition:transform .12s, background-color .15s, border-color .15s;
 }
-.icon-action-btn:active{transform:scale(0.86);}
+.icon-action-btn:active{transform:scale(0.97);}
 .icon-action-icon{
   display:block;
-  width:52px;
-  height:52px;
+  width:42px;
+  height:42px;
   mask-repeat:no-repeat;
   mask-position:center;
   mask-size:contain;
   -webkit-mask-repeat:no-repeat;
   -webkit-mask-position:center;
   -webkit-mask-size:contain;
-  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+}
+.icon-action-correct{
+  background:rgba(143,217,172,0.14);
+  border-color:rgba(143,217,172,0.4);
+}
+.icon-action-correct:active{
+  background:rgba(143,217,172,0.26);
 }
 .icon-action-correct .icon-action-icon{
   background-color:#8fd9ac;
   mask-image:url('resources/images/common/check.svg');
   -webkit-mask-image:url('resources/images/common/check.svg');
 }
+.icon-action-error{
+  background:rgba(232,146,156,0.14);
+  border-color:rgba(232,146,156,0.4);
+}
+.icon-action-error:active{
+  background:rgba(232,146,156,0.26);
+}
 .icon-action-error .icon-action-icon{
   background-color:#e8929c;
   mask-image:url('resources/images/common/error.svg');
   -webkit-mask-image:url('resources/images/common/error.svg');
+}
+.icon-action-skip{
+  background:rgba(242,201,76,0.14);
+  border-color:rgba(242,201,76,0.4);
+}
+.icon-action-skip:active{
+  background:rgba(242,201,76,0.26);
 }
 .icon-action-skip .icon-action-icon{
   background-color:#f2c94c;
@@ -1007,15 +1168,9 @@ button:focus-visible, input:focus-visible{
 #screen-setup .card{
   position:relative;
   overflow:hidden;
-  padding:22px 22px 24px;
-  background:rgba(16,26,43,0.92);
-  border-color:rgba(255,255,255,0.16);
-  border-top:2px solid var(--accent2);
-  border-radius:20px;
-  box-shadow:0 18px 46px rgba(0,0,0,0.34), 0 0 0 1px rgba(255,255,255,0.025);
 }
 #screen-setup .setup-header{
-  margin-bottom:18px;
+  margin-bottom:8px;
 }
 #screen-setup .subtitle{
   max-width:34ch;
@@ -1049,6 +1204,7 @@ button:focus-visible, input:focus-visible{
 #screen-setup .submode-toggle,
 #screen-setup .packages-dropdown-btn,
 #screen-setup .player-row,
+#screen-setup .player-input-row,
 #screen-setup .chip,
 #screen-setup .night-nav-btn{
   background:rgba(255,255,255,0.045);
@@ -1069,7 +1225,8 @@ button:focus-visible, input:focus-visible{
 #screen-setup .night-nav-btn:hover,
 #screen-setup .packages-dropdown-btn:hover,
 #screen-setup .chip:hover,
-#screen-setup .player-row:hover{
+#screen-setup .player-row:hover,
+#screen-setup .player-input-row:hover{
   border-color:var(--accent2);
   background:rgba(255,255,255,0.075);
 }

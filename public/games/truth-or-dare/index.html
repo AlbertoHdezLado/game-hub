@@ -54,6 +54,11 @@
   .td-btn-icon{font-size:2rem;}
   .td-btn-truth{background:linear-gradient(135deg, var(--accent2), var(--accent));}
   .td-btn-dare{background:linear-gradient(135deg, var(--danger), #7a2e35);}
+  #screen-game .scr-body{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
 </style>
 </head>
 <body>
@@ -68,30 +73,36 @@
       </div>
       <h1>VERDAD O RETO</h1>
 
-      <div id="setup-step-players">
-        <label><span class="label-icon">👥</span>Jugadores</label>
-        <div id="players-list"></div>
-        <div class="error-msg" id="players-error"></div>
-      </div>
-
-      <div class="night-nav" id="setup-nav">
-        <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
-        <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
-      </div>
-
-      <div id="setup-step-settings" class="hidden">
-        <details class="setup-optional">
-          <summary>Ajustes adicionales</summary>
-          <div class="setup-optional-content">
-            <label><span class="label-icon">🏷️</span>Categorías</label>
-            <button type="button" class="chip-toggle-all" id="category-toggle-all-btn">Seleccionar todas</button>
-            <div class="chip-list" id="category-list"></div>
+      <div class="scr-body">
+        <div id="setup-step-players">
+          <label><span class="label-icon">👥</span>Jugadores</label>
+          <div class="player-chips-list" id="players-chips"></div>
+          <div class="player-input-row">
+            <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
           </div>
-        </details>
+          <div class="error-msg" id="players-error"></div>
+        </div>
 
-        <div class="error-msg" id="setup-error"></div>
+        <div id="setup-step-settings" class="hidden">
+          <details class="setup-optional">
+            <summary>Ajustes adicionales</summary>
+            <div class="setup-optional-content">
+              <label><span class="label-icon">🏷️</span>Categorías</label>
+              <button type="button" class="chip-toggle-all" id="category-toggle-all-btn">Seleccionar todas</button>
+              <div class="chip-list" id="category-list"></div>
+            </div>
+          </details>
 
-        <div class="final-nav">
+          <div class="error-msg" id="setup-error"></div>
+        </div>
+      </div>
+
+      <div class="scr-dock">
+        <div class="night-nav" id="setup-nav">
+          <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
+        </div>
+        <div class="final-nav hidden" id="setup-final-nav">
           <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
           <button class="btn-main" id="start-btn">Iniciar partida</button>
         </div>
@@ -137,23 +148,26 @@
       <div class="player-name" id="player-name">1</div>
       <div class="pass-hint">Elige verdad o reto. Nadie más debe elegir por ti.</div>
 
-      <div class="reveal-wrap" id="reveal-wrap">
-        <div class="reveal-content" id="reveal-content"></div>
-        <div class="td-buttons" id="td-buttons">
-          <button type="button" class="td-btn td-btn-truth" id="truth-btn">
-            <span class="td-btn-icon">🤔</span>
-            <span>Verdad</span>
-          </button>
-          <button type="button" class="td-btn td-btn-dare" id="dare-btn">
-            <span class="td-btn-icon">😈</span>
-            <span>Reto</span>
-          </button>
+      <div class="scr-body">
+        <div class="reveal-wrap" id="reveal-wrap">
+          <div class="reveal-content" id="reveal-content"></div>
+          <div class="td-buttons" id="td-buttons">
+            <button type="button" class="td-btn td-btn-truth" id="truth-btn">
+              <span class="td-btn-icon">🤔</span>
+              <span>Verdad</span>
+            </button>
+            <button type="button" class="td-btn td-btn-dare" id="dare-btn">
+              <span class="td-btn-icon">😈</span>
+              <span>Reto</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <button class="btn-main" id="next-btn" disabled>Siguiente jugador</button>
-
-      <div class="progress-dots" id="progress-dots"></div>
+      <div class="scr-dock">
+        <button class="btn-main" id="next-btn" disabled>Siguiente jugador</button>
+        <div class="progress-dots" id="progress-dots"></div>
+      </div>
     </div>
   </div>
 
@@ -169,8 +183,12 @@
       </div>
       <div class="end-icon">🔥</div>
       <h1 style="font-size:1.6rem;">RONDA TERMINADA</h1>
-      <p class="subtitle">¡Que empiece la próxima tanda de verdades y retos!</p>
-      <button class="btn-main" id="new-round-btn">Iniciar nueva ronda</button>
+      <div class="scr-body">
+        <p class="subtitle">¡Que empiece la próxima tanda de verdades y retos!</p>
+      </div>
+      <div class="scr-dock">
+        <button class="btn-main" id="new-round-btn">Iniciar nueva ronda</button>
+      </div>
     </div>
   </div>
 
@@ -185,7 +203,7 @@
 
   var config = {
     selectedCategories: [],
-    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; }).concat([{ name: "" }])
+    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; })
   };
 
   function persistPlayers(){
@@ -230,78 +248,50 @@
   }
 
   // ---------- players ----------
-  // No "add player" button: the last row is always an empty slot, and
-  // filling it grows the list automatically (see normalizeTrailingSlot).
-  var rowsContainer = document.getElementById('players-list');
+  var playersChipsList = document.getElementById('players-chips');
+  var playersDraftInput = document.getElementById('players-draft');
 
+  // players are only added once a non-empty name is committed from the draft input;
+  // config.rows never carries an empty slot, so effectivePlayerCount is just rows.length.
   function effectivePlayerCount(rows){
-    var n = rows.length;
-    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
-    return n;
-  }
-
-  function rowHtml(row, idx, rows){
-    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
-    if (isTrailingSlot){
-      return (
-        '<div class="player-row">' +
-          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '</div>'
-      );
-    }
-    return (
-      '<div class="player-row">' +
-        '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-          'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
-          (effectivePlayerCount(rows) <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
-      '</div>'
-    );
+    return rows.length;
   }
 
   function renderRows(){
     var rows = config.rows;
-    rowsContainer.innerHTML = rows.map(function(row, idx){
-      return rowHtml(row, idx, rows);
+    playersChipsList.innerHTML = rows.map(function(row, idx){
+      return (
+        '<div class="player-chip">' +
+          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
+            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+        '</div>'
+      );
     }).join('');
+    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
+    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
   }
 
-  // keeps exactly one empty row at the end, ready for the next player
-  function normalizeTrailingSlot(){
-    var rows = config.rows;
-    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
-      rows.pop();
-    }
-    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
-      rows.push({ name: "" });
-    }
-  }
-
-  rowsContainer.addEventListener('input', function(e){
-    var target = e.target;
-    if (!target.classList.contains('player-name-input')) return;
-    var idx = parseInt(target.getAttribute('data-index'), 10);
-    config.rows[idx].name = target.value;
-    normalizeTrailingSlot();
-    persistPlayers();
-
-    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+  function addPlayerFromDraft(){
+    var trimmed = playersDraftInput.value.trim();
+    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    config.rows.push({ name: trimmed });
+    playersDraftInput.value = '';
     renderRows();
-    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
-    if (restored){
-      restored.focus();
-      restored.setSelectionRange(selStart, selEnd);
-    }
+    persistPlayers();
     validateSetup();
+    playersDraftInput.focus();
+  }
+
+  playersDraftInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
   });
 
-  rowsContainer.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.row-remove-btn');
+  playersChipsList.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.player-chip-remove');
     if (!removeBtn || removeBtn.disabled) return;
     var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
     config.rows.splice(rIdx, 1);
-    normalizeTrailingSlot();
     renderRows();
     persistPlayers();
     validateSetup();
@@ -316,6 +306,7 @@
   var setupStepPlayersEl = document.getElementById('setup-step-players');
   var setupStepSettingsEl = document.getElementById('setup-step-settings');
   var setupNavEl = document.getElementById('setup-nav');
+  var setupFinalNavEl = document.getElementById('setup-final-nav');
   var setupPrevBtn = document.getElementById('setup-prev-btn');
   var setupNextBtn = document.getElementById('setup-next-btn');
   var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
@@ -327,6 +318,7 @@
     setupStepPlayersEl.classList.toggle('hidden', setupStep !== 0);
     setupStepSettingsEl.classList.toggle('hidden', setupStep !== 1);
     setupNavEl.classList.toggle('hidden', setupStep === 1);
+    setupFinalNavEl.classList.toggle('hidden', setupStep !== 1);
     setupPrevBtn.classList.toggle('hidden', setupStep === 0);
   }
   setupPrevBtn.addEventListener('click', function(){
@@ -416,8 +408,6 @@
   function validateSetup(){
     var rows = config.rows;
     var playerMsgs = [];
-    var hasEmptyName = rows.some(function(r, idx){ return idx !== rows.length - 1 && !r.name.trim(); });
-    if (hasEmptyName) playerMsgs.push("Todos los jugadores necesitan un nombre.");
     if (effectivePlayerCount(rows) < MIN_PLAYERS) playerMsgs.push("Necesitas al menos " + MIN_PLAYERS + " jugadores.");
 
     var settingsMsgs = [];

@@ -326,6 +326,7 @@
     max-width:340px;
     max-height:88vh;
     overflow-y:auto;
+    overflow-x:hidden;
     text-align:center;
   }
   .card-modal-close{
@@ -391,6 +392,23 @@
     display:flex;
     background:rgba(255,255,255,0.08);
     margin:10px 0 14px;
+    flex:0 0 auto;
+  }
+  #panel-night, #panel-vote{
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+  }
+  #vote-announce-view, #vote-select-view, #judge-prompt-view, #vote-continue-view{
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+    justify-content:center;
+  }
+  #narrator-wake-cue{
+    flex:0 0 auto;
   }
   .narrator-balance-fill-lobos{
     height:100%;
@@ -583,6 +601,7 @@
     margin-top:18px;
     max-height:32vh;
     overflow-y:auto;
+    overflow-x:hidden;
     text-align:left;
     font-size:0.82rem;
     color:var(--text-dim);
@@ -605,49 +624,55 @@
       </div>
       <h1>HOMBRES LOBO</h1>
 
-      <div id="setup-step-players">
-        <label><span class="label-icon">👥</span>Jugadores</label>
-        <div id="players-list"></div>
-        <div class="error-msg" id="setup-error"></div>
-      </div>
-
-      <div id="setup-step-roles" class="hidden">
-        <label id="included-roles-label"><span class="label-icon">🎭</span>Roles incluidos</label>
-        <div class="role-picker-grid" id="included-roles-grid"></div>
-        <div class="error-msg" id="roles-setup-error"></div>
-
-        <div class="section-label-row">
-          <label style="margin:0;">Toca para añadir un rol</label>
-          <button type="button" class="section-help-btn" id="role-picker-tip-btn" aria-label="Ayuda">?</button>
-        </div>
-        <div class="role-picker-grid" id="available-roles-grid"></div>
-      </div>
-
-      <div class="night-nav" id="setup-nav">
-        <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
-        <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
-      </div>
-
-      <div id="setup-step-final" class="hidden">
-        <details class="setup-optional">
-          <summary>Ajustes adicionales</summary>
-          <div class="setup-optional-content">
-            <label class="switch-toggle">
-              <input type="checkbox" id="unguided-mode-toggle">
-              <span class="switch-track"><span class="switch-thumb"></span></span>
-              Modo no guiado
-            </label>
-
-            <label><span class="label-icon">⏱️</span>Tiempo para votar</label>
-            <div class="stepper">
-              <button type="button" id="vote-minutes-minus">−</button>
-              <div class="value" id="vote-minutes-value">Sin límite</div>
-              <button type="button" id="vote-minutes-plus">+</button>
-            </div>
+      <div class="scr-body">
+        <div id="setup-step-players">
+          <label><span class="label-icon">👥</span>Jugadores</label>
+          <div class="player-chips-list" id="players-chips"></div>
+          <div class="player-input-row">
+            <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
           </div>
-        </details>
+          <div class="error-msg" id="setup-error"></div>
+        </div>
 
-        <div class="final-nav">
+        <div id="setup-step-roles" class="hidden">
+          <label id="included-roles-label"><span class="label-icon">🎭</span>Roles incluidos</label>
+          <div class="role-picker-grid" id="included-roles-grid"></div>
+          <div class="error-msg" id="roles-setup-error"></div>
+
+          <div class="section-label-row">
+            <label style="margin:0;">Toca para añadir un rol</label>
+            <button type="button" class="section-help-btn" id="role-picker-tip-btn" aria-label="Ayuda">?</button>
+          </div>
+          <div class="role-picker-grid" id="available-roles-grid"></div>
+        </div>
+
+        <div id="setup-step-final" class="hidden">
+          <details class="setup-optional">
+            <summary>Ajustes adicionales</summary>
+            <div class="setup-optional-content">
+              <label class="switch-toggle">
+                <input type="checkbox" id="unguided-mode-toggle">
+                <span class="switch-track"><span class="switch-thumb"></span></span>
+                Modo no guiado
+              </label>
+
+              <label><span class="label-icon">⏱️</span>Tiempo para votar</label>
+              <div class="stepper">
+                <button type="button" id="vote-minutes-minus">−</button>
+                <div class="value" id="vote-minutes-value">Sin límite</div>
+                <button type="button" id="vote-minutes-plus">+</button>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="scr-dock">
+        <div class="night-nav" id="setup-nav">
+          <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
+        </div>
+        <div class="final-nav hidden" id="setup-final-nav">
           <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
           <button class="btn-main" id="start-btn">Iniciar partida</button>
         </div>
@@ -735,9 +760,13 @@
       </div>
       <p class="subtitle">Toca tu nombre para ver tu carta. Nadie más debe mirar.</p>
 
-      <div class="roster-list" id="reveal-roster"></div>
+      <div class="scr-body">
+        <div class="roster-list" id="reveal-roster"></div>
+      </div>
 
-      <button class="btn-main" id="reveal-continue-btn" disabled>Continuar</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="reveal-continue-btn" disabled>Continuar</button>
+      </div>
     </div>
   </div>
 
@@ -781,56 +810,75 @@
 
       <!-- NIGHT GUIDE PANEL -->
       <div id="panel-night">
-        <p class="narrator-cue" id="night-wake-cue"></p>
-        <div class="reveal-wrap revealed" id="night-reveal-wrap">
-          <div class="reveal-content" id="night-reveal-content"></div>
-        </div>
-        <div class="reveal-name-caption visible" id="night-reveal-caption"></div>
+        <div class="scr-body">
+          <p class="narrator-cue" id="night-wake-cue"></p>
+          <div class="reveal-wrap revealed" id="night-reveal-wrap">
+            <div class="reveal-content" id="night-reveal-content"></div>
+          </div>
+          <div class="reveal-name-caption visible" id="night-reveal-caption"></div>
 
-        <div class="role-widget hidden" id="role-widget"></div>
+          <div class="role-widget hidden" id="role-widget"></div>
 
-        <div class="error-msg" id="night-nav-error"></div>
-        <div class="night-nav" id="night-nav">
-          <button type="button" class="night-nav-btn icon-only" id="night-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
-          <button type="button" class="night-nav-btn" id="night-next-btn">Siguiente</button>
+          <div class="error-msg" id="night-nav-error"></div>
         </div>
-        <div class="progress-dots" id="night-progress-dots"></div>
+
+        <div class="scr-dock">
+          <div class="night-nav" id="night-nav">
+            <button type="button" class="night-nav-btn icon-only" id="night-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+            <button type="button" class="night-nav-btn" id="night-next-btn">Siguiente</button>
+          </div>
+          <div class="progress-dots" id="night-progress-dots"></div>
+        </div>
       </div>
 
       <!-- END OF ROUND: DAY VOTE EVENT -->
       <div id="panel-vote" class="hidden">
         <p class="narrator-cue" id="narrator-wake-cue"></p>
         <div id="vote-announce-view" class="hidden">
-          <p class="narrator-cue" id="vote-announce-cue"></p>
-          <div class="roster-list" id="vote-announce-list"></div>
+          <div class="scr-body">
+            <p class="narrator-cue" id="vote-announce-cue"></p>
+            <div class="roster-list" id="vote-announce-list"></div>
 
-          <div id="announce-cazador-shoot" class="hidden">
-            <label>El Cazador ha muerto: ¿a quién dispara?</label>
-            <div class="role-widget-checklist" id="announce-cazador-shoot-list"></div>
-          </div>
-
-          <button class="btn-main" id="vote-announce-continue-btn">Continuar al debate ›</button>
-        </div>
-        <div id="vote-select-view" class="hidden">
-          <label>¿A quién ha votado el pueblo para linchar?</label>
-          <div class="vote-timer-wrap hidden" id="vote-timer-wrap">
-            <div class="vote-timer">
-              <span class="vote-timer-part" id="vote-timer-mm">00</span><span class="vote-timer-colon">:</span><span class="vote-timer-part" id="vote-timer-ss">00</span>
+            <div id="announce-cazador-shoot" class="hidden">
+              <label>El Cazador ha muerto: ¿a quién dispara?</label>
+              <div class="role-widget-checklist" id="announce-cazador-shoot-list"></div>
             </div>
           </div>
-          <div id="vote-players-list"></div>
-          <button class="btn-main" id="confirm-vote-btn" disabled>Confirmar votación</button>
+
+          <div class="scr-dock">
+            <button class="btn-main" id="vote-announce-continue-btn">Continuar al debate ›</button>
+          </div>
+        </div>
+        <div id="vote-select-view" class="hidden">
+          <div class="scr-body">
+            <label>¿A quién ha votado el pueblo para linchar?</label>
+            <div class="vote-timer-wrap hidden" id="vote-timer-wrap">
+              <div class="vote-timer">
+                <span class="vote-timer-part" id="vote-timer-mm">00</span><span class="vote-timer-colon">:</span><span class="vote-timer-part" id="vote-timer-ss">00</span>
+              </div>
+            </div>
+            <div id="vote-players-list"></div>
+          </div>
+          <div class="scr-dock">
+            <button class="btn-main" id="confirm-vote-btn" disabled>Confirmar votación</button>
+          </div>
         </div>
         <div id="judge-prompt-view" class="hidden">
-          <p class="narrator-cue" id="judge-prompt-cue"></p>
-          <label>¿Usa su poder para repetir la votación?</label>
-          <div class="night-nav">
-            <button type="button" class="night-nav-btn" id="judge-skip-btn">No</button>
-            <button type="button" class="night-nav-btn" id="judge-use-btn">Sí, repetir votación</button>
+          <div class="scr-body">
+            <p class="narrator-cue" id="judge-prompt-cue"></p>
+            <label>¿Usa su poder para repetir la votación?</label>
+          </div>
+          <div class="scr-dock">
+            <div class="night-nav">
+              <button type="button" class="night-nav-btn" id="judge-skip-btn">No</button>
+              <button type="button" class="night-nav-btn" id="judge-use-btn">Sí, repetir votación</button>
+            </div>
           </div>
         </div>
         <div id="vote-continue-view" class="hidden">
-          <button class="btn-main" id="round-continue-btn">Siguiente ronda</button>
+          <div class="scr-dock">
+            <button class="btn-main" id="round-continue-btn">Siguiente ronda</button>
+          </div>
         </div>
       </div>
 
@@ -866,9 +914,13 @@
       <h1 style="font-size:1.5rem;">JUGADORES Y ROLES</h1>
       <p class="subtitle" id="roster-subtitle">Modo no guiado: toca a un jugador para marcarlo como eliminado o revivirlo.</p>
 
-      <div class="roster-list" id="roster-list"></div>
+      <div class="scr-body">
+        <div class="roster-list" id="roster-list"></div>
+      </div>
 
-      <button class="btn-main" id="roster-new-round-btn">Iniciar nueva ronda</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="roster-new-round-btn">Iniciar nueva ronda</button>
+      </div>
     </div>
   </div>
 
@@ -995,7 +1047,11 @@
   function loadRoles(){
     return fetch('/data/werewolf-roles.json')
       .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
-      .then(function(data){ ROLES = data.roles; })
+      .then(function(data){
+        ROLES = data.roles.map(function(role){
+          return Object.assign({}, role, { imagen: role.imagen.charAt(0) === '/' ? role.imagen : '/' + role.imagen });
+        });
+      })
       .catch(function(){ ROLES = ROLES_FALLBACK; })
       .then(function(){
         var saved = loadSavedRoleCounts();
@@ -1013,7 +1069,7 @@
   var config = {
     unguidedMode: false,
     voteSeconds: 0, // 0 = sin límite; steps by VOTE_SECONDS_STEP
-    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; }).concat([{ name: "" }])
+    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; })
   };
 
   function persistPlayers(){
@@ -1087,14 +1143,13 @@
   }
 
   // ---------- players ----------
-  // No "add player" button: the last row is always an empty slot, and
-  // filling it grows the list automatically (see normalizeTrailingSlot).
-  var rowsContainer = document.getElementById('players-list');
+  var playersChipsList = document.getElementById('players-chips');
+  var playersDraftInput = document.getElementById('players-draft');
 
+  // players are only added once a non-empty name is committed from the draft input;
+  // config.rows never carries an empty slot, so effectivePlayerCount is just rows.length.
   function effectivePlayerCount(rows){
-    var n = rows.length;
-    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
-    return n;
+    return rows.length;
   }
 
   // El Ladrón is dealt to a player like any other role, but he also needs 2
@@ -1104,72 +1159,41 @@
     return effectivePlayerCount(rows) + (counts['ladron'] ? 2 : 0);
   }
 
-  function rowHtml(row, idx, rows){
-    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
-    if (isTrailingSlot){
-      return (
-        '<div class="player-row">' +
-          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '</div>'
-      );
-    }
-    var removeBtn = '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
-      (effectivePlayerCount(rows) <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>';
-    return (
-      '<div class="player-row">' +
-        '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-          'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        removeBtn +
-      '</div>'
-    );
-  }
-
   function renderRows(){
     var rows = config.rows;
-    rowsContainer.innerHTML = rows.map(function(row, idx){
-      return rowHtml(row, idx, rows);
+    playersChipsList.innerHTML = rows.map(function(row, idx){
+      return (
+        '<div class="player-chip">' +
+          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
+            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+        '</div>'
+      );
     }).join('');
+    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
+    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
   }
 
-  // keeps exactly one empty row at the end, ready for the next player
-  function normalizeTrailingSlot(){
-    var rows = config.rows;
-    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
-      rows.pop();
-    }
-    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
-      rows.push({ name: "" });
-    }
-  }
-
-  rowsContainer.addEventListener('input', function(e){
-    var target = e.target;
-    if (!target.classList.contains('player-name-input')) return;
-    var idx = parseInt(target.getAttribute('data-index'), 10);
-    config.rows[idx].name = target.value;
-    normalizeTrailingSlot();
-    persistPlayers();
-
-    // a row can gain/lose its buttons here (placeholder -> real player and
-    // back) and every row's disabled state can shift (MIN_PLAYERS crossed),
-    // so re-render fully and just restore focus/caret on the active input
-    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+  function addPlayerFromDraft(){
+    var trimmed = playersDraftInput.value.trim();
+    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    config.rows.push({ name: trimmed });
+    playersDraftInput.value = '';
     renderRows();
-    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
-    if (restored){
-      restored.focus();
-      restored.setSelectionRange(selStart, selEnd);
-    }
+    persistPlayers();
     validateSetup();
+    playersDraftInput.focus();
+  }
+
+  playersDraftInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
   });
 
-  rowsContainer.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.row-remove-btn');
+  playersChipsList.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.player-chip-remove');
     if (!removeBtn || removeBtn.disabled) return;
     var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
     config.rows.splice(rIdx, 1);
-    normalizeTrailingSlot();
     renderRows();
     persistPlayers();
     validateSetup();
@@ -1189,6 +1213,7 @@
   var setupStepRolesEl = document.getElementById('setup-step-roles');
   var setupStepFinalEl = document.getElementById('setup-step-final');
   var setupNavEl = document.getElementById('setup-nav');
+  var setupFinalNavEl = document.getElementById('setup-final-nav');
   var setupPrevBtn = document.getElementById('setup-prev-btn');
   var setupNextBtn = document.getElementById('setup-next-btn');
   var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
@@ -1203,6 +1228,7 @@
     setupStepRolesEl.classList.toggle('hidden', setupStep !== 1);
     setupStepFinalEl.classList.toggle('hidden', setupStep !== 2);
     setupNavEl.classList.toggle('hidden', setupStep === 2);
+    setupFinalNavEl.classList.toggle('hidden', setupStep !== 2);
     setupPrevBtn.classList.toggle('hidden', setupStep === 0);
     balanceBarFixedEl.classList.toggle('hidden', setupStep !== 1);
     setupCardEl.classList.toggle('balance-visible', setupStep === 1);
@@ -1483,9 +1509,7 @@
     trimExcessRoles();
     var rows = config.rows;
     var playerMsgs = [];
-    var hasEmptyName = rows.some(function(r, idx){ return idx !== rows.length - 1 && !r.name.trim(); });
-    if (hasEmptyName) playerMsgs.push("Todos los jugadores necesitan un nombre.");
-    else if (hasDuplicatePlayerNames(rows)) playerMsgs.push("No puede haber dos jugadores con el mismo nombre.");
+    if (hasDuplicatePlayerNames(rows)) playerMsgs.push("No puede haber dos jugadores con el mismo nombre.");
 
     var total = totalRoleCount();
     var players = effectivePlayerCount(rows);

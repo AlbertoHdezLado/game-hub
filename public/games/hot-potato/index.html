@@ -100,6 +100,17 @@
   .packages-dropdown-panel{
     margin-top:10px;
   }
+  #pc-round, #pc-boom{
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+  }
+  #pc-round .scr-body, #pc-boom .scr-body{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
 </style>
 </head>
 <body>
@@ -114,27 +125,31 @@
       </div>
       <h1>PATATA CALIENTE</h1>
 
-      <button type="button" class="packages-dropdown-btn" id="extra-settings-btn" aria-expanded="false">
-        <span class="packages-dropdown-summary">Ajustes adicionales</span>
-        <span class="packages-dropdown-chevron">▾</span>
-      </button>
-      <div class="packages-dropdown-panel hidden" id="extra-settings-panel">
-        <label><span class="label-icon">⏱️</span>Mecha mínima</label>
-        <div class="stepper">
-          <button type="button" id="fuse-min-minus">−</button>
-          <div class="value" id="fuse-min-value">20s</div>
-          <button type="button" id="fuse-min-plus">+</button>
-        </div>
+      <div class="scr-body">
+        <button type="button" class="packages-dropdown-btn" id="extra-settings-btn" aria-expanded="false">
+          <span class="packages-dropdown-summary">Ajustes adicionales</span>
+          <span class="packages-dropdown-chevron">▾</span>
+        </button>
+        <div class="packages-dropdown-panel hidden" id="extra-settings-panel">
+          <label><span class="label-icon">⏱️</span>Mecha mínima</label>
+          <div class="stepper">
+            <button type="button" id="fuse-min-minus">−</button>
+            <div class="value" id="fuse-min-value">20s</div>
+            <button type="button" id="fuse-min-plus">+</button>
+          </div>
 
-        <label><span class="label-icon">⏱️</span>Mecha máxima</label>
-        <div class="stepper">
-          <button type="button" id="fuse-max-minus">−</button>
-          <div class="value" id="fuse-max-value">45s</div>
-          <button type="button" id="fuse-max-plus">+</button>
+          <label><span class="label-icon">⏱️</span>Mecha máxima</label>
+          <div class="stepper">
+            <button type="button" id="fuse-max-minus">−</button>
+            <div class="value" id="fuse-max-value">45s</div>
+            <button type="button" id="fuse-max-plus">+</button>
+          </div>
         </div>
       </div>
 
-      <button class="btn-main" id="start-btn" disabled>Iniciar partida</button>
+      <div class="scr-dock">
+        <button class="btn-main" id="start-btn" disabled>Iniciar partida</button>
+      </div>
     </div>
   </div>
 
@@ -170,16 +185,24 @@
       </div>
 
       <div id="pc-round">
-        <div class="pc-theme" id="pc-theme"></div>
-        <div class="pc-bomb-icon" id="pc-bomb-icon">💣</div>
-        <button class="btn-main" id="start-fuse-btn">Encender la mecha</button>
+        <div class="scr-body">
+          <div class="pc-theme" id="pc-theme"></div>
+          <div class="pc-bomb-icon" id="pc-bomb-icon">💣</div>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main" id="start-fuse-btn">Encender la mecha</button>
+        </div>
       </div>
 
       <div id="pc-boom" class="hidden">
-        <div class="end-icon">💥</div>
-        <h1 style="font-size:1.7rem;">¡BOOM!</h1>
-        <p class="subtitle">Quien tenga el móvil en la mano… ¡pierde esta ronda!</p>
-        <button class="btn-main" id="next-btn">Siguiente tema ▶</button>
+        <div class="scr-body">
+          <div class="end-icon">💥</div>
+          <h1 style="font-size:1.7rem;">¡BOOM!</h1>
+          <p class="subtitle">Quien tenga el móvil en la mano… ¡pierde esta ronda!</p>
+        </div>
+        <div class="scr-dock">
+          <button class="btn-main" id="next-btn">Siguiente tema ▶</button>
+        </div>
       </div>
     </div>
   </div>
