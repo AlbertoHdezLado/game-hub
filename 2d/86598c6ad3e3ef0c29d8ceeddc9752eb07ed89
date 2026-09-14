@@ -1,0 +1,19 @@
+src/styles/shared.css
+  s_9900a9822fc933::t_153afcfd4e642e 1-1177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2d86598c6ad3e3ef0c29d8ceeddc9752eb07ed89",
+  "prompts": {},
+  "sessions": {
+    "s_9900a9822fc933": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "3ebc4c1c-4289-4227-a859-50ca4eb0862e",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
