@@ -1,0 +1,14 @@
+public/games/trivia/index.html
+  h_fed6a40af368f7 367-370,588-589,626,641,643-653,656-660,662,664-668,671-672
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "98abe2b08fbc8b49b3e4461a7579df76065fa59d",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
