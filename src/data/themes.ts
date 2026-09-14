@@ -22,6 +22,7 @@ export const gameThemeColors: Partial<Record<GameSlug, GameTheme>> = {
   'detective-club': { accent: '#5b8fe0', accent2: '#8fc1f0', revealB: '#8fc1f0' },
   'codigo-secreto': { accent: '#5f7285', accent2: '#7d94ab', revealB: '#7d94ab' },
   trivial: { accent: '#7a9e4a', accent2: '#b7e07a', revealB: '#b7e07a' },
+  'hombres-lobo': { accent: '#8b6dd6', accent2: '#c3b1f0', revealB: '#c3b1f0' },
 };
 
 export const defaultGameTheme: GameTheme = { accent: '#5b8fe0', accent2: '#9dc9ff' };
