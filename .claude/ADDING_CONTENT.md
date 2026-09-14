@@ -31,11 +31,11 @@ Usado por (misma forma, distinto nombre de clave del array):
 
 | Juego | Fichero | Clave del array |
 |---|---|---|
-| Código Secreto | `codigo-secreto-words.json` | `palabras` |
-| Yo Nunca | `yo-nunca.json` | `frases` |
-| ¿Quién es más probable? | `quien-es-mas-probable.json` | `frases` |
-| ¿Qué Harías Si...? | `que-harias-si.json` | `escenarios` |
-| Patata Caliente | `patata-caliente.json` | `temas` |
+| Código Secreto | `secret-code-words.json` | `palabras` |
+| Yo Nunca | `never-have-i-ever.json` | `frases` |
+| ¿Quién es más probable? | `most-likely.json` | `frases` |
+| ¿Qué Harías Si...? | `what-would-you-do.json` | `escenarios` |
+| Patata Caliente | `hot-potato.json` | `temas` |
 
 ```json
 { "id": "un_id_unico", "nombre": "Nombre visible", "icono": "🎈", "frases": ["Frase 1", "Frase 2"] }
@@ -89,7 +89,7 @@ Placeholders en `texto`, sustituidos en tiempo real por nombres de jugadores:
 
 Usa un `tipo` de los ya existentes salvo que quieras una categoría de carta nueva (revisa `picolo.html` para ver si ese `tipo` nuevo necesita lógica de sustitución de jugadores adicional — los tipos actuales ya cubren "un jugador", "dos jugadores" y "todo el grupo sin jugador concreto").
 
-## F — Preguntas de Trivial (`trivial.json`)
+## F — Preguntas de Trivial (`trivia.json`)
 ```json
 {
   "id": "un_id_unico",
@@ -102,7 +102,7 @@ Usa un `tipo` de los ya existentes salvo que quieras una categoría de carta nue
 ```
 `correcta` es el **índice** (empezando en 0) de la respuesta correcta dentro de `opciones`. Exactamente 4 opciones por pregunta (es lo que espera la UI del juego).
 
-## G — Cartas de Taboo (`tabu.json`)
+## G — Cartas de Taboo (`taboo.json`)
 Igual que el esquema A (paquetes con `id`/`nombre`/`icono`) pero el array se llama `cartas` y cada carta es un objeto, no un string:
 ```json
 {
@@ -116,7 +116,7 @@ Igual que el esquema A (paquetes con `id`/`nombre`/`icono`) pero el array se lla
 ```
 `prohibidas` suele llevar 4-5 palabras — no hay un mínimo/máximo forzado por el juego, pero mantén el número parecido al resto de cartas del mismo paquete por consistencia visual.
 
-## H — ¿Qué Preferirías? (`que-preferirias.json`)
+## H — ¿Qué Preferirías? (`would-you-rather.json`)
 Lista **plana** de opciones (sin categorías), con un campo `nivel` que agrupa por "deseabilidad":
 ```json
 { "texto": "Una opción concreta", "nivel": 3 }

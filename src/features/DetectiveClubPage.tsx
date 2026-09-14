@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { ScreenHeader } from '@/components/legacy/ScreenHeader';
-import { GuideModal } from '@/components/legacy/GuideModal';
-import { PlayerNameRows } from '@/components/legacy/PlayerNameRows';
-import { RevealCard, RevealButton } from '@/components/legacy/RevealCard';
-import { effectivePlayerCount, effectivePlayerNames, hasDuplicatePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/legacy';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { GuideModal } from '@/components/shared/GuideModal';
+import { PlayerNameRows } from '@/components/shared/PlayerNameRows';
+import { RevealCard, RevealButton } from '@/components/shared/RevealCard';
+import { effectivePlayerCount, effectivePlayerNames, hasDuplicatePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/shared';
+import { pickRandom, randomInt } from '@/lib/random';
 import '@/styles/games/detective-club.css';
 
 const MIN_PLAYERS = 4;
@@ -20,7 +21,7 @@ function range(n: number): number[] {
 }
 
 function buildActiveSchedule(n: number, laps: number): number[] {
-  const start = Math.floor(Math.random() * n);
+  const start = randomInt(0, n - 1);
   const schedule: number[] = [];
   for (let lap = 0; lap < laps; lap++) for (let i = 0; i < n; i++) schedule.push((start + i) % n);
   return schedule;
@@ -74,7 +75,7 @@ export function DetectiveClubPage() {
     const n = names.length;
     const active = sched[r];
     const others = range(n).filter((i) => i !== active);
-    const conspirador = others[Math.floor(Math.random() * others.length)];
+    const conspirador = pickRandom(others);
     setActiveIdx(active);
     setConspiradorIdx(conspirador);
     setDetectiveIdxs(range(n).filter((i) => i !== active && i !== conspirador));

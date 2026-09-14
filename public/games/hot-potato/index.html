@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="/analytics.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Patata Caliente · Game Hub</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="78" font-size="72" text-anchor="middle">%F0%9F%92%A3</text></svg>'>
+<link rel="stylesheet" href="/shared.css">
+<style>
+  :root{
+    --accent:#d9502f;
+    --accent2:#f5936a;
+    --reveal-b:#f5936a;
+  }
+  html,body{
+    /* flat solid fill — a multi-layer gradient here used to leave gaps of
+       the raw background color showing on some viewports/scroll ranges */
+    background-color:var(--bg2);
+  }
+
+  .pc-theme{
+    text-align:center;
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:1.7rem;
+    line-height:1.35;
+    margin:6px 0 4px;
+    max-height:30vh;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    word-break:break-word;
+  }
+  .pc-bomb-icon{
+    text-align:center;
+    font-size:4rem;
+    line-height:1;
+    margin:14px 0 22px;
+    filter:drop-shadow(0 4px 14px rgba(0,0,0,0.4));
+    animation:pcBombIdle 2s ease-in-out infinite;
+  }
+  @keyframes pcBombIdle{
+    0%, 100%{ transform:scale(1); }
+    50%{ transform:scale(1.06); }
+  }
+  .pc-bomb-icon.armed{
+    animation:pcBombArmed 0.5s ease-in-out infinite;
+  }
+  @keyframes pcBombArmed{
+    0%, 100%{ transform:scale(1); filter:drop-shadow(0 4px 14px rgba(217,80,47,0.35)); }
+    50%{ transform:scale(1.16); filter:drop-shadow(0 4px 26px rgba(217,80,47,0.85)); }
+  }
+  #pc-boom{
+    text-align:center;
+    animation:pcShake 0.5s ease;
+  }
+  #pc-boom .end-icon{font-size:4.6rem;}
+  @keyframes pcShake{
+    0%, 100%{ transform:translateX(0); }
+    20%{ transform:translateX(-10px); }
+    40%{ transform:translateX(10px); }
+    60%{ transform:translateX(-6px); }
+    80%{ transform:translateX(6px); }
+  }
+
+  .packages-dropdown-btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05);
+    color:var(--text);
+    font-size:0.88rem;
+    font-weight:600;
+    cursor:pointer;
+    text-align:left;
+  }
+  .packages-dropdown-btn:active{transform:scale(0.98);}
+  .packages-dropdown-summary{
+    color:var(--text-dim);
+  }
+  .packages-dropdown-chevron{
+    flex-shrink:0;
+    color:var(--text-dim);
+    transition:transform .2s;
+  }
+  .packages-dropdown-btn[aria-expanded="true"] .packages-dropdown-chevron{
+    transform:rotate(180deg);
+  }
+  .packages-dropdown-panel{
+    margin-top:10px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SETUP: no players/teams — only optional fuse settings -->
+  <div class="screen" id="screen-setup">
+    <div class="card">
+      <div class="setup-header">
+        <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <h1>PATATA CALIENTE</h1>
+
+      <button type="button" class="packages-dropdown-btn" id="extra-settings-btn" aria-expanded="false">
+        <span class="packages-dropdown-summary">Ajustes adicionales</span>
+        <span class="packages-dropdown-chevron">▾</span>
+      </button>
+      <div class="packages-dropdown-panel hidden" id="extra-settings-panel">
+        <label><span class="label-icon">⏱️</span>Mecha mínima</label>
+        <div class="stepper">
+          <button type="button" id="fuse-min-minus">−</button>
+          <div class="value" id="fuse-min-value">20s</div>
+          <button type="button" id="fuse-min-plus">+</button>
+        </div>
+
+        <label><span class="label-icon">⏱️</span>Mecha máxima</label>
+        <div class="stepper">
+          <button type="button" id="fuse-max-minus">−</button>
+          <div class="value" id="fuse-max-value">45s</div>
+          <button type="button" id="fuse-max-plus">+</button>
+        </div>
+      </div>
+
+      <button class="btn-main" id="start-btn" disabled>Iniciar partida</button>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY GUIDE -->
+  <div class="guide-modal-backdrop hidden" id="guide-modal-backdrop">
+    <div class="guide-modal">
+      <button type="button" class="guide-modal-close" id="guide-modal-close">✕</button>
+      <h2>Cómo se juega</h2>
+
+      <h3>Objetivo</h3>
+      <p>No hace falta configurar jugadores ni equipos: la app solo controla la bomba. Aparece un tema; entre todos decís en voz alta palabras relacionadas mientras os pasáis el móvil como una patata caliente.</p>
+
+      <h3>Usar la app</h3>
+      <ol>
+        <li>La app elige un tema al azar. Si queréis, podéis ajustar el rango de duración de la mecha.</li>
+        <li>Pulsa "Encender la mecha" cuando estéis listos para empezar a pasaros el móvil.</li>
+        <li>El pitido se acelera al azar sin avisar cuánto queda — nadie sabe cuándo va a explotar.</li>
+        <li>Cuando explota, quien tenga el móvil en la mano en ese momento pierde esa ronda.</li>
+        <li>Pulsa "Siguiente tema" para seguir jugando con un tema nuevo. Los temas no se repiten hasta agotar todo el mazo.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN: theme + bomb fuse, then explosion -->
+  <div class="screen hidden" id="screen-game">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+
+      <div id="pc-round">
+        <div class="pc-theme" id="pc-theme"></div>
+        <div class="pc-bomb-icon" id="pc-bomb-icon">💣</div>
+        <button class="btn-main" id="start-fuse-btn">Encender la mecha</button>
+      </div>
+
+      <div id="pc-boom" class="hidden">
+        <div class="end-icon">💥</div>
+        <h1 style="font-size:1.7rem;">¡BOOM!</h1>
+        <p class="subtitle">Quien tenga el móvil en la mano… ¡pierde esta ronda!</p>
+        <button class="btn-main" id="next-btn">Siguiente tema ▶</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/shared.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var MIN_FUSE = 10, MAX_FUSE = 90, FUSE_STEP = 5;
+  var BEEP_INITIAL_INTERVAL = 2000; // ms between beeps at the very start
+  var BEEP_MIN_INTERVAL = 50; // twenty distinct beeps per second at maximum speed
+  var BEEP_MAX_SPEED_HOLD_MS = 1000; // time at twenty beeps per second before the final tone
+  var LONG_BEEP_DURATION_MS = 3000; // fixed final warning right before the explosion — counted within the total fuse duration
+  var EXPLOSION_SOUND_SRC = '/resources/audios/boom.mp3';
+
+  var config = {
+    fuseMin: 20,
+    fuseMax: 45
+  };
+
+  var CATEGORIES = null;
+  var CATEGORIES_FALLBACK = [
+    { "id": "comida", "nombre": "Comida", "icono": "🍕", "temas": ["Frutas", "Verduras", "Postres", "Comida rápida", "Bebidas sin alcohol", "Comida picante"] },
+    { "id": "animales", "nombre": "Animales", "icono": "🦁", "temas": ["Animales de granja", "Animales marinos", "Aves", "Insectos", "Mascotas", "Dinosaurios"] }
+  ];
+
+  function loadCategories(){
+    return fetch('/data/hot-potato.json')
+      .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
+      .then(function(data){ CATEGORIES = data.categorias; })
+      .catch(function(){ CATEGORIES = CATEGORIES_FALLBACK; })
+      .then(validateSetup);
+  }
+
+  function randomInt(min, max){
+    return min + Math.floor(Math.random() * (max - min + 1));
+  }
+
+  var state = {
+    deck: [],
+    index: 0,
+    audioCtx: null,
+    beepTimeout: null,
+    stepTimeout: null,
+    longBeepTimeout: null,
+    explodeTimeout: null,
+    longBeepOsc: null,
+    explosionAudio: null,
+    fuseStart: 0,
+    fuseDuration: 0,
+    beepInterval: 0,
+    longBeepDuration: 0
+  };
+
+  var screenSetup = document.getElementById('screen-setup');
+  var screenGame = document.getElementById('screen-game');
+  var ALL_SCREENS = [screenSetup, screenGame];
+
+  function switchScreen(target){
+    ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
+    target.classList.remove('hidden');
+  }
+
+  // ---------- topic deck ----------
+  var startBtn = document.getElementById('start-btn');
+
+  function buildDeck(){
+    var pool = [];
+    CATEGORIES.forEach(function(c){
+      pool = pool.concat(c.temas);
+    });
+    return shuffle(pool.slice());
+  }
+
+  function validateSetup(){
+    var ready = !!CATEGORIES && CATEGORIES.length > 0;
+    startBtn.disabled = !ready;
+    return ready;
+  }
+
+  // ---------- fuse length (setup) ----------
+  var fuseMinValueEl = document.getElementById('fuse-min-value');
+  var fuseMaxValueEl = document.getElementById('fuse-max-value');
+
+  function renderFuseValues(){
+    fuseMinValueEl.textContent = config.fuseMin + 's';
+    fuseMaxValueEl.textContent = config.fuseMax + 's';
+  }
+  document.getElementById('fuse-min-minus').addEventListener('click', function(){
+    config.fuseMin = clamp(config.fuseMin - FUSE_STEP, MIN_FUSE, config.fuseMax);
+    renderFuseValues();
+    popValue(fuseMinValueEl);
+  });
+  document.getElementById('fuse-min-plus').addEventListener('click', function(){
+    config.fuseMin = clamp(config.fuseMin + FUSE_STEP, MIN_FUSE, config.fuseMax);
+    renderFuseValues();
+    popValue(fuseMinValueEl);
+  });
+  document.getElementById('fuse-max-minus').addEventListener('click', function(){
+    config.fuseMax = clamp(config.fuseMax - FUSE_STEP, config.fuseMin, MAX_FUSE);
+    renderFuseValues();
+    popValue(fuseMaxValueEl);
+  });
+  document.getElementById('fuse-max-plus').addEventListener('click', function(){
+    config.fuseMax = clamp(config.fuseMax + FUSE_STEP, config.fuseMin, MAX_FUSE);
+    renderFuseValues();
+    popValue(fuseMaxValueEl);
+  });
+  renderFuseValues();
+
+  var extraSettingsBtn = document.getElementById('extra-settings-btn');
+  var extraSettingsPanel = document.getElementById('extra-settings-panel');
+  extraSettingsBtn.addEventListener('click', function(){
+    var isOpen = !extraSettingsPanel.classList.contains('hidden');
+    extraSettingsPanel.classList.toggle('hidden', isOpen);
+    extraSettingsBtn.setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  // ---------- round screen: theme + bomb fuse ----------
+  var phraseEl = document.getElementById('pc-theme');
+  var pcRoundEl = document.getElementById('pc-round');
+  var pcBoomEl = document.getElementById('pc-boom');
+  var pcBombIconEl = document.getElementById('pc-bomb-icon');
+  var startFuseBtn = document.getElementById('start-fuse-btn');
+  var nextBtn = document.getElementById('next-btn');
+
+  function fitPhraseText(){
+    var maxSize = 1.7, minSize = 1, step = 0.05;
+    var size = maxSize;
+    phraseEl.style.fontSize = size + 'rem';
+    while (size > minSize && phraseEl.scrollHeight > phraseEl.clientHeight + 1){
+      size -= step;
+      phraseEl.style.fontSize = size + 'rem';
+    }
+  }
+
+  var phraseResizeTimer = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(phraseResizeTimer);
+    phraseResizeTimer = setTimeout(fitPhraseText, 150);
+  });
+
+  function clearFuseTimers(){
+    if (state.beepTimeout){ clearTimeout(state.beepTimeout); state.beepTimeout = null; }
+    if (state.stepTimeout){ clearTimeout(state.stepTimeout); state.stepTimeout = null; }
+    if (state.longBeepTimeout){ clearTimeout(state.longBeepTimeout); state.longBeepTimeout = null; }
+    if (state.explodeTimeout){ clearTimeout(state.explodeTimeout); state.explodeTimeout = null; }
+    stopLongBeepSound();
+  }
+
+  function resetRoundView(){
+    clearFuseTimers();
+    pcBombIconEl.classList.remove('armed');
+    startFuseBtn.disabled = false;
+    startFuseBtn.classList.remove('hidden');
+    pcRoundEl.classList.remove('hidden');
+    pcBoomEl.classList.add('hidden');
+  }
+
+  function showRound(i){
+    phraseEl.textContent = state.deck[i];
+    fitPhraseText();
+    resetRoundView();
+  }
+
+  // ---------- audio: bomb beep + explosion, synthesized (no audio files) ----------
+  function unlockAudio(){
+    if (!state.audioCtx){
+      try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e){ state.audioCtx = null; }
+    } else if (state.audioCtx.state === 'suspended'){
+      state.audioCtx.resume();
+    }
+  }
+
+  function playBeepSound(){
+    if (!state.audioCtx) return;
+    var now = state.audioCtx.currentTime;
+    var osc = state.audioCtx.createOscillator();
+    var gain = state.audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 740;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.05, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+    osc.connect(gain).connect(state.audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.14);
+  }
+
+  // sustained tone for the final stretch — replaces discrete beeps once the fuse
+  // enters its last LONG_BEEP_MIN_MS-LONG_BEEP_MAX_MS window before exploding.
+  function playLongBeepSound(durationMs){
+    if (!state.audioCtx) return;
+    var ctx = state.audioCtx;
+    var now = ctx.currentTime;
+    var dur = durationMs / 1000;
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 740;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.02);
+    gain.gain.setValueAtTime(0.01, now + dur - 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + dur);
+    state.longBeepOsc = osc;
+  }
+
+  function stopLongBeepSound(){
+    if (state.longBeepOsc){
+      try { state.longBeepOsc.stop(); } catch (e){}
+      state.longBeepOsc = null;
+    }
+  }
+
+  function playExplosionSound(){
+    if (!state.explosionAudio){
+      state.explosionAudio = new Audio(EXPLOSION_SOUND_SRC);
+      state.explosionAudio.volume = 1;
+    }
+    state.explosionAudio.currentTime = 0;
+    state.explosionAudio.play().catch(function(){});
+  }
+
+  // ---------- fuse engine: hidden random duration, beep speeds up progressively,
+  // then holds one long sustained tone right before the explosion ----------
+  function scheduleBeep(){
+    playBeepSound();
+    var accelerationDuration = state.fuseDuration - state.longBeepDuration - BEEP_MAX_SPEED_HOLD_MS;
+    var progress = Math.min(1, (Date.now() - state.fuseStart) / accelerationDuration);
+    // Increase the beep frequency evenly throughout the fuse.
+    state.beepInterval = BEEP_INITIAL_INTERVAL -
+      (BEEP_INITIAL_INTERVAL - BEEP_MIN_INTERVAL) * progress;
+    state.beepTimeout = setTimeout(scheduleBeep, state.beepInterval);
+  }
+
+  // switches from discrete beeps to one sustained tone that plays through to the explosion
+  function startLongBeep(){
+    if (state.beepTimeout){ clearTimeout(state.beepTimeout); state.beepTimeout = null; }
+    if (state.stepTimeout){ clearTimeout(state.stepTimeout); state.stepTimeout = null; }
+    playLongBeepSound(state.longBeepDuration);
+  }
+
+  function explode(){
+    clearFuseTimers();
+    playExplosionSound();
+    pcRoundEl.classList.add('hidden');
+    pcBoomEl.classList.remove('hidden');
+  }
+
+  function startFuse(){
+    state.fuseDuration = randomInt(config.fuseMin, config.fuseMax) * 1000;
+    state.fuseStart = Date.now();
+    state.longBeepDuration = LONG_BEEP_DURATION_MS;
+    state.beepInterval = BEEP_INITIAL_INTERVAL;
+    scheduleBeep();
+    state.longBeepTimeout = setTimeout(startLongBeep,
+      state.fuseDuration - state.longBeepDuration);
+    state.explodeTimeout = setTimeout(explode, state.fuseDuration);
+  }
+
+  startFuseBtn.addEventListener('click', function(){
+    unlockAudio();
+    startFuseBtn.disabled = true;
+    startFuseBtn.classList.add('hidden');
+    pcBombIconEl.classList.add('armed');
+    startFuse();
+  });
+
+  nextBtn.addEventListener('click', function(){
+    state.index++;
+    if (state.index >= state.deck.length){
+      state.deck = buildDeck(); // reshuffle and keep going — the deck never runs out
+      state.index = 0;
+    }
+    showRound(state.index);
+  });
+
+  startBtn.addEventListener('click', function(){
+    if (!validateSetup()) return;
+
+    state.deck = buildDeck();
+    state.index = 0;
+
+    showRound(0);
+    switchScreen(screenGame);
+  });
+
+  // ---------- how-to-play guide ----------
+  setupModal(
+    document.querySelectorAll('.ayuda-trigger'),
+    document.getElementById('guide-modal-backdrop'),
+    document.getElementById('guide-modal-close')
+  );
+
+  // ---------- back to setup (stop any running fuse first) ----------
+  initBackToSetupConfirm(function(){
+    clearFuseTimers();
+    switchScreen(screenSetup);
+  });
+
+  // ---------- init ----------
+  loadCategories();
+})();
+</script>
+</body>
+</html>

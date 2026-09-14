@@ -22,13 +22,12 @@ jobs:
           next=$((current + 1))
           printf '{ "build": %s }\n' "$next" > version.json
           printf '{ "build": %s }\n' "$next" > public/version.json
-          printf '{ "build": %s }\n' "$next" > public/legacy/version.json
           echo "build=$next" >> "$GITHUB_ENV"
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add version.json public/version.json public/legacy/version.json
+          git add version.json public/version.json
           git commit -m "chore: bump build number to ${build} [skip version]"
           git push

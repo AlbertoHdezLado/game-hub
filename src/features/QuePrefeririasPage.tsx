@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { ScreenHeader } from '@/components/legacy/ScreenHeader';
-import { GuideModal } from '@/components/legacy/GuideModal';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { GuideModal } from '@/components/shared/GuideModal';
 import { loadContent } from '@/lib/content';
+import { randomInt } from '@/lib/random';
 import '@/styles/games/que-preferirias.css';
 
 interface Option {
@@ -11,7 +12,7 @@ interface Option {
 }
 
 // picks 2 distinct options at random from the same nivel (desirability tier), never
-// mixing a dream power with a costly sacrifice — mirrors legacy pickPair()
+// mixing a dream power with a costly sacrifice — mirrors shared pickPair()
 function pickPair(options: Option[]): [string, string] {
   const byLevel = new Map<number, string[]>();
   options.forEach((option) => {
@@ -20,11 +21,11 @@ function pickPair(options: Option[]): [string, string] {
     byLevel.set(option.nivel, list);
   });
   const levels = [...byLevel.keys()].filter((level) => (byLevel.get(level)?.length ?? 0) >= 2);
-  const pool = [...(byLevel.get(levels[Math.floor(Math.random() * levels.length)]) ?? [])];
-  const indexA = Math.floor(Math.random() * pool.length);
+  const pool = [...(byLevel.get(levels[randomInt(0, levels.length - 1)]) ?? [])];
+  const indexA = randomInt(0, pool.length - 1);
   const optionA = pool[indexA];
   pool.splice(indexA, 1);
-  const optionB = pool[Math.floor(Math.random() * pool.length)];
+  const optionB = pool[randomInt(0, pool.length - 1)];
   return [optionA, optionB];
 }
 
@@ -35,7 +36,7 @@ export function QuePrefeririasPage() {
   const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
-    loadContent<{ opciones: Option[] }>('que-preferirias.json').then((data) => setOptions(data.opciones));
+    loadContent<{ opciones: Option[] }>('would-you-rather.json').then((data) => setOptions(data.opciones));
   }, []);
 
   const canStart = !!options && options.length >= 2;

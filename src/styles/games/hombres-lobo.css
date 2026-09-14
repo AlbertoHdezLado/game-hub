@@ -1,10 +1,10 @@
-.reveal-wrap{height:280px;}
+.reveal-wrap{height:min(62vh, 520px); min-height:320px;}
 .reveal-icon{filter:grayscale(1);}
 .reveal-text{font-size:1.15rem;}
 .reveal-content{padding:0; cursor:pointer;}
 .reveal-content img.reveal-portrait{
   position:absolute; inset:0; width:100%; height:100%;
-  max-width:none; max-height:none; object-fit:cover; border-radius:0; filter:none;
+  max-width:none; max-height:none; object-fit:contain; border-radius:0; filter:none;
 }
 .reveal-name-caption{
   text-align:center; font-family:var(--font-display); font-size:1.15rem; font-weight:700;

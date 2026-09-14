@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-// same tone patterns as legacy shared per-game <script> (Mímica/Time's Up/Tabú): correct (rising sine
+// same tone patterns as shared shared per-game <script> (Mímica/Time's Up/Tabú): correct (rising sine
 // double-beep), skip (falling triangle), foul (harsh sawtooth double-beep), alarm (3x square beep)
 export function useGameAudio() {
   const ctxRef = useRef<AudioContext | null>(null);

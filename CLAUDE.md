@@ -1,6 +1,6 @@
 # Game Hub
 
-Colección de juegos de fiesta/mesa en HTML+CSS+JS vanilla, sin build ni dependencias. `index.html` es el hub con acceso a todos los juegos.
+Colección de juegos de fiesta/mesa en Vite + React para el hub, con juegos legacy vanilla servidos como páginas estáticas limpias en `public/games/<slug>/index.html`. La app muestra el hub en `/` y cada juego en `/games/<english-slug>/`, sin exponer `.html` en las URLs.
 
 Contexto completo del proyecto en `.claude/`:
 

@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { ScreenHeader } from '@/components/legacy/ScreenHeader';
-import { GuideModal } from '@/components/legacy/GuideModal';
-import { PlayerNameRows } from '@/components/legacy/PlayerNameRows';
-import { PackagesDropdown } from '@/components/legacy/PackagesDropdown';
-import { RevealCard, RevealButton } from '@/components/legacy/RevealCard';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { GuideModal } from '@/components/shared/GuideModal';
+import { PlayerNameRows } from '@/components/shared/PlayerNameRows';
+import { PackagesDropdown } from '@/components/shared/PackagesDropdown';
+import { RevealCard, RevealButton } from '@/components/shared/RevealCard';
 import { useGameAudio } from '@/hooks/useGameAudio';
 import { loadContent } from '@/lib/content';
+import { pickRandom } from '@/lib/random';
 import {
   buildRandomShuffledRoles, effectivePlayerCount, effectivePlayerNames, hasDuplicatePlayerNames,
   loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames,
-} from '@/lib/legacy';
+} from '@/lib/shared';
 import type { WordPack, WordPackContent } from '@/types/game';
 import '@/styles/games/impostor.css';
 
@@ -32,12 +33,12 @@ const IMPOSTOR_MODE_DESC: Record<ImpostorMode, string> = {
 function pickRandomWordWithHint(packages: WordPack[], selectedIds: string[]): { word: string; hint: string | null } {
   const pool: { word: string; packageId: string; pkg: WordPack }[] = [];
   packages.forEach((p) => { if (selectedIds.includes(p.id)) p.palabras.forEach((w) => pool.push({ word: w, packageId: p.id, pkg: p })); });
-  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  const chosen = pickRandom(pool);
   let hint = chosen.pkg.relacionadas?.[chosen.word] ?? null;
   if (!hint) {
     let related = pool.filter((item) => item.packageId === chosen.packageId && item.word !== chosen.word);
     if (related.length === 0) related = pool.filter((item) => item.word !== chosen.word);
-    hint = related.length ? related[Math.floor(Math.random() * related.length)].word : null;
+    hint = related.length ? pickRandom(related).word : null;
   }
   return { word: chosen.word, hint };
 }
@@ -176,7 +177,7 @@ export function ImpostorPage() {
     setVoteStage('idle');
     if (first) {
       const aliveIdxs = alive.map((a, i) => (a ? i : -1)).filter((i) => i !== -1);
-      const starter = aliveIdxs[Math.floor(Math.random() * aliveIdxs.length)];
+      const starter = pickRandom(aliveIdxs);
       setStartPlayerName(playerNames[starter]);
       setIsFirstDebate(false);
     } else {

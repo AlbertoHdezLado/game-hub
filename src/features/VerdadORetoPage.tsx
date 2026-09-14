@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { ScreenHeader } from '@/components/legacy/ScreenHeader';
-import { GuideModal } from '@/components/legacy/GuideModal';
-import { CategorySelector, type SelectableCategory } from '@/components/legacy/CategorySelector';
-import { PlayerNameRows } from '@/components/legacy/PlayerNameRows';
-import { RevealCard } from '@/components/legacy/RevealCard';
-import { ProgressDots } from '@/components/legacy/ProgressDots';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { GuideModal } from '@/components/shared/GuideModal';
+import { CategorySelector, type SelectableCategory } from '@/components/shared/CategorySelector';
+import { PlayerNameRows } from '@/components/shared/PlayerNameRows';
+import { RevealCard } from '@/components/shared/RevealCard';
+import { ProgressDots } from '@/components/shared/ProgressDots';
 import { loadContent } from '@/lib/content';
 import { pickRandom } from '@/lib/random';
-import { effectivePlayerCount, effectivePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/legacy';
+import { effectivePlayerCount, effectivePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/shared';
 import '@/styles/games/verdad-o-reto.css';
 
 const MIN_PLAYERS = 2;

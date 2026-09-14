@@ -1,11 +1,11 @@
 import { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { ScreenHeader } from '@/components/legacy/ScreenHeader';
-import { GuideModal } from '@/components/legacy/GuideModal';
-import { PlayerNameRows } from '@/components/legacy/PlayerNameRows';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { GuideModal } from '@/components/shared/GuideModal';
+import { PlayerNameRows } from '@/components/shared/PlayerNameRows';
 import { loadContent } from '@/lib/content';
-import { shuffle } from '@/lib/random';
-import { effectivePlayerCount, effectivePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/legacy';
+import { randomInt, shuffle } from '@/lib/random';
+import { effectivePlayerCount, effectivePlayerNames, loadSavedPlayerNames, normalizeTrailingSlot, savePlayerNames } from '@/lib/shared';
 import '@/styles/games/picolo.css';
 
 const MIN_PLAYERS = 2;
@@ -45,13 +45,13 @@ function readableTextColor(hex: string): string {
 
 function fillTemplate(tpl: string, playerNames: string[]): string {
   if (tpl.includes('{P1}') || tpl.includes('{P2}')) {
-    const idx1 = Math.floor(Math.random() * playerNames.length);
+    const idx1 = randomInt(0, playerNames.length - 1);
     let idx2 = idx1;
-    while (idx2 === idx1 && playerNames.length > 1) idx2 = Math.floor(Math.random() * playerNames.length);
+    while (idx2 === idx1 && playerNames.length > 1) idx2 = randomInt(0, playerNames.length - 1);
     return tpl.replace(/\{P1\}/g, playerNames[idx1]).replace(/\{P2\}/g, playerNames[idx2]);
   }
   if (tpl.includes('{P}')) {
-    const idx = Math.floor(Math.random() * playerNames.length);
+    const idx = randomInt(0, playerNames.length - 1);
     return tpl.replace(/\{P\}/g, playerNames[idx]);
   }
   return tpl;
@@ -115,8 +115,8 @@ export function PicoloPage() {
 
   function resolveDecision() {
     if (!card?.opciones?.length) return;
-    const chosen = card.opciones[Math.floor(Math.random() * card.opciones.length)];
-    setText(`¡Beben los que eligieron «${chosen}»!`);
+    const chosenLabel = card.opciones[randomInt(0, card.opciones.length - 1)];
+    setText(`¡Beben los que eligieron «${chosenLabel}»!`);
     setPulse((p) => p + 1);
     setDecisionResolved(true);
   }

@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { ScreenHeader } from '@/components/legacy/ScreenHeader';
-import { GuideModal } from '@/components/legacy/GuideModal';
-import { CategorySelector, type SelectableCategory } from '@/components/legacy/CategorySelector';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { GuideModal } from '@/components/shared/GuideModal';
+import { CategorySelector, type SelectableCategory } from '@/components/shared/CategorySelector';
 import { loadContent } from '@/lib/content';
 import { shuffle } from '@/lib/random';
 import { getGame } from '@/data/games';
@@ -27,7 +27,7 @@ interface Variant {
 
 const VARIANTS: Record<string, Variant> = {
   'yo-nunca': {
-    jsonFile: 'yo-nunca.json',
+    jsonFile: 'never-have-i-ever.json',
     field: 'frases',
     title: 'YO NUNCA',
     phraseClassName: 'yn-phrase',
@@ -54,7 +54,7 @@ const VARIANTS: Record<string, Variant> = {
     ),
   },
   'quien-es-mas-probable': {
-    jsonFile: 'quien-es-mas-probable.json',
+    jsonFile: 'most-likely.json',
     field: 'frases',
     title: '¿QUIÉN ES MÁS PROBABLE?',
     phraseClassName: 'qp-phrase',
@@ -73,7 +73,7 @@ const VARIANTS: Record<string, Variant> = {
     ),
   },
   'que-harias-si': {
-    jsonFile: 'que-harias-si.json',
+    jsonFile: 'what-would-you-do.json',
     field: 'escenarios',
     title: '¿QUÉ HARÍAS SI...?',
     phraseClassName: 'qh-phrase',

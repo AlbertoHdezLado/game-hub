@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { ScreenHeader } from '@/components/legacy/ScreenHeader';
-import { GuideModal } from '@/components/legacy/GuideModal';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { GuideModal } from '@/components/shared/GuideModal';
 import { loadContent } from '@/lib/content';
 import { randomInt, shuffle } from '@/lib/random';
 import '@/styles/games/patata-caliente.css';
@@ -44,7 +44,7 @@ export function PatataCalientePage() {
   const explosionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    loadContent<{ categorias: HotCategory[] }>('patata-caliente.json').then((data) => setCategories(data.categorias));
+    loadContent<{ categorias: HotCategory[] }>('hot-potato.json').then((data) => setCategories(data.categorias));
   }, []);
 
   useLayoutEffect(() => {

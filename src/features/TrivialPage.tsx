@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { GuideModal } from '@/components/legacy/GuideModal';
-import { TeamPlayerRows } from '@/components/legacy/TeamPlayerRows';
-import { TeamBoxes } from '@/components/legacy/TeamBoxes';
+import { GuideModal } from '@/components/shared/GuideModal';
+import { TeamPlayerRows } from '@/components/shared/TeamPlayerRows';
+import { TeamBoxes } from '@/components/shared/TeamBoxes';
 import { loadContent } from '@/lib/content';
-import { shuffle } from '@/lib/random';
+import { randomInt as cryptoRandomInt, shuffle } from '@/lib/random';
 import {
   MAX_TEAMS, MIN_TEAMS, TEAM_NAMES, autoBalanceAllTeams, buildTeams, emptyTeamIndex,
-  leastPopulatedTeam, normalizeTrailingTeamSlot, randomizeAllTeams, realPlayerCount, type TeamRow,
+  initialTeamRows, leastPopulatedTeam, normalizeTrailingTeamSlot, randomizeAllTeams, realPlayerCount, type TeamRow,
 } from '@/lib/teamSetup';
-import { loadSavedPlayerNames, savePlayerNames } from '@/lib/legacy';
+import { loadSavedPlayerNames, savePlayerNames } from '@/lib/shared';
 import '@/styles/games/team-shared.css';
 import '@/styles/games/trivial.css';
 
@@ -38,11 +38,11 @@ interface Team {
 }
 
 function randomInt(min: number, max: number): number {
-  return min + Math.floor(Math.random() * (max - min + 1));
+  return cryptoRandomInt(min, max);
 }
 
 export function TrivialPage() {
-  const [rows, setRows] = useState<TeamRow[]>(() => normalizeTrailingTeamSlot(loadSavedPlayerNames().slice(0, MAX_PLAYERS).map((name) => ({ name, team: 0 })), MAX_PLAYERS, 2));
+  const [rows, setRows] = useState<TeamRow[]>(() => initialTeamRows(loadSavedPlayerNames(), MAX_PLAYERS, 2));
   const [numTeams, setNumTeams] = useState(2);
   const [setupStep, setSetupStep] = useState(0);
   const [categories, setCategories] = useState<Category[] | null>(null);
@@ -70,7 +70,7 @@ export function TrivialPage() {
   const teamBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadContent<{ categorias: Category[] }>('trivial.json').then((data) => setCategories(data.categorias));
+    loadContent<{ categorias: Category[] }>('trivia.json').then((data) => setCategories(data.categorias));
   }, []);
 
   function updateRows(next: TeamRow[]) {
@@ -148,7 +148,7 @@ export function TrivialPage() {
     if (!canStart) return;
     const built = buildTeams(rows, numTeams);
     const initialTeams: Team[] = built.teams.map((t) => ({ ...t, wedges: [], turnsPlayed: 0, nextWedgeTurn: randomInt(MIN_WEDGE_GAP, MAX_WEDGE_GAP) }));
-    const startPointer = Math.floor(Math.random() * initialTeams.length);
+    const startPointer = cryptoRandomInt(0, initialTeams.length - 1);
     setPlayerNames(built.playerNames);
     setTeams(initialTeams);
     setTurnTeamPointer(startPointer);

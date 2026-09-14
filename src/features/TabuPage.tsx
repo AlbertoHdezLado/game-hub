@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { GameThemeProvider } from '@/components/GameThemeProvider';
-import { ScreenHeader } from '@/components/legacy/ScreenHeader';
-import { GuideModal } from '@/components/legacy/GuideModal';
-import { PackagesDropdown } from '@/components/legacy/PackagesDropdown';
-import { TeamPlayerRows } from '@/components/legacy/TeamPlayerRows';
-import { TeamBoxes } from '@/components/legacy/TeamBoxes';
-import { TeamScoreboard } from '@/components/legacy/TeamScoreboard';
-import { TurnEndWordPills, type TurnResult } from '@/components/legacy/TurnEndWordPills';
+import { ScreenHeader } from '@/components/shared/ScreenHeader';
+import { GuideModal } from '@/components/shared/GuideModal';
+import { PackagesDropdown } from '@/components/shared/PackagesDropdown';
+import { TeamPlayerRows } from '@/components/shared/TeamPlayerRows';
+import { TeamBoxes } from '@/components/shared/TeamBoxes';
+import { TeamScoreboard } from '@/components/shared/TeamScoreboard';
+import { TurnEndWordPills, type TurnResult } from '@/components/shared/TurnEndWordPills';
 import { loadContent } from '@/lib/content';
-import { shuffle } from '@/lib/random';
-import { loadSavedPlayerNames, savePlayerNames } from '@/lib/legacy';
+import { randomInt, shuffle } from '@/lib/random';
+import { loadSavedPlayerNames, savePlayerNames } from '@/lib/shared';
 import { useGameAudio } from '@/hooks/useGameAudio';
 import {
   MAX_TEAMS, MIN_TEAMS, TEAM_NAMES, autoBalanceAllTeams, buildTeams, emptyTeamIndex, formatMMSS,
-  leastPopulatedTeam, normalizeTrailingTeamSlot, randomizeAllTeams, realPlayerCount, type BuiltTeam, type TeamRow,
+  initialTeamRows, leastPopulatedTeam, normalizeTrailingTeamSlot, randomizeAllTeams, realPlayerCount, type BuiltTeam, type TeamRow,
 } from '@/lib/teamSetup';
 import { flattenTabooPacks, type TabooCard, type TabooContent, type TabooPack } from '@/types/timed';
 import '@/styles/games/team-shared.css';
@@ -27,7 +27,7 @@ type Screen = 'setup' | 'game' | 'end';
 type TurnPhase = 'intro' | 'play' | 'end';
 
 export function TabuPage() {
-  const [rows, setRows] = useState<TeamRow[]>(() => normalizeTrailingTeamSlot(loadSavedPlayerNames().slice(0, MAX_PLAYERS).map((name) => ({ name, team: 0 })), MAX_PLAYERS, 2));
+  const [rows, setRows] = useState<TeamRow[]>(() => initialTeamRows(loadSavedPlayerNames(), MAX_PLAYERS, 2));
   const [numTeams, setNumTeams] = useState(2);
   const [packages, setPackages] = useState<TabooPack[] | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -53,7 +53,7 @@ export function TabuPage() {
   const audio = useGameAudio();
 
   useEffect(() => {
-    loadContent<TabooContent>('tabu.json').then((data) => {
+    loadContent<TabooContent>('taboo.json').then((data) => {
       setPackages(data.paquetes);
       setSelectedIds(data.paquetes.map((p) => p.id));
     });
@@ -107,7 +107,7 @@ export function TabuPage() {
   function handleStart() {
     if (!canStart) return;
     const built = buildTeams(rows, numTeams);
-    const startTeam = Math.floor(Math.random() * built.teams.length);
+    const startTeam = randomInt(0, built.teams.length - 1);
     setPlayerNames(built.playerNames);
     setDeck(shuffle(flattenTabooPacks(packages!, selectedIds)).slice(0, DECK_SIZE));
     setTurnTeamPointer(startTeam);

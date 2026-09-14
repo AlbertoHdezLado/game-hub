@@ -2,19 +2,19 @@
 
 ## Qué es
 
-App web de juegos de fiesta/mesa para jugar en grupo con un solo móvil (o uno por equipo). Pensada para abrirse directamente en el navegador — sin servidor, sin build, sin npm. Cada juego es un `.html` independiente y autocontenido en la raíz del repo.
+App web de juegos de fiesta/mesa para jugar en grupo con un solo móvil (o uno por equipo). El hub está montado con Vite + React en `/`, y los juegos recuperan la implementación vanilla original como documentos estáticos servidos en `/games/<english-slug>/` desde `public/games/<english-slug>/index.html`.
 
 ## Stack
 
-- HTML + CSS + JS vanilla, estilo ES5 (`var`, funciones anónimas, sin arrow functions ni módulos ES6). Sin frameworks, sin bundler, sin TypeScript.
-- Cada `<juego>.html` es una IIFE `(function(){ "use strict"; ... })();` autocontenida.
-- Datos de contenido (palabras, preguntas, cartas, roles...) en ficheros `.json` sueltos en la raíz, cargados vía `fetch()`.
-- `analytics.js`: Google Analytics (GA4). Solo recoge datos de verdad si la app está en un dominio real — abrir el HTML localmente (`file://`) no cuenta como visita.
+- Vite + React + TypeScript para el hub y el enrutado base.
+- Cada juego mantiene su HTML + CSS + JS vanilla, estilo ES5 (`var`, funciones anónimas, sin módulos ES6), en `public/games/<english-slug>/index.html`.
+- Datos de contenido (palabras, preguntas, cartas, roles...) en `public/data/*.json`, cargados desde los juegos vía `fetch('/data/archivo.json')`.
+- `public/analytics.js`: Google Analytics (GA4). Solo recoge datos de verdad si la app está en un dominio real.
 
 ## Ficheros compartidos
 
-- **`shared.css`** — design system común: variables CSS (`--bg1/2/3`, `--accent`, `--accent2`, `--text`, `--glass`...), layout base (`#app`, `.screen`, `.card`), tipografía. Cada juego sobreescribe `--accent`/`--accent2` (y a veces `--reveal-b`) en su propio `<style>` para teñir su UI con su color de marca, pero reutiliza las mismas clases de layout.
-- **`shared.js`** — utilidades compartidas entre juegos:
+- **`public/shared.css`** — design system común para los juegos estáticos: variables CSS (`--bg1/2/3`, `--accent`, `--accent2`, `--text`, `--glass`...), layout base (`#app`, `.screen`, `.card`), tipografía. Cada juego sobreescribe `--accent`/`--accent2` (y a veces `--reveal-b`) en su propio `<style>` para teñir su UI con su color de marca.
+- **`public/shared.js`** — utilidades compartidas entre juegos:
   - `shuffle`, `clamp`, `escapeHtml`, `popValue` (animación al cambiar un valor numérico).
   - `loadSavedPlayerNames` / `savePlayerNames` — nombres de jugadores persistidos en `localStorage` (`gamehub.playerNames`), compartidos entre Impostor / Hombres Lobo / Detective Club.
   - `loadSavedRoleCounts` / `saveRoleCounts` — configuración de roles de Hombres Lobo persistida (`gamehub.werewolfRoleCounts`).
@@ -22,7 +22,7 @@ App web de juegos de fiesta/mesa para jugar en grupo con un solo móvil (o uno p
   - `initHomeExitConfirm` — intercepta todo `a[aria-label="Inicio"]` fuera de `#screen-setup` para pedir confirmación antes de volver al hub (se perdería la partida).
   - `initBackToSetupConfirm(returnToSetup)` — igual pero para el botón "volver a configuración" dentro del propio juego.
   - `createRevealCard` — tarjeta de "toca para revelar" (usada en Impostor, Hombres Lobo, Detective Club).
-- **`index.html`** — el hub. Grid de tarjetas (`.mode-card`), cada una con icono, color de tema y enlace al juego.
+- **`src/features/HubPage.tsx` + `src/components/GameCard.tsx`** — el hub React. Reproduce el grid legacy de tarjetas (`.mode-card`), cada una con icono, color de tema y enlace limpio a `/games/<english-slug>/`.
 
 ## Patrón de pantallas de cada juego
 
@@ -63,7 +63,7 @@ Consecuencia práctica: **para añadir contenido a un juego casi nunca hay que t
 
 ## Sistema de temas de color (hub)
 
-En `index.html`, cada tarjeta de juego lleva una clase `theme-<color>` (`theme-red`, `theme-violet`, `theme-steel`, `theme-flame`...) que define su `border-color` y color de icono (`.mode-icon-badge{background-color:...}`). Los colores están definidos inline en el `<style>` de `index.html`, no en `shared.css`.
+En `src/components/GameCard.tsx`, cada tarjeta de juego lleva una clase `theme-<color>` (`theme-red`, `theme-violet`, `theme-steel`, `theme-flame`...) que define su `border-color` y color de icono (`.mode-icon-badge{background-color:...}`). Los colores del hub viven en `src/styles/index.css`.
 
 ## Iconos
 
@@ -75,8 +75,8 @@ Una tarjeta de juego sin terminar/publicar usa `class="mode-card ... disabled"` 
 
 ## Versión (número de build)
 
-`version.json` (`{ "build": N }`) se muestra en el footer del hub (`index.html`) como `0.N`, junto a los créditos. Se incrementa solo, sin ningún paso manual en ningún clon: el workflow `.github/workflows/bump-version.yml` corre en GitHub Actions en cada push a `main`, suma 1 a `version.json` y hace commit+push de vuelta (marcando el mensaje con `[skip version]` para no disparar el workflow otra vez a sí mismo).
+`public/version.json` (`{ "build": N }`) se muestra en el footer del hub como `0.N`, junto a los créditos. Se incrementa solo, sin ningún paso manual en ningún clon: el workflow `.github/workflows/bump-version.yml` corre en GitHub Actions en cada push a `main`, suma 1 al JSON de versión y hace commit+push de vuelta (marcando el mensaje con `[skip version]` para no disparar el workflow otra vez a sí mismo).
 
 ## Botón de sugerencias
 
-`<a href="https://forms.gle/..." class="suggestion-link">💡 Enviar una sugerencia</a>` en el hub — enlaza a un Google Form externo, no tocar salvo que el usuario pida cambiar el formulario.
+`<a href="https://forms.gle/..." class="suggestion-link">💡 Enviar una sugerencia</a>` en el hub React — enlaza a un Google Form externo, no tocar salvo que el usuario pida cambiar el formulario.

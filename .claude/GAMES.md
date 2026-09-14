@@ -1,25 +1,25 @@
 # Catálogo de juegos
 
-16 juegos en el hub (`index.html`). Todos activos salvo **Hitster**, deshabilitado con badge "Próximamente" (ver `.claude/HITSTER.md`).
+16 juegos en el hub React (`/`). Todos activos salvo **Hitster**, deshabilitado con badge "Próximamente" (ver `.claude/HITSTER.md`). Los juegos se sirven desde `public/games/<english-slug>/index.html` y se enlazan como `/games/<english-slug>/`.
 
 | # | Juego | HTML | Tema | Fichero de datos | Esquema* | Paquetes/categorías hoy |
 |---|-------|------|------|-------------------|----------|--------------------------|
-| 1 | Impostor | `impostor.html` | red | `packages.json` (compartido) | A | 29 paquetes |
-| 2 | Hombres Lobo | `hombres-lobo.html` | violet | `werewolf-roles.json` | D | 32 roles |
-| 3 | Código Secreto | `codigo-secreto.html` | steel | `codigo-secreto-words.json` | B | 9 categorías |
-| 4 | Time's Up | `times-up.html` | green | `packages.json` (compartido) | A | 29 paquetes |
-| 5 | Verdad o Reto | `verdad-o-reto.html` | teal | `truth-or-dare.json` | C | 3 categorías (suave/fiesta/atrevido) |
-| 6 | Mímica | `mimica.html` | amber | `packages.json` (compartido) | A | 29 paquetes |
-| 7 | Yo Nunca | `yo-nunca.html` | gold | `yo-nunca.json` | B | 3 categorías |
-| 8 | Picolo | `picolo.html` | orange | `picolo.json` | E | lista plana de cartas |
-| 9 | Trivial Pursuit | `trivial.html` | lime | `trivial.json` | F | 6 categorías |
-| 10 | Taboo | `tabu.html` | purple | `tabu.json` | G | 5 paquetes |
-| 11 | ¿Quién es más probable? | `quien-es-mas-probable.html` | yellow | `quien-es-mas-probable.json` | B | 4 categorías |
-| 12 | ¿Qué Harías Si...? | `que-harias-si.html` | indigo | `que-harias-si.json` | B | 4 categorías |
-| 13 | ¿Qué Preferirías? | `que-preferirias.html` | cyan | `que-preferirias.json` | H | lista plana de opciones |
-| 14 | Patata Caliente | `patata-caliente.html` | flame | `patata-caliente.json` | B | 10 categorías |
-| 15 | Detective Club | `detective-club.html` | blue | — (sin JSON) | — | la palabra la escribe el jugador activo cada ronda, basada en una carta Dixit física; no hay banco de contenido que editar |
-| 16 | Hitster | `hitster.html` | rose | `music-timeline.json` | I | 2 ediciones · 19-20 canciones cada una (contenido MUY escaso — por eso está deshabilitado) |
+| 1 | Impostor | `public/games/impostor/index.html` | red | `public/data/packages.json` (compartido) | A | 29 paquetes |
+| 2 | Hombres Lobo | `public/games/werewolf/index.html` | violet | `public/data/werewolf-roles.json` | D | 32 roles |
+| 3 | Código Secreto | `public/games/secret-code/index.html` | steel | `public/data/secret-code-words.json` | B | 9 categorías |
+| 4 | Time's Up | `public/games/times-up/index.html` | green | `public/data/packages.json` (compartido) | A | 29 paquetes |
+| 5 | Verdad o Reto | `public/games/truth-or-dare/index.html` | teal | `public/data/truth-or-dare.json` | C | 3 categorías (suave/fiesta/atrevido) |
+| 6 | Mímica | `public/games/charades/index.html` | amber | `public/data/packages.json` (compartido) | A | 29 paquetes |
+| 7 | Yo Nunca | `public/games/never-have-i-ever/index.html` | gold | `public/data/never-have-i-ever.json` | B | 3 categorías |
+| 8 | Picolo | `public/games/picolo/index.html` | orange | `public/data/picolo.json` | E | lista plana de cartas |
+| 9 | Trivial Pursuit | `public/games/trivia/index.html` | lime | `public/data/trivia.json` | F | 6 categorías |
+| 10 | Taboo | `public/games/taboo/index.html` | purple | `public/data/taboo.json` | G | 5 paquetes |
+| 11 | ¿Quién es más probable? | `public/games/most-likely/index.html` | yellow | `public/data/most-likely.json` | B | 4 categorías |
+| 12 | ¿Qué Harías Si...? | `public/games/what-would-you-do/index.html` | indigo | `public/data/what-would-you-do.json` | B | 4 categorías |
+| 13 | ¿Qué Preferirías? | `public/games/would-you-rather/index.html` | cyan | `public/data/would-you-rather.json` | H | lista plana de opciones |
+| 14 | Patata Caliente | `public/games/hot-potato/index.html` | flame | `public/data/hot-potato.json` | B | 10 categorías |
+| 15 | Detective Club | `public/games/detective-club/index.html` | blue | — (sin JSON) | — | la palabra la escribe el jugador activo cada ronda, basada en una carta Dixit física; no hay banco de contenido que editar |
+| 16 | Hitster | `public/games/hitster/index.html` | rose | `public/data/music-timeline.json` | I | 2 ediciones · 19-20 canciones cada una (contenido MUY escaso — por eso está deshabilitado) |
 
 \* Letra de esquema = sección correspondiente en `.claude/ADDING_CONTENT.md`.
 

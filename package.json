@@ -10,17 +10,19 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "vite-plugin-pwa": "latest",
-    "typescript": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-router-dom": "latest"
+    "react-router-dom": "latest",
+    "tailwindcss": "^4.3.3",
+    "typescript": "latest",
+    "vite": "latest",
+    "vite-plugin-pwa": "latest"
   },
   "devDependencies": {
+    "@types/node": "latest",
     "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "@types/node": "latest"
+    "@types/react-dom": "latest"
   }
 }

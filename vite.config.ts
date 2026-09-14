@@ -1,14 +1,45 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
+type ConnectNext = (error?: unknown) => void;
+
+function cleanGameRoutes(): Plugin {
+  return {
+    name: 'game-hub-clean-game-routes',
+    configureServer(server: ViteDevServer) {
+      server.middlewares.use((request: IncomingMessage, _response: ServerResponse, next: ConnectNext) => {
+        rewriteGameUrl(request);
+        next();
+      });
+    },
+    configurePreviewServer(server: PreviewServer) {
+      server.middlewares.use((request: IncomingMessage, _response: ServerResponse, next: ConnectNext) => {
+        rewriteGameUrl(request);
+        next();
+      });
+    },
+  };
+}
+
+function rewriteGameUrl(request: { url?: string }) {
+  const match = request.url?.match(/^\/games\/([^/?]+)\/?(?:\?.*)?$/);
+  if (!match) return;
+
+  request.url = `/games/${match[1]}/index.html`;
+}
+
 export default defineConfig({
   plugins: [
+    cleanGameRoutes(),
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['resources/images/hub/logo-logo.svg'],
@@ -23,7 +54,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,json}'],
-        navigateFallbackDenylist: [/^\/legacy\//, /^\/data\//],
+        navigateFallbackDenylist: [/^\/data\//, /^\/games\//],
         runtimeCaching: [
           {
             urlPattern: /\/data\/.*\.json$/,

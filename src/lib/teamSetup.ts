@@ -46,6 +46,11 @@ export function randomizeAllTeams(rows: readonly TeamRow[], numTeams: number): T
   return next;
 }
 
+export function initialTeamRows(names: readonly string[], max: number, numTeams: number): TeamRow[] {
+  const rows = names.slice(0, max).map((name) => ({ name, team: 0 }));
+  return normalizeTrailingTeamSlot(randomizeAllTeams(rows, numTeams), max, numTeams);
+}
+
 export interface BuiltTeam {
   score: number;
   memberIdxs: number[];
