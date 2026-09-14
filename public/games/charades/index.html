@@ -285,7 +285,10 @@
       <div class="scr-body">
         <div id="setup-step-players">
           <label><span class="label-icon">👥</span>Jugadores</label>
-          <div id="mimica-players-list"></div>
+          <div class="player-chips-list" id="mimica-players-chips"></div>
+          <div class="player-input-row">
+            <input type="text" class="player-name-input" id="mimica-players-draft" placeholder="Nombre del jugador..." maxlength="20">
+          </div>
           <div class="error-msg" id="players-error"></div>
         </div>
 
@@ -693,7 +696,8 @@
   var teamCountValueEl = document.getElementById('team-count-value');
   var teamCountMinusBtn = document.getElementById('team-count-minus');
   var teamCountPlusBtn = document.getElementById('team-count-plus');
-  var playersListEl = document.getElementById('mimica-players-list');
+  var playersChipsList = document.getElementById('mimica-players-chips');
+  var playersDraftInput = document.getElementById('mimica-players-draft');
   var randomizeTeamsBtn = document.getElementById('randomize-teams-btn');
 
   function renderTeamCount(){
@@ -701,7 +705,7 @@
   }
 
   function realPlayerCount(){
-    return config.rows.filter(function(r){ return r.name.trim(); }).length;
+    return config.rows.length;
   }
 
   function leastPopulatedTeam(){
@@ -717,17 +721,8 @@
     return minIdx;
   }
 
-  // keeps exactly one empty row at the end, ready for the next player —
-  // its default team is whichever team currently has the fewest players
-  function normalizeTrailingSlot(){
-    var rows = config.rows;
-    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
-      rows.pop();
-    }
-    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
-      rows.push({ name: "", team: leastPopulatedTeam() });
-    }
-  }
+  // players are only added once a non-empty name is committed from the draft input;
+  // config.rows never carries an empty slot, so no trailing-slot bookkeeping is needed.
 
   // even round-robin split across every real player — used whenever the
   // team count changes, since existing per-player picks don't carry over
@@ -759,19 +754,10 @@
   randomizeTeamsBtn.addEventListener('click', randomizeAllTeams);
 
   function rowHtml(row, idx, rows){
-    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
-    if (isTrailingSlot){
-      return (
-        '<div class="player-row">' +
-          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
-            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="">' +
-        '</div>'
-      );
-    }
     return (
-      '<div class="player-row">' +
-        '<input type="text" class="player-name-input" data-index="' + idx + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
-        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
+      '<div class="player-chip">' +
+        '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
+        '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
           (realPlayerCount() <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
       '</div>'
     );
@@ -779,33 +765,31 @@
 
   function renderPlayerRows(){
     var rows = config.rows;
-    playersListEl.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
+    playersChipsList.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
+    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
+    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
   }
 
-  playersListEl.addEventListener('input', function(e){
-    var input = e.target.closest('.player-name-input');
-    if (!input) return;
-    var idx = parseInt(input.getAttribute('data-index'), 10);
-    config.rows[idx].name = input.value;
-    normalizeTrailingSlot();
-    persistPlayers();
-
-    var selStart = input.selectionStart, selEnd = input.selectionEnd;
+  function addPlayerFromDraft(){
+    var trimmed = playersDraftInput.value.trim();
+    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    config.rows.push({ name: trimmed, team: leastPopulatedTeam() });
+    playersDraftInput.value = '';
     renderPlayerRows();
-    var restored = playersListEl.querySelector('.player-name-input[data-index="' + idx + '"]');
-    if (restored){
-      restored.focus();
-      restored.setSelectionRange(selStart, selEnd);
-    }
+    persistPlayers();
     validateSetup();
+    playersDraftInput.focus();
+  }
+
+  playersDraftInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
   });
 
-  playersListEl.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.row-remove-btn');
+  playersChipsList.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.player-chip-remove');
     if (removeBtn && !removeBtn.disabled){
       var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
       config.rows.splice(rIdx, 1);
-      normalizeTrailingSlot();
       renderPlayerRows();
       persistPlayers();
       validateSetup();
@@ -894,8 +878,6 @@
 
   function reassignTeamsAfterCountChange(){
     autoBalanceAllTeams();
-    var rows = config.rows;
-    if (rows.length && !rows[rows.length - 1].name.trim()) rows[rows.length - 1].team = leastPopulatedTeam();
     renderTeamBoxes();
     persistPlayers();
     validateSetup();
@@ -1320,7 +1302,6 @@
 
   // ---------- init ----------
   autoBalanceAllTeams();
-  normalizeTrailingSlot();
   renderTeamCount();
   renderPlayerRows();
   renderTeamBoxes();
