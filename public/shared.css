@@ -103,6 +103,12 @@ button{ touch-action:manipulation; }
 @media (orientation:landscape) and (min-width:700px){
   .screen{ max-width:min(94vw, 900px); }
 }
+/* Time's Up / Mímica in-game screen: no phone-width cap — the HUD, card
+   stack and rails already bleed edge-to-edge, so let it use the full
+   viewport width instead of centering within the shared 480px screen cap. */
+.party-stage{
+  max-width:none;
+}
 @keyframes fadeIn{
   from{opacity:0;}
   to{opacity:1;}
@@ -1160,6 +1166,61 @@ button:focus-visible, input:focus-visible{
   -webkit-mask-image:url('resources/images/common/next.svg');
 }
 
+/* ---- turn-play stage (Time's Up / Mímica): the flip-card-stack sits between
+   two full-bleed edge rails (skip/correct) instead of a dock row below it —
+   big, thumb-reachable targets flush with the screen edges on phones. The
+   card itself has no side gutter on .party-stage (see below), so no extra
+   bleed margin is needed here anymore. The rails reuse .icon-action-btn's
+   color variants, just reshaped via .icon-action-rail (flex-basis + inner-
+   corner rounding only). */
+.turn-play-stage{
+  display:flex;
+  align-items:stretch;
+  justify-content:center;
+  gap:8px;
+  height:100%;
+}
+.icon-action-rail{
+  flex:0 0 clamp(64px, 17vw, 100px);
+  min-height:0;
+  padding:12px 4px;
+}
+.icon-action-rail:first-child{
+  border-radius:0 999px 999px 0;
+  padding-left:max(10px, env(safe-area-inset-left));
+}
+.icon-action-rail:last-child{
+  border-radius:999px 0 0 999px;
+  padding-right:max(10px, env(safe-area-inset-right));
+}
+.icon-action-rail .icon-action-icon{width:34px; height:34px;}
+@media (max-width:360px){
+  .icon-action-rail{flex-basis:56px;}
+  .icon-action-rail .icon-action-icon{width:28px; height:28px;}
+}
+/* solid red/green pills (reference screenshot) instead of the tinted glass
+   look used by Taboo's .icon-action-row buttons — rail-only override. */
+.icon-action-rail.icon-action-skip{
+  background:linear-gradient(180deg, #ea6871, #cf3a45);
+  border-color:transparent;
+}
+.icon-action-rail.icon-action-skip:active{
+  background:linear-gradient(180deg, #d85860, #b92e39);
+}
+.icon-action-rail.icon-action-skip .icon-action-icon{
+  background-color:#fff;
+}
+.icon-action-rail.icon-action-correct{
+  background:linear-gradient(180deg, #7ed26f, #4a9e3c);
+  border-color:transparent;
+}
+.icon-action-rail.icon-action-correct:active{
+  background:linear-gradient(180deg, #6ec15f, #3f8b32);
+}
+.icon-action-rail.icon-action-correct .icon-action-icon{
+  background-color:#fff;
+}
+
 /* ---- setup shell: a calmer, denser control surface shared by every game ---- */
 #screen-setup .card{
   position:relative;
@@ -1318,48 +1379,106 @@ button:focus-visible, input:focus-visible{
   color:#f0a1a8;
 }
 
-/* party HUD (Time's Up / Mímica in-game header): replaces .setup-header on
-   the game screen with round/player status on one side, a live counter on
-   the other. Bleeds edge-to-edge the same way .setup-header does. */
+/* party stage backdrop (Time's Up / Mímica in-game screen): solid indigo
+   fill plus a faint tiled shape pattern (circles/diamonds/triangles),
+   matching the reference party-game screenshot. Exclusive to these two
+   modes' #screen-game — untouched by every other screen/mode. */
+.party-stage{
+  --party-bg:#5b71b3;
+  --party-label:#c2cdef;
+  --party-ring-track:rgba(255,255,255,0.22);
+  --party-ring-arc:#f2c94c;
+  --party-ring-bg:rgba(20,28,56,0.35);
+  background-color:var(--party-bg);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Ccircle cx='28' cy='34' r='13' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpath d='M118 16 L132 30 L118 44 L104 30 Z' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpolygon points='150,116 161,136 139,136' fill='none' stroke='rgba(255,255,255,0.14)' stroke-width='2'/%3E%3Ccircle cx='58' cy='150' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Ccircle cx='168' cy='62' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Cpath d='M30 110 L42 122 L30 134 L18 122 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:180px 180px;
+}
+
+/* Time's Up / Mímica in-game screen: the card has no gutter of its own here
+   (see .party-stage > .card below) — every section re-adds just the padding
+   it needs, so the HUD and card stack/rails can go fully edge-to-edge while
+   the text-based intro/end phases still get a comfortable inset. */
+.party-stage > .card{
+  padding:env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+.party-stage #turn-intro .scr-body,
+.party-stage #turn-end .scr-body{
+  padding:0 18px;
+}
+.party-stage #turn-intro .scr-dock,
+.party-stage #turn-end .scr-dock{
+  padding:10px 18px 16px;
+}
+
+/* party HUD (Time's Up / Mímica in-game status row): no boxed header —
+   round/player status, live counter and remaining-cards float directly on
+   the stage background, same as the reference in-game screen. */
 .party-game-hud{
   flex:0 0 auto;
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
   gap:12px;
-  min-height:56px;
-  margin:0 0 10px;
-}
-.card>.party-game-hud{
-  margin-left:calc(-1 * max(18px, env(safe-area-inset-left)));
-  margin-right:calc(-1 * max(18px, env(safe-area-inset-right)));
-  padding:10px max(18px, env(safe-area-inset-left)) 10px max(18px, env(safe-area-inset-right));
-  border-bottom:1px solid var(--glass-border);
-  background:var(--glass);
+  margin:0 0 18px;
+  padding-left:max(18px, env(safe-area-inset-left));
+  /* leave room for the floating .ingame-home-btn pinned at the top-right
+     corner (see shared.js initIngameHomeControls) so it never overlaps the
+     "remaining cards" block */
+  padding-right:calc(max(18px, env(safe-area-inset-right)) + 46px + 10px);
 }
 .party-hud-block{
   display:flex;
   flex-direction:column;
-  gap:2px;
-  font-size:0.68rem;
+  gap:4px;
+  font-family:var(--font-display);
+  font-size:0.72rem;
   font-weight:700;
   letter-spacing:0.06em;
   text-transform:uppercase;
-  color:var(--text-dim);
+  color:var(--party-label, var(--text-dim));
   min-width:0;
+  padding-top:6px;
 }
 .party-hud-block:last-child{align-items:flex-end; text-align:right;}
 .party-hud-value{
   font-family:var(--font-display);
-  font-size:1.05rem;
+  font-size:1.35rem;
   font-weight:800;
   letter-spacing:normal;
   text-transform:none;
-  color:var(--text);
+  color:#fff;
   max-width:100%;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+}
+
+/* center timer badge in the HUD: only shown while a turn is actively being
+   played (i.e. #turn-play is the visible phase among its siblings) — hidden
+   during the intro/end phases, where it would just show stale leftover time. */
+.party-hud-timer{
+  flex:0 0 auto;
+  width:76px;
+  height:76px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--party-ring-bg, rgba(255,255,255,0.04));
+  border:5px solid var(--party-ring-track, rgba(255,255,255,0.14));
+  border-top-color:var(--party-ring-arc, var(--accent2));
+  border-right-color:var(--party-ring-arc, var(--accent2));
+  margin:0;
+  visibility:hidden;
+}
+.party-game-hud:has(~ #turn-play:not(.hidden)) .party-hud-timer{visibility:visible;}
+.party-hud-timer-value{
+  font-family:var(--font-display);
+  font-weight:800;
+  color:#fff;
+  font-size:1.2rem;
+  font-variant-numeric:tabular-nums;
 }
 
 /* flip-card stack (Time's Up / Mímica): 3 physical .flip-card slots that get

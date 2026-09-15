@@ -117,7 +117,7 @@
   .mimica-timer-wrap{margin-bottom:2px;}
   .mimica-timer{
     font-family:var(--font-display);
-    font-size:2.6rem;
+    font-size:1.2rem;
     font-weight:800;
     font-variant-numeric:tabular-nums;
   }
@@ -388,6 +388,9 @@
           <span id="mimica-round-status">RONDA 1</span>
           <span class="party-hud-value" id="mimica-hud-player">Nombre</span>
         </div>
+        <div class="party-hud-timer mimica-timer-wrap" id="mimica-timer-wrap">
+          <div class="party-hud-timer-value mimica-timer" id="mimica-timer">1:00</div>
+        </div>
         <div class="party-hud-block">
           <span>Aciertos del turno</span>
           <span class="party-hud-value" id="mimica-hud-score">x0</span>
@@ -409,40 +412,35 @@
       <!-- ACTIVE PLAY: word + timer + correct/skip -->
       <div id="turn-play" class="hidden">
         <div class="scr-body">
-          <div class="mimica-timer-wrap" id="mimica-timer-wrap">
-            <div class="mimica-timer" id="mimica-timer">1:00</div>
-          </div>
-          <div class="flip-card-stack" id="mimica-flip-card">
-            <div class="flip-card flip-card-depth-0">
-              <div class="flip-card-inner">
-                <div class="flip-card-face flip-card-back-design"></div>
-                <div class="flip-card-face flip-card-front-face">
-                  <div class="mimica-word flip-card-word-text"></div>
+          <div class="turn-play-stage">
+            <button type="button" class="icon-action-btn icon-action-skip icon-action-rail" id="mimica-skip-btn" aria-label="Saltar"><span class="icon-action-icon"></span></button>
+            <div class="flip-card-stack" id="mimica-flip-card">
+              <div class="flip-card flip-card-depth-0">
+                <div class="flip-card-inner">
+                  <div class="flip-card-face flip-card-back-design"></div>
+                  <div class="flip-card-face flip-card-front-face">
+                    <div class="mimica-word flip-card-word-text"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card flip-card-depth-1">
+                <div class="flip-card-inner">
+                  <div class="flip-card-face flip-card-back-design"></div>
+                  <div class="flip-card-face flip-card-front-face">
+                    <div class="mimica-word flip-card-word-text"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card flip-card-depth-2">
+                <div class="flip-card-inner">
+                  <div class="flip-card-face flip-card-back-design"></div>
+                  <div class="flip-card-face flip-card-front-face">
+                    <div class="mimica-word flip-card-word-text"></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="flip-card flip-card-depth-1">
-              <div class="flip-card-inner">
-                <div class="flip-card-face flip-card-back-design"></div>
-                <div class="flip-card-face flip-card-front-face">
-                  <div class="mimica-word flip-card-word-text"></div>
-                </div>
-              </div>
-            </div>
-            <div class="flip-card flip-card-depth-2">
-              <div class="flip-card-inner">
-                <div class="flip-card-face flip-card-back-design"></div>
-                <div class="flip-card-face flip-card-front-face">
-                  <div class="mimica-word flip-card-word-text"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="scr-dock">
-          <div class="icon-action-row">
-            <button type="button" class="icon-action-btn icon-action-skip" id="mimica-skip-btn" aria-label="Saltar"><span class="icon-action-icon"></span></button>
-            <button type="button" class="icon-action-btn icon-action-correct" id="mimica-correct-btn" aria-label="Acierto"><span class="icon-action-icon"></span></button>
+            <button type="button" class="icon-action-btn icon-action-correct icon-action-rail" id="mimica-correct-btn" aria-label="Acierto"><span class="icon-action-icon"></span></button>
           </div>
         </div>
       </div>
