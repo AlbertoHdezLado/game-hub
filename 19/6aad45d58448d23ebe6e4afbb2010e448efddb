@@ -1,0 +1,24 @@
+public/_stacktest.html
+  h_fed6a40af368f7 1-18,21-30,34-51
+public/games/charades/index.html
+  h_fed6a40af368f7 384,386-393,415-440,581,1047-1049,1056,1137-1139,1213-1214,1230-1234,1238,1245-1246,1257
+public/games/times-up/index.html
+  h_fed6a40af368f7 331,445,447-450,452-454,476-501,685,724-726,730-753,765,767-772,775-780,783-790,793-794,798,908-909,1146,1155,1185,1191,1261,1281,1295,1422
+public/shared.css
+  h_fed6a40af368f7 1321-1453
+public/shared.js
+  h_fed6a40af368f7 177-202,382-439
+src/styles/index.css
+  h_fed6a40af368f7 660
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "196aad45d58448d23ebe6e4afbb2010e448efddb",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
