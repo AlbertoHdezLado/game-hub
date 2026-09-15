@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/shared.css">
+<style>
+  body{ background:#0d1420; margin:0; }
+  .party-stage{ height:100vh; display:flex; align-items:center; justify-content:center; }
+</style>
+</head>
+<body>
+<div class="party-stage">
+  <div id="turn-play">
+    <div class="scr-body" style="display:flex;align-items:center;justify-content:center;">
+      <div class="flip-card-stack" id="tu-flip-card" style="width:400px;min-height:260px;">
+        <div class="flip-card flip-card-depth-0">
+          <div class="flip-card-inner">
+            <div class="flip-card-face flip-card-back-design"><span class="flip-card-back-icon">&#127136;</span></div>
+            <div class="flip-card-face flip-card-front-face"><div class="tu-word flip-card-word-text"></div></div>
+          </div>
+        </div>
+        <div class="flip-card flip-card-depth-1">
+          <div class="flip-card-inner">
+            <div class="flip-card-face flip-card-back-design"><span class="flip-card-back-icon">&#127136;</span></div>
+            <div class="flip-card-face flip-card-front-face"><div class="tu-word flip-card-word-text"></div></div>
+          </div>
+        </div>
+        <div class="flip-card flip-card-depth-2">
+          <div class="flip-card-inner">
+            <div class="flip-card-face flip-card-back-design"><span class="flip-card-back-icon">&#127136;</span></div>
+            <div class="flip-card-face flip-card-front-face"><div class="tu-word flip-card-word-text"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<button id="correctbtn" style="position:fixed;top:10px;left:10px;">Correct (right)</button>
+<script src="/shared.js"></script>
+<script>
+var words = ['JIRAFA','LEON','TIGRE','OSO','PATO','GATO'];
+var remaining = words.length;
+var stack = createCardStack(document.getElementById('tu-flip-card'));
+stack.reveal(words.shift(), --remaining + 1);
+document.getElementById('correctbtn').addEventListener('click', function(){
+  if (!words.length) return;
+  remaining--;
+  stack.discard('right', words.shift(), remaining);
+});
+</script>
+</body>
+</html>

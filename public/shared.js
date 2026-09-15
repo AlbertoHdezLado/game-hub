@@ -174,10 +174,32 @@ function createDots(container){
   };
 }
 
-/* "back to hub" (home icon) needs a confirmation once a match is in progress —
-   only the setup screen's home link is a plain, no-confirm navigation since
-   there's no progress to lose there yet. Applies to every mode automatically:
-   any a[aria-label="Inicio"] outside #screen-setup gets intercepted. */
+/* In-game screens use one unobtrusive home control instead of an app bar.
+   Reuse each screen's existing link before removing the header so every game
+   gets the same placement without duplicating markup across all mode files. */
+function initIngameHomeControls(){
+  var screens = document.querySelectorAll('.screen:not(#screen-setup)');
+  Array.prototype.forEach.call(screens, function(screen){
+    var card = screen.querySelector(':scope > .card');
+    if (!card) return;
+    var header = card.querySelector(':scope > .setup-header');
+    var home = header && header.querySelector('a[aria-label="Inicio"]');
+    if (!home){
+      home = document.createElement('a');
+      home.href = '/';
+      home.className = 'guide-btn';
+      home.setAttribute('aria-label', 'Inicio');
+      home.innerHTML = '<span class="home-icon"></span>';
+    }
+    home.classList.add('ingame-home-btn');
+    card.appendChild(home);
+    if (header) header.remove();
+  });
+}
+initIngameHomeControls();
+
+/* "back to hub" needs confirmation while a match still has progress to lose.
+   Setup and final-result screens navigate directly. */
 function initHomeExitConfirm(){
   var links = document.querySelectorAll('a[aria-label="Inicio"]');
   if (!links.length) return;
@@ -356,4 +378,62 @@ function createRevealCard(wrap, content, btn, nextBtn){
       nextBtn.disabled = true;
     }
   };
+}
+
+/* card-stack component for Time's Up / Mímica: rootEl is a `.flip-card-stack`
+   wrapping exactly 3 `.flip-card` slots (each with a `.flip-card-inner` that
+   flips to reveal a `.flip-card-word-text` node). The 3 slots never move in
+   the DOM — a rotating "depth" class (0 = front, 1/2 = peeking behind, like
+   a real stack) is reassigned between them so CSS can animate the promotion,
+   while the outgoing front card is swiped left/right to mirror the skip/
+   correct action taken on it. `remaining` is how many cards are left
+   counting the one about to show, so the stack visually shrinks down to a
+   single card near the end of the deck. */
+function createCardStack(rootEl){
+  var slots = Array.prototype.slice.call(rootEl.querySelectorAll('.flip-card'));
+  var timer = null;
+
+  function applyDepths(remaining){
+    for (var i = 0; i < slots.length; i++){
+      var slot = slots[i];
+      slot.classList.remove('flip-card-depth-0', 'flip-card-depth-1', 'flip-card-depth-2');
+      slot.classList.add('flip-card-depth-' + i);
+      slot.classList.toggle('flip-card-slot-empty', i >= remaining);
+    }
+  }
+
+  function reveal(word, remaining){
+    var front = slots[0];
+    front.querySelector('.flip-card-word-text').textContent = word;
+    var inner = front.querySelector('.flip-card-inner');
+    if (inner) inner.classList.add('is-flipped');
+    applyDepths(remaining);
+  }
+
+  // swipes the current front card away (direction 'left' for skip/miss,
+  // 'right' for correct), then rotates the stack so the card behind it
+  // becomes the new front and flips face-up to reveal the next word
+  function discard(direction, word, remaining){
+    if (timer){ clearTimeout(timer); timer = null; }
+    var outgoing = slots[0];
+    outgoing.classList.add(direction === 'left' ? 'flip-card-exit-left' : 'flip-card-exit-right');
+    timer = window.setTimeout(function(){
+      outgoing.classList.remove('flip-card-exit-left', 'flip-card-exit-right');
+      var outgoingInner = outgoing.querySelector('.flip-card-inner');
+      if (outgoingInner){
+        // reset face-down instantly — otherwise it plays the flip transition
+        // in reverse, visible behind the new front card
+        outgoingInner.classList.add('flip-card-inner-no-transition');
+        outgoingInner.classList.remove('is-flipped');
+        void outgoingInner.offsetWidth;
+        outgoingInner.classList.remove('flip-card-inner-no-transition');
+      }
+      slots.shift();
+      slots.push(outgoing); // snaps straight to the back of the stack, no transition
+      reveal(word, remaining);
+      timer = null;
+    }, 300);
+  }
+
+  return { reveal: reveal, discard: discard };
 }

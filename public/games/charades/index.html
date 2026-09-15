@@ -381,14 +381,17 @@
   </div>
 
   <!-- GAME SCREEN: team turn, 60s, unlimited words, correct/skip -->
-  <div class="screen hidden" id="screen-game">
+  <div class="screen party-stage hidden" id="screen-game">
     <div class="card">
-      <div class="setup-header">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
-          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+      <div class="party-game-hud">
+        <div class="party-hud-block">
+          <span id="mimica-round-status">RONDA 1</span>
+          <span class="party-hud-value" id="mimica-hud-player">Nombre</span>
         </div>
-        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+        <div class="party-hud-block">
+          <span>Aciertos del turno</span>
+          <span class="party-hud-value" id="mimica-hud-score">x0</span>
+        </div>
       </div>
 
       <!-- TURN INTRO: gate before the minute starts -->
@@ -409,7 +412,32 @@
           <div class="mimica-timer-wrap" id="mimica-timer-wrap">
             <div class="mimica-timer" id="mimica-timer">1:00</div>
           </div>
-          <div class="mimica-word" id="mimica-word">Palabra</div>
+          <div class="flip-card-stack" id="mimica-flip-card">
+            <div class="flip-card flip-card-depth-0">
+              <div class="flip-card-inner">
+                <div class="flip-card-face flip-card-back-design"></div>
+                <div class="flip-card-face flip-card-front-face">
+                  <div class="mimica-word flip-card-word-text"></div>
+                </div>
+              </div>
+            </div>
+            <div class="flip-card flip-card-depth-1">
+              <div class="flip-card-inner">
+                <div class="flip-card-face flip-card-back-design"></div>
+                <div class="flip-card-face flip-card-front-face">
+                  <div class="mimica-word flip-card-word-text"></div>
+                </div>
+              </div>
+            </div>
+            <div class="flip-card flip-card-depth-2">
+              <div class="flip-card-inner">
+                <div class="flip-card-face flip-card-back-design"></div>
+                <div class="flip-card-face flip-card-front-face">
+                  <div class="mimica-word flip-card-word-text"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="scr-dock">
           <div class="icon-action-row">
@@ -550,6 +578,7 @@
     turnResults: [],
     wordDeck: [],
     wordDeckIdx: 0,
+    currentWord: '',
     timeRemaining: 60,
     timerInterval: null,
     audioCtx: null
@@ -1015,13 +1044,16 @@
 
   // ---------- game screen: 60s timed team turns ----------
   var turnIntroEl = document.getElementById('turn-intro');
+  var roundStatusEl = document.getElementById('mimica-round-status');
+  var hudPlayerEl = document.getElementById('mimica-hud-player');
+  var hudScoreEl = document.getElementById('mimica-hud-score');
   var turnTeamBadgeEl = document.getElementById('turn-team-badge');
   var turnPlayerNameEl = document.getElementById('turn-player-name');
   var turnStartBtn = document.getElementById('turn-start-btn');
   var turnPlayEl = document.getElementById('turn-play');
   var mimicaTimerWrapEl = document.getElementById('mimica-timer-wrap');
   var mimicaTimerEl = document.getElementById('mimica-timer');
-  var mimicaWordEl = document.getElementById('mimica-word');
+  var mimicaCardStack = createCardStack(document.getElementById('mimica-flip-card'));
   var mimicaSkipBtn = document.getElementById('mimica-skip-btn');
   var mimicaCorrectBtn = document.getElementById('mimica-correct-btn');
   var turnEndEl = document.getElementById('turn-end');
@@ -1102,6 +1134,9 @@
     turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
     turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
     turnPlayerNameEl.textContent = state.playerNames[actorIdx];
+    roundStatusEl.textContent = 'RONDA ' + (Math.floor(state.turnIdx / config.numTeams) + 1) + ' / ' + config.rounds;
+    hudPlayerEl.textContent = state.playerNames[actorIdx];
+    hudScoreEl.textContent = 'x0';
 
     turnIntroEl.classList.remove('hidden');
     turnPlayEl.classList.add('hidden');
@@ -1175,7 +1210,8 @@
     turnIntroEl.classList.add('hidden');
     turnPlayEl.classList.remove('hidden');
     mimicaTimerWrapEl.classList.remove('time-up');
-    mimicaWordEl.textContent = drawNextWord();
+    state.currentWord = drawNextWord();
+    mimicaCardStack.reveal(state.currentWord, 3);
     updateTimerDisplay(state.timeRemaining);
     stopTimer();
     state.timerInterval = setInterval(function(){
@@ -1191,20 +1227,23 @@
     state.teams[teamIdx].score++;
     state.playerScores[state.currentActorIdx]++;
     state.turnCorrect++;
-    state.turnWords.push(mimicaWordEl.textContent);
-    state.turnResults.push({ word: mimicaWordEl.textContent, correct: true });
-    mimicaWordEl.textContent = drawNextWord();
+    hudScoreEl.textContent = 'x' + state.turnCorrect;
+    state.turnWords.push(state.currentWord);
+    state.turnResults.push({ word: state.currentWord, correct: true });
+    state.currentWord = drawNextWord();
+    mimicaCardStack.discard('right', state.currentWord, 3);
   });
   mimicaSkipBtn.addEventListener('click', function(){
     playSkipSound();
-    state.turnResults.push({ word: mimicaWordEl.textContent, correct: false });
+    state.turnResults.push({ word: state.currentWord, correct: false });
     state.timeRemaining = Math.max(0, state.timeRemaining - config.skipPenaltySeconds);
     updateTimerDisplay(state.timeRemaining);
     mimicaTimerEl.classList.remove('skip-pulse');
     void mimicaTimerEl.offsetWidth;
     mimicaTimerEl.classList.add('skip-pulse');
     if (state.timeRemaining <= 0){ endTurn(false); return; }
-    mimicaWordEl.textContent = drawNextWord();
+    state.currentWord = drawNextWord();
+    mimicaCardStack.discard('left', state.currentWord, 3);
   });
 
   function endTurn(hasActiveWord){
@@ -1215,7 +1254,7 @@
     turnEndEl.classList.remove('hidden');
 
     var teamIdx = state.turnOrder[state.turnIdx];
-    if (hasActiveWord !== false) state.turnResults.push({ word: mimicaWordEl.textContent, correct: false });
+    if (hasActiveWord !== false) state.turnResults.push({ word: state.currentWord, correct: false });
     turnEndSubtitleEl.textContent = state.playerNames[state.currentActorIdx] + ' jugó para ' + TEAM_NAMES[teamIdx] +
       ' y acertó ' + state.turnCorrect + (state.turnCorrect === 1 ? ' palabra.' : ' palabras.');
     renderTurnResults();

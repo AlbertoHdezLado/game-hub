@@ -657,5 +657,5 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .game-over-title { font-size: 1.5rem !important; transition: color .2s; }
 .game-over-title.winner-lobos { color: var(--danger); }
 .game-over-title.winner-aldeanos { color: var(--safe); }
-.game-over-summary { max-height: 32vh; margin-top: 18px; overflow-y: auto; overflow-x: hidden; padding-top: 14px; border-top: 1px solid var(--glass-border); color: var(--text-dim); font-size: .82rem; line-height: 1.6; text-align: left; }
+.game-over-summary { max-height: 32vh; margin-top: 18px; overflow-y: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); color: var(--text-dim); font-size: .82rem; line-height: 1.6; text-align: left; }
 .game-over-summary p { margin: 4px 0; }

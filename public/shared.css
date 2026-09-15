@@ -143,9 +143,6 @@ button{ touch-action:manipulation; }
   flex:1 1 auto;
   min-height:0;
   overflow-y:auto;
-  /* scale-pulsing icons/text inside (revealPulse, tada...) must never force
-     a horizontal scrollbar to flicker in as they expand past the edge */
-  overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
 }
@@ -459,7 +456,6 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
   max-width:400px;
   max-height:82vh;
   overflow-y:auto;
-  overflow-x:hidden;
   background:var(--glass);
   border:1px solid var(--glass-border);
   border-radius:24px;
@@ -1321,6 +1317,139 @@ button:focus-visible, input:focus-visible{
 #screen-setup .error-msg{
   color:#f0a1a8;
 }
+
+/* party HUD (Time's Up / Mímica in-game header): replaces .setup-header on
+   the game screen with round/player status on one side, a live counter on
+   the other. Bleeds edge-to-edge the same way .setup-header does. */
+.party-game-hud{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:56px;
+  margin:0 0 10px;
+}
+.card>.party-game-hud{
+  margin-left:calc(-1 * max(18px, env(safe-area-inset-left)));
+  margin-right:calc(-1 * max(18px, env(safe-area-inset-right)));
+  padding:10px max(18px, env(safe-area-inset-left)) 10px max(18px, env(safe-area-inset-right));
+  border-bottom:1px solid var(--glass-border);
+  background:var(--glass);
+}
+.party-hud-block{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  font-size:0.68rem;
+  font-weight:700;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  min-width:0;
+}
+.party-hud-block:last-child{align-items:flex-end; text-align:right;}
+.party-hud-value{
+  font-family:var(--font-display);
+  font-size:1.05rem;
+  font-weight:800;
+  letter-spacing:normal;
+  text-transform:none;
+  color:var(--text);
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* flip-card stack (Time's Up / Mímica): 3 physical .flip-card slots that get
+   recycled by shared.js's createCardStack() — the front card flips face up
+   to reveal the word, peeking cards behind it show only their card back.
+   Discarding swipes the front card off left/right, then it's snapped
+   (transition-less) to the back of the stack and the next card promotes up.
+   Depth changes are instant (no transition) — only the top card animates,
+   via the exit-left/exit-right classes below, when it's swiped away. */
+.flip-card-stack{
+  position:relative;
+  width:min(54vw, calc(100vw - clamp(256px, 40vw, 540px) - 32px), 760px);
+  min-height:min(46vh, 330px);
+  margin:auto;
+}
+.flip-card{
+  position:absolute;
+  inset:0;
+  perspective:1400px;
+}
+.flip-card.flip-card-depth-0{transform:translateY(0) scale(1); opacity:1; z-index:3;}
+.flip-card.flip-card-depth-1{transform:translateY(10px) scale(0.965); opacity:1; z-index:2;}
+.flip-card.flip-card-depth-2{transform:translateY(20px) scale(0.93); opacity:1; z-index:1;}
+.flip-card.flip-card-slot-empty{opacity:0;}
+.flip-card.flip-card-exit-left,
+.flip-card.flip-card-exit-right{
+  transition:transform .28s cubic-bezier(.45,.05,.35,1), opacity .28s ease;
+  opacity:0;
+  z-index:4;
+}
+.flip-card.flip-card-exit-left{transform:translate(-135%, 10px) scale(0.72) rotate(-10deg);}
+.flip-card.flip-card-exit-right{transform:translate(135%, 10px) scale(0.72) rotate(10deg);}
+/* two-faced card: front/back sit stacked in the same spot, each hidden while
+   turned away (backface-visibility) — .flip-card-inner is what actually spins.
+   Only the top card ever gets .is-flipped, so cards behind always stay face-down. */
+.flip-card-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  transform-style:preserve-3d;
+  transition:transform .3s cubic-bezier(.45,.05,.35,1);
+}
+.flip-card-inner.is-flipped{transform:rotateY(180deg);}
+.flip-card-inner.flip-card-inner-no-transition{transition:none;}
+.flip-card-face{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:34px;
+  border:10px solid rgba(255,255,255,0.5);
+  border-radius:14px;
+  box-shadow:0 10px 18px rgba(10,14,26,0.35);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.flip-card-back-design{
+  border-color:#fff;
+  background-image:repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 60%, #1c2534) 0 16px, color-mix(in srgb, var(--accent2) 55%, #1c2534) 16px 32px);
+}
+.flip-card-front-face{
+  background-color:#f7f3df;
+  transform:rotateY(180deg);
+}
+.tu-word,
+.mimica-word{
+  width:100%;
+  color:#18202b;
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:clamp(1.45rem, 3.4vw, 2.7rem);
+  text-align:center;
+  overflow-wrap:anywhere;
+}
+.flip-card-word-text{margin:0;}
+
+.ingame-home-btn{
+  position:absolute;
+  z-index:30;
+  top:max(14px, env(safe-area-inset-top));
+  right:max(16px, env(safe-area-inset-right));
+  margin:0;
+  color:var(--text);
+  background:rgba(16,26,43,0.42);
+  border-color:rgba(255,255,255,0.28);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
 
 @media (max-width:380px){
   .card{padding:24px 18px;}

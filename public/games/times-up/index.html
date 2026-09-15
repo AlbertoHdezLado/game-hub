@@ -328,10 +328,7 @@
       <div class="scr-body">
         <div id="setup-step-players">
           <label><span class="label-icon">👥</span>Jugadores</label>
-          <div class="player-chips-list" id="players-chips"></div>
-          <div class="player-input-row">
-            <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
-          </div>
+          <div id="players-list"></div>
           <div class="error-msg" id="players-error"></div>
         </div>
 
@@ -445,17 +442,16 @@
   </div>
 
   <!-- GAME SCREEN: team turn, timer, correct/skip -->
-  <div class="screen hidden" id="screen-game">
+  <div class="screen party-stage hidden" id="screen-game">
     <div class="card">
-      <div class="setup-header">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
-          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
-          <span class="back-btn" style="cursor:default;" id="phase-status">Ronda 1 / 3</span>
+      <div class="party-game-hud">
+        <div class="party-hud-block">
+          <span id="phase-status">RONDA 1 / 3</span>
+          <span class="party-hud-value" id="tu-hud-player">Nombre</span>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
-          <div class="tu-cards-remaining" id="tu-cards-remaining"><span class="tu-cards-icon">🂠</span><span id="tu-cards-remaining-value">x40</span></div>
+        <div class="party-hud-block">
+          <span>Cartas restantes</span>
+          <div class="tu-cards-remaining" id="tu-cards-remaining"><span id="tu-cards-remaining-value">x40</span></div>
         </div>
       </div>
 
@@ -477,7 +473,32 @@
           <div class="tu-timer-wrap" id="tu-timer-wrap">
             <div class="tu-timer" id="tu-timer">1:00</div>
           </div>
-          <div class="tu-word" id="tu-word">Carta</div>
+          <div class="flip-card-stack" id="tu-flip-card">
+            <div class="flip-card flip-card-depth-0">
+              <div class="flip-card-inner">
+                <div class="flip-card-face flip-card-back-design"></div>
+                <div class="flip-card-face flip-card-front-face">
+                  <div class="tu-word flip-card-word-text"></div>
+                </div>
+              </div>
+            </div>
+            <div class="flip-card flip-card-depth-1">
+              <div class="flip-card-inner">
+                <div class="flip-card-face flip-card-back-design"></div>
+                <div class="flip-card-face flip-card-front-face">
+                  <div class="tu-word flip-card-word-text"></div>
+                </div>
+              </div>
+            </div>
+            <div class="flip-card flip-card-depth-2">
+              <div class="flip-card-inner">
+                <div class="flip-card-face flip-card-back-design"></div>
+                <div class="flip-card-face flip-card-front-face">
+                  <div class="tu-word flip-card-word-text"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="scr-dock">
           <div class="icon-action-row">
@@ -661,8 +682,7 @@
   }
 
   // ---------- setup: players ----------
-  var playersChipsList = document.getElementById('players-chips');
-  var playersDraftInput = document.getElementById('players-draft');
+  var rowsContainer = document.getElementById('players-list');
   var playersErrorEl = document.getElementById('players-error');
   var teamsErrorEl = document.getElementById('teams-error');
   var setupError = document.getElementById('setup-error');
@@ -701,9 +721,35 @@
   renderSetupStep();
 
   function effectivePlayerCount(rows){
-    return rows.length;
+    var n = rows.length;
+    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
+    return n;
   }
   function realPlayerCount(){ return effectivePlayerCount(config.rows); }
+
+  function rowHtml(row, idx, rows){
+    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
+    if (isTrailingSlot){
+      return (
+        '<div class="player-row">' +
+          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
+            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="">' +
+        '</div>'
+      );
+    }
+    return (
+      '<div class="player-row">' +
+        '<input type="text" class="player-name-input" data-index="' + idx + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
+        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
+          (realPlayerCount() <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+      '</div>'
+    );
+  }
+
+  function renderPlayerRows(){
+    var rows = config.rows;
+    rowsContainer.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
+  }
 
   function leastPopulatedTeam(){
     var counts = [];
@@ -716,41 +762,40 @@
     return minIdx;
   }
 
-  function renderPlayerRows(){
+  function normalizeTrailingSlot(){
     var rows = config.rows;
-    playersChipsList.innerHTML = rows.map(function(row, idx){
-      return (
-        '<div class="player-chip">' +
-          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
-          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
-            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
-        '</div>'
-      );
-    }).join('');
-    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
-    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
+    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
+      rows.pop();
+    }
+    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
+      rows.push({ name: "", team: leastPopulatedTeam() });
+    }
   }
 
-  function addPlayerFromDraft(){
-    var trimmed = playersDraftInput.value.trim();
-    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
-    config.rows.push({ name: trimmed, team: leastPopulatedTeam() });
-    playersDraftInput.value = '';
-    renderPlayerRows();
+  rowsContainer.addEventListener('input', function(e){
+    var target = e.target;
+    if (!target.classList.contains('player-name-input')) return;
+    var idx = parseInt(target.getAttribute('data-index'), 10);
+    config.rows[idx].name = target.value;
+    normalizeTrailingSlot();
     persistPlayers();
-    validateSetup();
-    playersDraftInput.focus();
-  }
 
-  playersDraftInput.addEventListener('keydown', function(e){
-    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
+    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+    renderPlayerRows();
+    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
+    if (restored){
+      restored.focus();
+      restored.setSelectionRange(selStart, selEnd);
+    }
+    validateSetup();
   });
 
-  playersChipsList.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.player-chip-remove');
+  rowsContainer.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.row-remove-btn');
     if (!removeBtn || removeBtn.disabled) return;
     var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
     config.rows.splice(rIdx, 1);
+    normalizeTrailingSlot();
     renderPlayerRows();
     persistPlayers();
     validateSetup();
@@ -860,6 +905,8 @@
 
   function reassignTeamsAfterCountChange(){
     autoBalanceAllTeams();
+    var rows = config.rows;
+    if (rows.length && !rows[rows.length - 1].name.trim()) rows[rows.length - 1].team = leastPopulatedTeam();
     renderTeamBoxes();
     persistPlayers();
     validateSetup();
@@ -1096,6 +1143,7 @@
 
   // ---------- game screen ----------
   var phaseStatusEl = document.getElementById('phase-status');
+  var hudPlayerEl = document.getElementById('tu-hud-player');
   var cardsRemainingValueEl = document.getElementById('tu-cards-remaining-value');
   var turnIntroEl = document.getElementById('turn-intro');
   var turnTeamBadgeEl = document.getElementById('turn-team-badge');
@@ -1104,7 +1152,7 @@
   var turnPlayEl = document.getElementById('turn-play');
   var tuTimerWrapEl = document.getElementById('tu-timer-wrap');
   var tuTimerEl = document.getElementById('tu-timer');
-  var tuWordEl = document.getElementById('tu-word');
+  var tuCardStack = createCardStack(document.getElementById('tu-flip-card'));
   var tuSkipBtn = document.getElementById('tu-skip-btn');
   var tuCorrectBtn = document.getElementById('tu-correct-btn');
   var turnEndEl = document.getElementById('turn-end');
@@ -1134,12 +1182,13 @@
     state.turnResults = [];
     state.timeRemaining = carriedTurn ? carriedTurn.timeRemaining : config.turnSeconds;
 
-    phaseStatusEl.textContent = PHASES[state.phase].title + ": " + PHASES[state.phase].subtitle;
+    phaseStatusEl.textContent = PHASES[state.phase].title + ' / 3 · ' + PHASES[state.phase].subtitle;
     renderCardsRemaining();
     turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
     turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
     turnPlayerNameEl.textContent = state.playerNames[actorIdx];
     turnPlayerNameEl.style.color = TEAM_HEX[teamIdx];
+    hudPlayerEl.textContent = state.playerNames[actorIdx];
 
     turnIntroEl.classList.remove('hidden');
     turnPlayEl.classList.add('hidden');
@@ -1209,7 +1258,7 @@
     turnIntroEl.classList.add('hidden');
     turnPlayEl.classList.remove('hidden');
     tuTimerWrapEl.classList.remove('time-up');
-    tuWordEl.textContent = state.deck[0];
+    tuCardStack.reveal(state.deck[0], state.deck.length);
     updateTimerDisplay(state.timeRemaining);
     stopTimer();
     state.timerInterval = setInterval(function(){
@@ -1229,7 +1278,7 @@
     state.turnResults.push({ word: word, correct: true });
     renderCardsRemaining();
     if (state.deck.length === 0){ endTurn(true); return; }
-    tuWordEl.textContent = state.deck[0];
+    tuCardStack.discard('right', state.deck[0], state.deck.length);
   });
 
   tuSkipBtn.addEventListener('click', function(){
@@ -1243,7 +1292,7 @@
     void tuTimerEl.offsetWidth;
     tuTimerEl.classList.add('skip-pulse');
     if (state.timeRemaining <= 0){ endTurn(false, false); return; }
-    tuWordEl.textContent = state.deck[0];
+    tuCardStack.discard('left', state.deck[0], state.deck.length);
   });
 
   function endTurn(deckExhausted, hasActiveWord){
@@ -1370,6 +1419,7 @@
 
   // ---------- init ----------
   autoBalanceAllTeams();
+  normalizeTrailingSlot();
   renderTeamCount();
   renderPlayerRows();
   renderTeamBoxes();
