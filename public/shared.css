@@ -1173,6 +1173,12 @@ button:focus-visible, input:focus-visible{
    bleed margin is needed here anymore. The rails reuse .icon-action-btn's
    color variants, just reshaped via .icon-action-rail (flex-basis + inner-
    corner rounding only). */
+#turn-play .scr-body{
+  /* .scr-body's overflow-y:auto implicitly makes overflow-x compute to
+     auto too — without this, the discard swipe (translateX past ±100%,
+     see .flip-card-exit-left/right) opens a horizontal scrollbar */
+  overflow-x:hidden;
+}
 .turn-play-stage{
   display:flex;
   align-items:stretch;
@@ -1181,7 +1187,7 @@ button:focus-visible, input:focus-visible{
   height:100%;
 }
 .icon-action-rail{
-  flex:0 0 clamp(64px, 17vw, 100px);
+  flex:0 0 clamp(78px, 21vw, 120px);
   min-height:0;
   padding:12px 4px;
 }
@@ -1195,7 +1201,7 @@ button:focus-visible, input:focus-visible{
 }
 .icon-action-rail .icon-action-icon{width:34px; height:34px;}
 @media (max-width:360px){
-  .icon-action-rail{flex-basis:56px;}
+  .icon-action-rail{flex-basis:68px;}
   .icon-action-rail .icon-action-icon{width:28px; height:28px;}
 }
 /* solid red/green pills (reference screenshot) instead of the tinted glass
@@ -1395,12 +1401,13 @@ button:focus-visible, input:focus-visible{
   background-size:180px 180px;
 }
 
-/* Time's Up / Mímica in-game screen: the card has no gutter of its own here
-   (see .party-stage > .card below) — every section re-adds just the padding
-   it needs, so the HUD and card stack/rails can go fully edge-to-edge while
-   the text-based intro/end phases still get a comfortable inset. */
+/* Time's Up / Mímica in-game screen: the card has no side gutter of its own
+   here (see .party-stage > .card below) — every section re-adds just the
+   padding it needs, so the HUD and card stack/rails can go edge-to-edge
+   horizontally, while a small top/bottom inset keeps content off the raw
+   screen edge so the backdrop reads as a frame around it. */
 .party-stage > .card{
-  padding:env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  padding:max(18px, env(safe-area-inset-top)) env(safe-area-inset-right, 0px) max(18px, env(safe-area-inset-bottom)) env(safe-area-inset-left, 0px);
 }
 .party-stage #turn-intro .scr-body,
 .party-stage #turn-end .scr-body{
@@ -1415,11 +1422,13 @@ button:focus-visible, input:focus-visible{
    round/player status, live counter and remaining-cards float directly on
    the stage background, same as the reference in-game screen. */
 .party-game-hud{
+  position:relative;
   flex:0 0 auto;
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
   gap:12px;
+  min-height:76px;
   margin:0 0 18px;
   padding-left:max(18px, env(safe-area-inset-left));
   /* leave room for the floating .ingame-home-btn pinned at the top-right
@@ -1441,6 +1450,13 @@ button:focus-visible, input:focus-visible{
   padding-top:6px;
 }
 .party-hud-block:last-child{align-items:flex-end; text-align:right;}
+/* "RONDA 1: DESCRIBIR" / "Cartas restantes" style: very pale blue fill with
+   a thin blue outline traced on the letters themselves (not a badge box). */
+.party-hud-block > span:first-child{
+  font-weight:900;
+  letter-spacing:0.14em;
+  color:#eaf5ff;
+}
 .party-hud-value{
   font-family:var(--font-display);
   font-size:1.35rem;
@@ -1454,10 +1470,17 @@ button:focus-visible, input:focus-visible{
   white-space:nowrap;
 }
 
-/* center timer badge in the HUD: only shown while a turn is actively being
-   played (i.e. #turn-play is the visible phase among its siblings) — hidden
-   during the intro/end phases, where it would just show stale leftover time. */
+/* center timer badge in the HUD: independent of the two side blocks —
+   absolutely positioned and centered on the row itself so uneven label/value
+   widths on either side never push it off-center. Only shown while a turn is
+   actively being played (i.e. #turn-play is the visible phase among its
+   siblings) — hidden during the intro/end phases, where it would just show
+   stale leftover time. */
 .party-hud-timer{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
   flex:0 0 auto;
   width:76px;
   height:76px;
@@ -1538,7 +1561,7 @@ button:focus-visible, input:focus-visible{
 }
 .flip-card-back-design{
   border-color:#fff;
-  background-image:repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 60%, #1c2534) 0 16px, color-mix(in srgb, var(--accent2) 55%, #1c2534) 16px 32px);
+  background-image:repeating-linear-gradient(135deg, var(--party-bg, var(--accent)) 0 16px, color-mix(in srgb, var(--party-bg, var(--accent2)) 70%, #1c2534) 16px 32px);
 }
 .flip-card-front-face{
   background-color:#f7f3df;
