@@ -147,14 +147,31 @@ initLandscapePrompt();
 
 /* the shell's height follows the real visible viewport (visualViewport when
    available) instead of the raw window/100dvh, which on some mobile browsers
-   still includes space the address bar/keyboard is currently covering */
+   still includes space the address bar/keyboard is currently covering.
+   Exception: while a text input is focused, the on-screen keyboard shrinking
+   visualViewport would otherwise squeeze the whole flex-column shell down to
+   that small height, dragging the pinned .scr-dock button right up against
+   the focused input — so during text entry we keep the pre-keyboard height
+   instead and let the keyboard simply overlap the bottom of the screen. */
 function initViewportHeightSync(){
   var vv = window.visualViewport;
+  var typing = false;
 
   function sync(){
+    if (typing) return;
     var height = (vv && vv.height) || window.innerHeight;
     document.documentElement.style.setProperty('--app-vh', height + 'px');
   }
+
+  document.addEventListener('focusin', function(e){
+    if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){ typing = true; }
+  });
+  document.addEventListener('focusout', function(e){
+    if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){
+      typing = false;
+      sync();
+    }
+  });
 
   window.addEventListener('resize', sync);
   window.addEventListener('orientationchange', sync);
