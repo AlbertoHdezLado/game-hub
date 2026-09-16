@@ -1,0 +1,16 @@
+public/games/taboo/index.html
+  h_fed6a40af368f7 23,42,59,86,99,243,250
+public/games/trivia/index.html
+  h_fed6a40af368f7 23,42,59,86,99,230,266,281,299,329,336
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e55d2f89381b18ca9429038da3df3761f1048732",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
