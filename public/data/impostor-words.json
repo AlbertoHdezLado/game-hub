@@ -607,7 +607,6 @@
         "Fútbol sala",
         "Bádminton",
         "Piragüismo",
-        "Halterofilia",
         "Patinaje artístico",
         "Taekwondo"
       ],
@@ -644,8 +643,7 @@
         "Buceo": "Fútbol sala",
         "Fútbol sala": "Bádminton",
         "Bádminton": "Piragüismo",
-        "Piragüismo": "Halterofilia",
-        "Halterofilia": "Patinaje artístico",
+        "Piragüismo": "Patinaje artístico",
         "Patinaje artístico": "Taekwondo",
         "Taekwondo": "Fútbol"
       }
