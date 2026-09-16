@@ -34,6 +34,15 @@ function savePlayerNames(names){
   }
 }
 
+/* forces a text input's value to uppercase as the user types, preserving caret position */
+function forceUppercaseInput(inputEl){
+  inputEl.addEventListener('input', function(){
+    var selStart = inputEl.selectionStart, selEnd = inputEl.selectionEnd;
+    inputEl.value = inputEl.value.toUpperCase();
+    inputEl.setSelectionRange(selStart, selEnd);
+  });
+}
+
 /* Hombres Lobo: the chosen role loadout (roleId -> count) carries over
    between matches the same way the player list does */
 var ROLE_COUNTS_STORAGE_KEY = 'gamehub.werewolfRoleCounts';

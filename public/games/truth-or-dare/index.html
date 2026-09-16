@@ -20,7 +20,7 @@
   html,body{
     /* flat solid fill — a multi-layer gradient here used to leave gaps of
        the raw background color showing on some viewports/scroll ranges */
-    background-color:color-mix(in srgb, var(--accent) 10%, #fffaf2);
+    background-color:var(--bg2);
   }
   .td-buttons{
     position:absolute;
@@ -250,6 +250,7 @@
   // ---------- players ----------
   var playersChipsList = document.getElementById('players-chips');
   var playersDraftInput = document.getElementById('players-draft');
+  forceUppercaseInput(playersDraftInput);
 
   // players are only added once a non-empty name is committed from the draft input;
   // config.rows never carries an empty slot, so effectivePlayerCount is just rows.length.

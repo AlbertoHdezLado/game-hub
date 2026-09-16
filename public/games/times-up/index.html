@@ -20,17 +20,7 @@
   html,body{
     /* flat solid fill — a multi-layer gradient here used to leave gaps of
        the raw background color showing on some viewports/scroll ranges */
-    background-color:color-mix(in srgb, var(--accent) 10%, #fffaf2);
-  }
-
-  /* This page no longer shows the team badge on the pass-the-device screen,
-     so the light blue backdrop can't clash with the blue team color here —
-     restore it, overriding shared.css's neutral dark .party-stage (which
-     stays dark for Mímica, where the badge is still shown). */
-  .party-stage{
-    --party-bg:#5b71b3;
-    --party-label:#c2cdef;
-    --party-ring-bg:rgba(20,28,56,0.35);
+    background-color:var(--bg2);
   }
 
   .team-color-0{background:#5b8fe0;}
@@ -49,7 +39,7 @@
   .team-box{
     border-radius:14px;
     border:1px solid var(--glass-border);
-    background:rgba(255,255,255,0.05);
+    background:var(--surface);
     padding:10px 12px;
     margin-bottom:8px;
   }
@@ -66,7 +56,7 @@
   .team-box-chip{
     padding:6px 12px;
     border-radius:999px;
-    background:rgba(255,255,255,0.08);
+    background:var(--surface-2);
     border:1px solid var(--glass-border);
     color:var(--text);
     font-size:0.85rem;
@@ -93,7 +83,7 @@
   .mini-score-pill.team-color-3, .team-turn-badge.team-color-3, .tu-word-pill.team-color-3{color:#3a2f00;}
   .team-box.drag-over{
     border-color:var(--accent);
-    background:rgba(255,255,255,0.1);
+    background:var(--surface-2);
   }
   .team-box-empty{color:var(--text-dim); font-size:0.8rem; font-style:italic;}
 
@@ -106,7 +96,7 @@
     padding:12px 14px;
     border-radius:14px;
     border:1px solid var(--glass-border);
-    background:rgba(255,255,255,0.05);
+    background:var(--surface);
     color:var(--text);
     font-size:0.88rem;
     font-weight:600;
@@ -233,14 +223,14 @@
     align-items:center;
     padding:10px 12px;
     border-radius:12px;
-    background:rgba(255,255,255,0.05);
+    background:var(--surface);
     border:1px solid var(--glass-border);
     margin-bottom:8px;
     text-align:left;
   }
   .team-score-row.winner{
     border-color:var(--accent);
-    background:rgba(255,255,255,0.1);
+    background:var(--surface-2);
   }
   .team-score-name{display:flex; align-items:center; gap:8px; font-weight:700;}
   .team-score-value{font-family:var(--font-display); font-weight:800; font-size:1.1rem;}
@@ -340,10 +330,7 @@
       <div class="scr-body">
         <div id="setup-step-players">
           <label><span class="label-icon">👥</span>Jugadores</label>
-          <div class="player-chips-list" id="players-chips"></div>
-          <div class="player-input-row">
-            <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
-          </div>
+          <div id="players-list"></div>
           <div class="error-msg" id="players-error"></div>
         </div>
 
@@ -476,6 +463,7 @@
       <!-- TURN INTRO: gate before the timer starts -->
       <div id="turn-intro">
         <div class="scr-body">
+          <div class="team-turn-badge" id="turn-team-badge">ROJO</div>
           <div class="player-name" id="turn-player-name">Nombre</div>
           <p class="pass-hint">Pasa el dispositivo a esta persona.</p>
         </div>
@@ -694,8 +682,7 @@
   }
 
   // ---------- setup: players ----------
-  var playersChipsList = document.getElementById('players-chips');
-  var playersDraftInput = document.getElementById('players-draft');
+  var rowsContainer = document.getElementById('players-list');
   var playersErrorEl = document.getElementById('players-error');
   var teamsErrorEl = document.getElementById('teams-error');
   var setupError = document.getElementById('setup-error');
@@ -733,54 +720,82 @@
   });
   renderSetupStep();
 
-  function realPlayerCount(){ return config.rows.length; }
+  function effectivePlayerCount(rows){
+    var n = rows.length;
+    if (n > 0 && !rows[n - 1].name.trim()) n--; // trailing empty slot isn't a player yet
+    return n;
+  }
+  function realPlayerCount(){ return effectivePlayerCount(config.rows); }
+
+  function rowHtml(row, idx, rows){
+    var isTrailingSlot = idx === rows.length - 1 && !row.name.trim();
+    if (isTrailingSlot){
+      return (
+        '<div class="player-row">' +
+          '<input type="text" class="player-name-input" data-index="' + idx + '" ' +
+            'placeholder="Jugador ' + (idx + 1) + '" maxlength="20" value="">' +
+        '</div>'
+      );
+    }
+    return (
+      '<div class="player-row">' +
+        '<input type="text" class="player-name-input" data-index="' + idx + '" maxlength="20" value="' + escapeHtml(row.name) + '">' +
+        '<button type="button" class="row-remove-btn" data-index="' + idx + '"' +
+          (realPlayerCount() <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+      '</div>'
+    );
+  }
 
   function renderPlayerRows(){
     var rows = config.rows;
-    playersChipsList.innerHTML = rows.map(function(row, idx){
-      return (
-        '<div class="player-chip">' +
-          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
-          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
-            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
-        '</div>'
-      );
-    }).join('');
-    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
-    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
+    rowsContainer.innerHTML = rows.map(function(row, idx){ return rowHtml(row, idx, rows); }).join('');
   }
 
   function leastPopulatedTeam(){
     var counts = [];
     for (var t = 0; t < config.numTeams; t++) counts.push(0);
     config.rows.forEach(function(r){
-      counts[clamp(r.team || 0, 0, config.numTeams - 1)]++;
+      if (r.name.trim()) counts[clamp(r.team || 0, 0, config.numTeams - 1)]++;
     });
     var minIdx = 0;
     for (var t = 1; t < config.numTeams; t++){ if (counts[t] < counts[minIdx]) minIdx = t; }
     return minIdx;
   }
 
-  function addPlayerFromDraft(){
-    var trimmed = playersDraftInput.value.trim();
-    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
-    config.rows.push({ name: trimmed, team: leastPopulatedTeam() });
-    playersDraftInput.value = '';
-    renderPlayerRows();
-    persistPlayers();
-    validateSetup();
-    playersDraftInput.focus();
+  function normalizeTrailingSlot(){
+    var rows = config.rows;
+    while (rows.length > 1 && !rows[rows.length - 1].name.trim() && !rows[rows.length - 2].name.trim()){
+      rows.pop();
+    }
+    if (rows.length < MAX_PLAYERS && (rows.length === 0 || rows[rows.length - 1].name.trim())){
+      rows.push({ name: "", team: leastPopulatedTeam() });
+    }
   }
 
-  playersDraftInput.addEventListener('keydown', function(e){
-    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
+  rowsContainer.addEventListener('input', function(e){
+    var target = e.target;
+    if (!target.classList.contains('player-name-input')) return;
+    var idx = parseInt(target.getAttribute('data-index'), 10);
+    config.rows[idx].name = target.value;
+    normalizeTrailingSlot();
+    persistPlayers();
+
+    var selStart = target.selectionStart, selEnd = target.selectionEnd;
+    renderPlayerRows();
+    var restored = rowsContainer.querySelector('.player-name-input[data-index="' + idx + '"]');
+    if (restored){
+      restored.focus();
+      restored.setSelectionRange(selStart, selEnd);
+    }
+    validateSetup();
   });
 
-  playersChipsList.addEventListener('click', function(e){
-    var removeBtn = e.target.closest('.player-chip-remove');
+  rowsContainer.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.row-remove-btn');
     if (!removeBtn || removeBtn.disabled) return;
     var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
     config.rows.splice(rIdx, 1);
+    normalizeTrailingSlot();
     renderPlayerRows();
     persistPlayers();
     validateSetup();
@@ -890,6 +905,8 @@
 
   function reassignTeamsAfterCountChange(){
     autoBalanceAllTeams();
+    var rows = config.rows;
+    if (rows.length && !rows[rows.length - 1].name.trim()) rows[rows.length - 1].team = leastPopulatedTeam();
     renderTeamBoxes();
     persistPlayers();
     validateSetup();
@@ -1129,6 +1146,7 @@
   var hudPlayerEl = document.getElementById('tu-hud-player');
   var cardsRemainingValueEl = document.getElementById('tu-cards-remaining-value');
   var turnIntroEl = document.getElementById('turn-intro');
+  var turnTeamBadgeEl = document.getElementById('turn-team-badge');
   var turnPlayerNameEl = document.getElementById('turn-player-name');
   var turnStartBtn = document.getElementById('turn-start-btn');
   var turnPlayEl = document.getElementById('turn-play');
@@ -1166,6 +1184,8 @@
 
     phaseStatusEl.textContent = PHASES[state.phase].title + ' / 3 · ' + PHASES[state.phase].subtitle;
     renderCardsRemaining();
+    turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
+    turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
     turnPlayerNameEl.textContent = state.playerNames[actorIdx];
     turnPlayerNameEl.style.color = TEAM_HEX[teamIdx];
     hudPlayerEl.textContent = state.playerNames[actorIdx];
@@ -1176,7 +1196,11 @@
   }
 
   // ---- countdown + alarm (same pattern as Impostor/Hombres Lobo/Mímica) ----
-  function updateTimerDisplay(totalSeconds){ tuTimerEl.textContent = formatMMSS(totalSeconds); }
+  function updateTimerDisplay(totalSeconds){
+    tuTimerEl.textContent = formatMMSS(totalSeconds);
+    var progress = config.turnSeconds > 0 ? clamp(totalSeconds / config.turnSeconds, 0, 1) : 0;
+    tuTimerWrapEl.style.setProperty('--progress', progress);
+  }
   function stopTimer(){ if (state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; } }
   function unlockAlarmAudio(){
     if (!state.audioCtx){
@@ -1399,6 +1423,7 @@
 
   // ---------- init ----------
   autoBalanceAllTeams();
+  normalizeTrailingSlot();
   renderTeamCount();
   renderPlayerRows();
   renderTeamBoxes();

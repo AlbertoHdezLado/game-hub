@@ -6,16 +6,20 @@
    ============================================================ */
 
 :root{
-  --bg1:#fff7e8;
-  --bg2:#fffaf2;
-  --bg3:#f5ead8;
-  --glass:color-mix(in srgb, var(--accent) 8%, #fffaf2);
-  --glass-border:color-mix(in srgb, var(--accent) 25%, #d8cdbd);
+  /* page background: a light pastel wash of each mode's own --accent, so
+     every game reads as "its color" at a glance instead of a shared neutral
+     tone. Kept lighter/less saturated than --glass/--surface below so
+     foreground panels and cards still stand out against it. */
+  --bg1:color-mix(in srgb, var(--accent) 8%, #fcfbf6);
+  --bg2:color-mix(in srgb, var(--accent) 11%, #fcfbf6);
+  --bg3:color-mix(in srgb, var(--accent) 18%, #fcfbf6);
+  --glass:color-mix(in srgb, var(--accent) 16%, #fffaf2);
+  --glass-border:color-mix(in srgb, var(--accent) 32%, #d8cdbd);
   --text:#202735;
   --text-dim:#596476;
-  --surface:color-mix(in srgb, var(--accent) 10%, #fffaf2);
-  --surface-2:color-mix(in srgb, var(--accent) 16%, #fffaf2);
-  --surface-border:color-mix(in srgb, var(--accent) 28%, #d8cdbd);
+  --surface:color-mix(in srgb, var(--accent) 22%, #fffaf2);
+  --surface-2:color-mix(in srgb, var(--accent) 32%, #fffaf2);
+  --surface-border:color-mix(in srgb, var(--accent) 34%, #d8cdbd);
   --on-surface:#202735;
   --overlay:rgba(32,39,53,0.42);
   --shadow:rgba(65,48,27,0.16);
@@ -229,7 +233,7 @@ input[type="text"]{
   padding:14px 16px;
   border-radius:14px;
   border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.06);
+  background:var(--surface);
   color:var(--text);
   font-size:1rem;
   outline:none;
@@ -237,15 +241,15 @@ input[type="text"]{
 }
 input[type="text"]:focus{
   border-color:var(--accent2);
-  background:rgba(255,255,255,0.1);
+  background:var(--surface-2);
 }
-input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
+input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
 
 .stepper{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  background:rgba(255,255,255,0.06);
+  background:var(--surface);
   border:1px solid var(--glass-border);
   border-radius:14px;
   padding:8px;
@@ -336,7 +340,7 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
   padding:12px;
   border-radius:12px;
   border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.06);
+  background:var(--surface);
   color:var(--text);
   font-weight:700;
   font-size:0.9rem;
@@ -447,7 +451,7 @@ input[type="text"]::placeholder{color:rgba(244,242,255,0.35);}
   padding:10px 22px;
   border-radius:999px;
   border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.06);
+  background:var(--surface);
   color:var(--text);
   font-size:0.85rem;
   font-weight:700;
@@ -789,7 +793,7 @@ button:focus-visible, input:focus-visible{
   gap:8px;
   padding:8px;
   border-radius:12px;
-  background:rgba(255,255,255,0.05);
+  background:var(--surface);
   border:1px solid var(--glass-border);
   margin-bottom:8px;
   transition:background .2s, border-color .2s, transform .18s;
@@ -812,7 +816,7 @@ button:focus-visible, input:focus-visible{
   flex-shrink:0;
   border-radius:10px;
   border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.06);
+  background:var(--surface);
   font-size:1.1rem;
   cursor:pointer;
   color:var(--text);
@@ -846,7 +850,7 @@ button:focus-visible, input:focus-visible{
   padding:6px 10px 6px 12px;
   border:1px solid var(--glass-border);
   border-radius:999px;
-  background:rgba(255,255,255,0.06);
+  background:var(--surface);
   color:var(--text);
   font-size:0.88rem;
   font-weight:600;
@@ -866,7 +870,7 @@ button:focus-visible, input:focus-visible{
   flex-shrink:0;
   border:0;
   border-radius:999px;
-  background:rgba(255,255,255,0.1);
+  background:var(--surface-2);
   color:var(--text);
   font-size:1.05rem;
   line-height:1;
@@ -883,7 +887,7 @@ button:focus-visible, input:focus-visible{
   gap:8px;
   padding:2px 4px;
   border-radius:12px;
-  background:rgba(255,255,255,0.05);
+  background:var(--surface);
   border:1px solid var(--glass-border);
 }
 .player-input-row .player-name-input{padding:10px 4px;}
@@ -907,7 +911,7 @@ button:focus-visible, input:focus-visible{
   padding:13px 16px;
   border-radius:14px;
   border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.05);
+  background:var(--surface);
   color:var(--text);
   font-size:0.95rem;
   font-weight:600;
@@ -975,7 +979,7 @@ button:focus-visible, input:focus-visible{
   padding:10px 12px;
   border-radius:14px;
   border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.05);
+  background:var(--surface);
   color:var(--text-dim);
   font-size:0.82rem;
   font-weight:600;
@@ -1010,7 +1014,7 @@ button:focus-visible, input:focus-visible{
 .submode-toggle{
   display:flex;
   gap:6px;
-  background:rgba(255,255,255,0.05);
+  background:var(--surface);
   border:1px solid var(--glass-border);
   border-radius:14px;
   padding:6px;
@@ -1124,7 +1128,7 @@ button:focus-visible, input:focus-visible{
   padding:12px 20px;
   border-radius:18px;
   border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.06);
+  background:var(--surface);
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   transition:transform .12s, background-color .15s, border-color .15s;
@@ -1264,16 +1268,16 @@ button:focus-visible, input:focus-visible{
   filter:saturate(0.8);
 }
 #screen-setup input[type="text"]{
-  background:rgba(5,7,13,0.32);
-  border-color:rgba(255,255,255,0.18);
+  background:var(--surface);
+  border-color:var(--surface-border);
   border-radius:12px;
 }
 #screen-setup input[type="text"]:hover{
-  border-color:rgba(255,255,255,0.3);
+  border-color:var(--accent2);
 }
 #screen-setup input[type="text"]:focus{
   border-color:var(--accent2);
-  background:rgba(5,7,13,0.48);
+  background:var(--surface-2);
   box-shadow:0 0 0 3px color-mix(in srgb, var(--accent2) 18%, transparent);
 }
 #screen-setup .stepper,
@@ -1283,8 +1287,8 @@ button:focus-visible, input:focus-visible{
 #screen-setup .player-input-row,
 #screen-setup .chip,
 #screen-setup .night-nav-btn{
-  background:rgba(255,255,255,0.045);
-  border-color:rgba(255,255,255,0.16);
+  background:var(--surface);
+  border-color:var(--surface-border);
 }
 #screen-setup .stepper{
   padding:6px;
@@ -1304,7 +1308,7 @@ button:focus-visible, input:focus-visible{
 #screen-setup .player-row:hover,
 #screen-setup .player-input-row:hover{
   border-color:var(--accent2);
-  background:rgba(255,255,255,0.075);
+  background:var(--surface-2);
 }
 #screen-setup .submode-toggle{
   border-radius:12px;
@@ -1322,9 +1326,9 @@ button:focus-visible, input:focus-visible{
 }
 #screen-setup .packages-dropdown-panel{
   padding:12px;
-  border:1px solid rgba(255,255,255,0.12);
+  border:1px solid var(--glass-border);
   border-radius:12px;
-  background:rgba(5,7,13,0.3);
+  background:var(--glass);
 }
 #screen-setup .chip{
   border-radius:10px;
@@ -1354,9 +1358,9 @@ button:focus-visible, input:focus-visible{
 }
 #screen-setup .setup-optional{
   margin-top:18px;
-  border:1px solid rgba(255,255,255,0.12);
+  border:1px solid var(--glass-border);
   border-radius:13px;
-  background:rgba(255,255,255,0.025);
+  background:var(--glass);
 }
 #screen-setup .setup-optional summary{
   display:flex;
@@ -1382,7 +1386,7 @@ button:focus-visible, input:focus-visible{
   transition:transform .2s;
 }
 #screen-setup .setup-optional[open] summary{
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  border-bottom:1px solid var(--glass-border);
 }
 #screen-setup .setup-optional[open] summary::after{
   transform:rotate(180deg);
@@ -1395,7 +1399,7 @@ button:focus-visible, input:focus-visible{
   margin-top:0;
 }
 #screen-setup .error-msg{
-  color:#f0a1a8;
+  color:var(--danger);
 }
 
 /* party stage backdrop (Time's Up / Mímica in-game screen): solid neutral
@@ -1508,10 +1512,22 @@ button:focus-visible, input:focus-visible{
   justify-content:center;
   background:var(--party-ring-bg, rgba(255,255,255,0.04));
   border:5px solid var(--party-ring-track, rgba(255,255,255,0.14));
-  border-top-color:var(--party-ring-arc, var(--accent2));
-  border-right-color:var(--party-ring-arc, var(--accent2));
   margin:0;
   visibility:hidden;
+  --progress:1;
+}
+/* countdown arc: a conic-gradient wedge shrinking clockwise from 12 o'clock,
+   masked down to a ring matching the track border's thickness. Progress
+   (0..1, fraction of time left) is set from JS on every tick. */
+.party-hud-timer::before{
+  content:"";
+  position:absolute;
+  inset:-5px;
+  border-radius:50%;
+  background:conic-gradient(var(--party-ring-arc, var(--accent2)) calc(var(--progress, 1) * 360deg), transparent 0deg);
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  mask:radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  pointer-events:none;
 }
 .party-game-hud:has(~ #turn-play:not(.hidden)) .party-hud-timer{visibility:visible;}
 .party-hud-timer-value{
