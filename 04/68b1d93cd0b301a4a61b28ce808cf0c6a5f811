@@ -1,0 +1,16 @@
+public/games/hitster/index.html
+  h_fed6a40af368f7 245-248
+public/games/impostor/index.html
+  h_fed6a40af368f7 235-251
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0468b1d93cd0b301a4a61b28ce808cf0c6a5f811",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
