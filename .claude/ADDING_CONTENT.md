@@ -4,14 +4,14 @@ Regla general (ver `.claude/PROJECT.md`): edita solo el `.json` del juego. El HT
 
 Tras editar un JSON, valídalo (es JSON estricto: comillas dobles, sin comas colgantes). Truco rápido en PowerShell:
 ```powershell
-Get-Content packages.json -Raw | ConvertFrom-Json | Out-Null
+Get-Content times-up-words.json -Raw | ConvertFrom-Json | Out-Null
 ```
 Si no lanza error, el JSON es válido.
 
 ---
 
-## A — Paquete de palabras (`packages.json`)
-Usado por: **Impostor, Time's Up, Mímica** (los tres leen el mismo fichero).
+## A — Paquete de palabras (`impostor-words.json`, `times-up-words.json`, `charades-words.json`)
+Usado por: **Impostor, Time's Up, Mímica** — mismo esquema, pero cada juego tiene su propio fichero independiente (dejaron de compartir `packages.json` porque sus mecánicas exigen contenido distinto, ver nota de mimeabilidad abajo). Añadir una palabra a uno de los tres ficheros NO la añade a los otros dos.
 
 ```json
 {
@@ -25,6 +25,8 @@ Usado por: **Impostor, Time's Up, Mímica** (los tres leen el mismo fichero).
 - `relacionadas` es **opcional** y solo la usa Impostor (modo "pista": el impostor recibe una palabra parecida en vez de ninguna). Si no la incluyes, Impostor simplemente no ofrece modo pista para esas palabras; Time's Up y Mímica la ignoran siempre.
 - Para solo añadir palabras a un paquete existente: añade strings al array `palabras` de ese paquete (y opcionalmente entradas a `relacionadas`).
 - Para un paquete nuevo: añade un objeto nuevo al array `paquetes`.
+- `relacionadas` solo tiene sentido en `impostor-words.json` (modo "pista"); no la añadas en los otros dos ficheros.
+- **Mímica exige mucho más cuidado que los otros dos**: en Impostor y Time's Up (ronda 1 y 2) los jugadores pueden describir la palabra hablando, así que cualquier concepto (por abstracto que sea) funciona. En Mímica (y en la ronda 3 de Time's Up) solo hay gestos y sonidos, sin hablar — antes de añadir una palabra a `charades-words.json`, comprueba que se pueda representar así. Evita: colores sueltos, nombres de marca sin acción física asociada, jerga técnica/abstracta (p. ej. términos de rodaje tipo "sinopsis" o "showrunner"), y emociones demasiado sutiles o sinónimas entre sí (si el público no puede adivinar cuál de dos gestos casi idénticos se está mimando, no aporta). Personajes, películas, profesiones, animales, objetos, lugares y acciones concretas sí funcionan bien.
 
 ## B — Categorías con lista de frases/palabras/temas
 Usado por (misma forma, distinto nombre de clave del array):
