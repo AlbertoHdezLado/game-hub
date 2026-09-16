@@ -1,0 +1,23 @@
+public/games/charades/index.html
+  s_6ed608536da526::t_a59482f196bc46 497,499,634-640,798,1016,1027-1028
+public/games/taboo/index.html
+  s_6ed608536da526::t_d9a0ca056495ab 473,475,599-605,638,907,918-919
+public/games/trivia/index.html
+  s_6ed608536da526::t_5dbe37cfe74ab2 504,506,625-631,662,840,851-852
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f6f872943f7651ed8262dd8cd85e4c31b9e9a98d",
+  "prompts": {},
+  "sessions": {
+    "s_6ed608536da526": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "ecb6ad2d-6c87-460c-8b5f-30aa78b3b5af",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
