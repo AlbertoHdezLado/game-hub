@@ -566,8 +566,27 @@
   });
 
   function buildBoard(){
-    var pool = shuffle(buildWordPool().slice());
-    state.board = pool.slice(0, BOARD_SIZE);
+    var selectedPools = PACKAGES.filter(function(p){
+      return config.selectedPackages.indexOf(p.id) !== -1;
+    }).map(function(p){
+      return shuffle(p.palabras.slice());
+    });
+    var categoryOrder = selectedPools.map(function(_, index){ return index; });
+    var board = [];
+    var addedWord = true;
+
+    // Deal in rounds so a large category cannot fill most of the board.
+    while (board.length < BOARD_SIZE && addedWord){
+      addedWord = false;
+      shuffle(categoryOrder).forEach(function(categoryIndex){
+        var categoryPool = selectedPools[categoryIndex];
+        if (board.length < BOARD_SIZE && categoryPool.length > 0){
+          board.push(categoryPool.pop());
+          addedWord = true;
+        }
+      });
+    }
+    state.board = board;
 
     var numTeams = config.numTeams;
     state.startingTeam = Math.floor(Math.random() * numTeams);
