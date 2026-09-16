@@ -232,6 +232,23 @@
             </div>
           </div>
 
+          <div id="random-impostors-wrap" class="hidden">
+            <label><span class="label-icon">🎭</span>Número de impostores</label>
+            <div class="stepper">
+              <button type="button" id="random-impostors-minus">−</button>
+              <div class="value" id="random-impostors-value">1</div>
+              <button type="button" id="random-impostors-plus">+</button>
+            </div>
+
+            <label><span class="label-icon">💡</span>Modo de juego</label>
+            <div class="submode-toggle" id="impostor-mode-toggle">
+              <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
+              <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
+              <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">Mr. Blanco</button>
+            </div>
+            <p class="count-info" id="impostor-mode-desc"></p>
+          </div>
+
           <details class="setup-optional">
             <summary>Ajustes adicionales</summary>
             <div class="setup-optional-content">
@@ -255,23 +272,6 @@
               </div>
             </div>
           </details>
-
-          <div id="random-impostors-wrap" class="hidden">
-            <label><span class="label-icon">🎭</span>Número de impostores</label>
-            <div class="stepper">
-              <button type="button" id="random-impostors-minus">−</button>
-              <div class="value" id="random-impostors-value">1</div>
-              <button type="button" id="random-impostors-plus">+</button>
-            </div>
-
-            <label><span class="label-icon">💡</span>Modo de juego</label>
-            <div class="submode-toggle" id="impostor-mode-toggle">
-              <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
-              <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
-              <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">Mr. Blanco</button>
-            </div>
-            <p class="count-info" id="impostor-mode-desc"></p>
-          </div>
 
           <div class="count-info" id="impostor-count-info"></div>
           <div class="error-msg" id="impostor-setup-error"></div>
