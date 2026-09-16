@@ -1,0 +1,20 @@
+.claude/ADDING_CONTENT.md
+  h_fed6a40af368f7 7,13-14,28-29
+.claude/GAMES.md
+  h_fed6a40af368f7 7,10,12,28-30
+public/data/charades-words.json
+  h_fed6a40af368f7 1-4398
+public/games/charades/index.html
+  h_fed6a40af368f7 571
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "44cd63215ad30d44d64555f1bd5986c6298963bd",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
