@@ -22,6 +22,8 @@
        the raw background color showing on some viewports/scroll ranges */
     background-color:var(--bg2);
   }
+  /* wide, rounded "mobile game" display face used for every text on this page */
+  body{font-family:var(--font-display);}
 
   .team-color-0{background:#5b8fe0;}
   .team-color-1{background:#c9525c;}
@@ -233,19 +235,24 @@
   .mimica-word-pill-wrap{
     display:flex;
     flex-wrap:wrap;
-    gap:6px;
+    gap:5px;
     justify-content:center;
-    margin:12px 0 18px;
+    margin:10px 0 14px;
+    max-width:100%;
   }
   .mimica-word-pill{
     display:inline-flex;
-    padding:6px 10px;
+    max-width:100%;
+    padding:5px 9px;
     border-radius:999px;
     color:#fff;
-    font-size:0.78rem;
+    font-size:0.72rem;
     font-weight:700;
+    overflow-wrap:anywhere;
   }
-  .mimica-word-pill.turn-missed{background:var(--danger); opacity:.72; text-decoration:line-through;}
+  /* missed words keep their team color, just struck through — only correctly
+     guessed words stay plain so the two states read at a glance */
+  .mimica-word-pill.turn-missed{text-decoration:line-through; opacity:.75;}
   button.mimica-word-pill{border:0; cursor:pointer; font:inherit;}
   .end-player-extreme{
     display:flex;
@@ -257,6 +264,15 @@
     border:1px solid var(--glass-border);
     margin-bottom:8px;
     text-align:left;
+  }
+  /* white tick/cross straight on the colored rails, no circle badge behind them */
+  .icon-action-rail.icon-action-correct .icon-action-icon{
+    mask-image:url('/resources/images/common/tick-plain.svg');
+    -webkit-mask-image:url('/resources/images/common/tick-plain.svg');
+  }
+  .icon-action-rail.icon-action-skip .icon-action-icon{
+    mask-image:url('/resources/images/common/cross-plain.svg');
+    -webkit-mask-image:url('/resources/images/common/cross-plain.svg');
   }
   .end-player-extreme-label{
     display:flex;
@@ -451,7 +467,6 @@
       <!-- TURN END: summary before moving on -->
       <div id="turn-end" class="hidden">
         <div class="scr-body">
-          <div class="end-icon">⏱️</div>
           <h1 style="font-size:1.4rem;" id="turn-end-title">¡Tiempo!</h1>
           <p class="subtitle" id="turn-end-subtitle"></p>
           <div class="mimica-word-pill-wrap" id="turn-end-words"></div>
@@ -810,6 +825,11 @@
   function addPlayerFromDraft(){
     var trimmed = playersDraftInput.value.trim();
     if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    var isDuplicate = config.rows.some(function(r){ return r.name.trim().toLowerCase() === trimmed.toLowerCase(); });
+    if (isDuplicate){
+      playersErrorEl.textContent = 'Ya hay un jugador llamado "' + trimmed + '".';
+      return;
+    }
     config.rows.push({ name: trimmed, team: leastPopulatedTeam() });
     playersDraftInput.value = '';
     renderPlayerRows();

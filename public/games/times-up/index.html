@@ -22,6 +22,18 @@
        the raw background color showing on some viewports/scroll ranges */
     background-color:var(--bg2);
   }
+  /* override shared.css's dark neutral party-stage backdrop with a pastel
+     green tone matching this game's accent — shared.css defaults to a dark
+     surface (shared with Charades) since it assumes light HUD text, so the
+     HUD/timer colors below are switched to dark ones for contrast here */
+  .party-stage{
+    --party-bg:var(--surface-2);
+    --party-label:var(--text-dim);
+    --party-ring-track:rgba(0,0,0,0.14);
+    --party-ring-bg:rgba(255,255,255,0.5);
+  }
+  .party-hud-block > span:first-child{color:var(--text-dim);}
+  .party-hud-value, .party-hud-timer-value{color:var(--text);}
 
   .team-color-0{background:#5b8fe0;}
   .team-color-1{background:#c9525c;}
