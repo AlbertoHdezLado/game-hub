@@ -349,6 +349,8 @@
     font-weight:800;
     font-size:0.72rem;
   }
+  /* leaves breathing room above the keyboard/dock when scrolled into view on focus */
+  #players-draft{ scroll-margin-bottom:24px; }
 </style>
 </head>
 <body data-landscape-recommended>
@@ -598,6 +600,8 @@
   var setupStepPlayersEl = document.getElementById('setup-step-players');
   var setupStepTeamsEl = document.getElementById('setup-step-teams');
   var setupNavEl = document.getElementById('setup-nav');
+
+  forceTitleCaseInput(playersDraftInput);
   var setupFinalNavEl = document.getElementById('setup-final-nav');
   var setupPrevBtn = document.getElementById('setup-prev-btn');
   var setupNextBtn = document.getElementById('setup-next-btn');
@@ -675,7 +679,7 @@
   playersAddBtn.addEventListener('click', addPlayerFromDraft);
 
   playersDraftInput.addEventListener('focus', function(){
-    playersDraftInput.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    playersDraftInput.scrollIntoView({ block: 'end', behavior: 'smooth' });
   });
 
   playersChipsList.addEventListener('click', function(e){

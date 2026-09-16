@@ -43,6 +43,18 @@ function forceUppercaseInput(inputEl){
   });
 }
 
+/* forces a text input's value to Title Case (first letter of each word
+   uppercase, rest lowercase) as the user types, preserving caret position */
+function forceTitleCaseInput(inputEl){
+  inputEl.addEventListener('input', function(){
+    var selStart = inputEl.selectionStart, selEnd = inputEl.selectionEnd;
+    inputEl.value = inputEl.value.replace(/\p{L}[\p{L}'-]*/gu, function(word){
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    });
+    inputEl.setSelectionRange(selStart, selEnd);
+  });
+}
+
 /* Hombres Lobo: the chosen role loadout (roleId -> count) carries over
    between matches the same way the player list does */
 var ROLE_COUNTS_STORAGE_KEY = 'gamehub.werewolfRoleCounts';
