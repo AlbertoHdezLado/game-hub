@@ -1,0 +1,50 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/detective-club/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/hitster/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/hot-potato/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/impostor/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/most-likely/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/never-have-i-ever/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/picolo/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/secret-code/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/taboo/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/times-up/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/trivia/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/truth-or-dare/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/werewolf/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/what-would-you-do/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/games/would-you-rather/index.html
+  h_fed6a40af368f7 7,16-17,23
+public/shared.css
+  h_fed6a40af368f7 9-21,24-26,29-30,1595-1596,1601-1624,1636-1679
+public/shared.js
+  h_fed6a40af368f7 181,187,196-199,221,234-239
+src/styles/index.css
+  h_fed6a40af368f7 526-563
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3aa2ed7bd1a6d144ad466f2ca6edfa8e4d8950e8",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
