@@ -6,22 +6,28 @@
    ============================================================ */
 
 :root{
-  --bg1:#0a0e1a;
-  --bg2:#101a2b;
-  --bg3:#05070d;
-  --glass:rgba(255,255,255,0.07);
-  --glass-border:rgba(255,255,255,0.14);
-  --text:#f5f1e8;
-  --text-dim:#93a0b4;
+  --bg1:#fff7e8;
+  --bg2:#fffaf2;
+  --bg3:#f5ead8;
+  --glass:color-mix(in srgb, var(--accent) 8%, #fffaf2);
+  --glass-border:color-mix(in srgb, var(--accent) 25%, #d8cdbd);
+  --text:#202735;
+  --text-dim:#596476;
+  --surface:color-mix(in srgb, var(--accent) 10%, #fffaf2);
+  --surface-2:color-mix(in srgb, var(--accent) 16%, #fffaf2);
+  --surface-border:color-mix(in srgb, var(--accent) 28%, #d8cdbd);
+  --on-surface:#202735;
+  --overlay:rgba(32,39,53,0.42);
+  --shadow:rgba(65,48,27,0.16);
 
   /* universal semantic colors (team/status), independent of each mode's brand hue */
-  --safe:#9dc9ff;
-  --danger:#9c3f47;
-  --wild:#e0b04d;
+  --safe:#2574c5;
+  --danger:#d33b4d;
+  --wild:#c77a00;
 
   /* generic brand accent fallback — every mode file overrides these two */
-  --accent:#7c8aa8;
-  --accent2:#9aa5bd;
+  --accent:#ff6b5f;
+  --accent2:#ffad42;
 
   --font-display:ui-rounded, 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
   --font-body:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -1586,10 +1592,34 @@ button:focus-visible, input:focus-visible{
   right:max(16px, env(safe-area-inset-right));
   margin:0;
   color:var(--text);
-  background:rgba(16,26,43,0.42);
-  border-color:rgba(255,255,255,0.28);
+  background:var(--surface-2);
+  border-color:var(--surface-border);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
+}
+
+.guide-modal-help{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:36px;
+  height:36px;
+  border:1px solid var(--surface-border);
+  border-radius:50%;
+  background:var(--surface-2);
+  color:var(--accent);
+  font-weight:900;
+  cursor:pointer;
+}
+
+@media (max-width:360px), (max-height:520px){
+  .screen>.card{padding-top:max(12px, env(safe-area-inset-top)); padding-bottom:max(10px, env(safe-area-inset-bottom));}
+  h1{font-size:clamp(1.45rem, 7vw, 1.8rem);}
+  .btn-main{padding:12px 14px; margin-top:10px; font-size:.95rem;}
+  label{margin-top:10px; margin-bottom:4px;}
+  .scr-dock{padding-top:6px;}
+  .guide-modal-backdrop{padding:14px;}
+  .guide-modal{padding:22px 18px; border-radius:18px;}
 }
 
 
@@ -1602,4 +1632,48 @@ button:focus-visible, input:focus-visible{
 @media (max-height:640px){
   .reveal-wrap{height:120px;}
   .pass-hint{margin-bottom:16px;}
+}
+
+/* Shared light-mode surfaces and the compact mobile rhythm. */
+.setup-header{display:none;}
+.back-to-setup-btn,
+.ayuda-trigger{display:none !important;}
+.screen>.card{padding-top:max(14px, env(safe-area-inset-top));}
+.card-modal .card,
+.guide-modal,
+.reveal-wrap,
+.player-row,
+.roster-row,
+.stepper,
+.night-nav-btn,
+.packages-dropdown-btn{
+  background:var(--surface);
+  border-color:var(--surface-border);
+  box-shadow:0 4px 0 var(--shadow);
+}
+input[type="text"],
+.player-input-row,
+.btn-add-row{
+  background:var(--surface);
+  border-color:var(--surface-border);
+  color:var(--text);
+}
+.stepper button,
+.reveal-btn,
+.btn-main{background:var(--accent);}
+.flip-card-back-design{background-color:var(--accent); background-image:none;}
+.guide-modal-backdrop{background:var(--overlay);}
+.guide-modal-close{background:var(--surface-2); color:var(--text);}
+.guide-modal h2{color:var(--text);}
+.ingame-home-btn{box-shadow:0 3px 0 var(--shadow);}
+
+@media (max-width:360px), (max-height:520px){
+  .screen>.card{padding-left:max(12px, env(safe-area-inset-left)); padding-right:max(12px, env(safe-area-inset-right));}
+  .subtitle{margin-bottom:10px; font-size:.82rem;}
+  .player-name{font-size:clamp(1.5rem, 8vw, 1.9rem);}
+  .reveal-wrap{height:clamp(112px, 27vh, 150px);}
+  .reveal-content{padding:8px; font-size:clamp(1.2rem, 7vw, 1.7rem);}
+  .progress-dots{margin-top:12px;}
+  .night-nav{gap:6px; margin-top:8px;}
+  .night-nav-btn{padding:10px 8px; font-size:.82rem;}
 }

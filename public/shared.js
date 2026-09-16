@@ -178,12 +178,13 @@ function createDots(container){
    Reuse each screen's existing link before removing the header so every game
    gets the same placement without duplicating markup across all mode files. */
 function initIngameHomeControls(){
-  var screens = document.querySelectorAll('.screen:not(#screen-setup)');
+  var screens = document.querySelectorAll('.screen');
   Array.prototype.forEach.call(screens, function(screen){
     var card = screen.querySelector(':scope > .card');
     if (!card) return;
     var header = card.querySelector(':scope > .setup-header');
     var home = header && header.querySelector('a[aria-label="Inicio"]');
+    var help = header && header.querySelector('.ayuda-trigger');
     if (!home){
       home = document.createElement('a');
       home.href = '/';
@@ -192,6 +193,10 @@ function initIngameHomeControls(){
       home.innerHTML = '<span class="home-icon"></span>';
     }
     home.classList.add('ingame-home-btn');
+    if (help){
+      help.classList.add('hidden');
+      card.appendChild(help);
+    }
     card.appendChild(home);
     if (header) header.remove();
   });
@@ -213,6 +218,7 @@ function initHomeExitConfirm(){
     backdrop.id = 'home-confirm-backdrop';
     backdrop.innerHTML =
       '<div class="guide-modal">' +
+        '<button type="button" class="guide-modal-help" aria-label="Ayuda">?</button>' +
         '<h2>¿Salir al inicio?</h2>' +
         '<p>Se perderá el progreso de la partida actual.</p>' +
         '<button type="button" class="btn-main" id="home-confirm-cancel-btn" style="margin-top:14px;">Seguir jugando</button>' +
@@ -224,6 +230,12 @@ function initHomeExitConfirm(){
     });
     document.getElementById('home-confirm-exit-btn').addEventListener('click', function(){
       window.location.href = pendingHref;
+    });
+    backdrop.querySelector('.guide-modal-help').addEventListener('click', function(){
+      var screen = document.querySelector('.screen:not(.hidden)');
+      var help = screen && screen.querySelector('.ayuda-trigger');
+      backdrop.classList.add('hidden');
+      if (help) help.click();
     });
     backdrop.addEventListener('click', function(e){
       if (e.target === backdrop) backdrop.classList.add('hidden');
