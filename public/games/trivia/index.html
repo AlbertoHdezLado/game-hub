@@ -501,8 +501,9 @@
 (function(){
   "use strict";
 
-  var MIN_PLAYERS = 2, MAX_PLAYERS = 30;
+  var MIN_PLAYERS_PER_TEAM = 2, MAX_PLAYERS = 30;
   var MIN_TEAMS = 2, MAX_TEAMS = 4;
+  var MIN_PLAYERS = MIN_TEAMS * MIN_PLAYERS_PER_TEAM;
   var MAX_ROUNDS = 72; // safety cap so a match always ends even if wedges are unlucky
   var MIN_WEDGE_GAP = 3, MAX_WEDGE_GAP = 5; // a wedge round every 3-5 questions
   var TEAM_NAMES = ['Azul', 'Rojo', 'Verde', 'Amarillo'];
@@ -621,7 +622,13 @@
     if (setupStep > 0){ setupStep--; renderSetupStep(); validateSetup(); }
   });
   setupNextBtn.addEventListener('click', function(){
-    if (setupStep < 1 && !setupNextBtn.disabled){ setupStep++; renderSetupStep(); validateSetup(); }
+    if (setupStep < 1 && !setupNextBtn.disabled){
+      setupStep++;
+      autoBalanceAllTeams();
+      renderSetupStep();
+      persistPlayers();
+      validateSetup();
+    }
   });
   setupFinalBackBtn.addEventListener('click', function(){
     setupStep = 0;
@@ -652,8 +659,7 @@
       return (
         '<div class="player-chip">' +
           '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
-          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
-            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '">✕</button>' +
         '</div>'
       );
     }).join('');
@@ -831,7 +837,7 @@
   function validateSetup(){
     var rows = config.rows;
     var playerMsgs = [];
-    if (realPlayerCount() < MIN_PLAYERS) playerMsgs.push("Necesitas al menos " + MIN_PLAYERS + " jugadores.");
+    if (realPlayerCount() < MIN_PLAYERS) playerMsgs.push("Necesitas al menos " + MIN_PLAYERS + " jugadores (" + MIN_TEAMS + " equipos x " + MIN_PLAYERS_PER_TEAM + ").");
     var playersValid = playerMsgs.length === 0;
 
     var teamMsgs = [];
@@ -842,8 +848,8 @@
         if (!r.name.trim()) return;
         teamCounts[clamp(r.team || 0, 0, config.numTeams - 1)]++;
       });
-      var emptyTeamIdx = teamCounts.indexOf(0);
-      if (emptyTeamIdx !== -1) teamMsgs.push(TEAM_NAMES[emptyTeamIdx] + " no tiene jugadores.");
+      var shortTeamIdx = teamCounts.findIndex(function(c){ return c < MIN_PLAYERS_PER_TEAM; });
+      if (shortTeamIdx !== -1) teamMsgs.push(TEAM_NAMES[shortTeamIdx] + " necesita al menos " + MIN_PLAYERS_PER_TEAM + " jugadores.");
     }
     var teamsValid = playersValid && teamMsgs.length === 0;
 
