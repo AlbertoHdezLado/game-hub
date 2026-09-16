@@ -170,10 +170,11 @@
       <p class="subtitle">Necesitas una baraja de cartas Dixit físicas para jugar</p>
 
       <div class="scr-body">
-        <label><span class="label-icon">🕵️</span>Jugadores</label>
+        <label class="players-label"><span class="label-icon">🕵️</span>Jugadores</label>
         <div class="player-chips-list" id="dc-players-chips"></div>
         <div class="player-input-row">
           <input type="text" class="player-name-input" id="dc-players-draft" placeholder="Nombre del jugador..." maxlength="20">
+          <button type="button" class="player-add-btn" id="dc-players-add" aria-label="Añadir jugador">+</button>
         </div>
         <div class="error-msg" id="dc-players-error"></div>
 
@@ -461,6 +462,7 @@
   // ---------- setup screen ----------
   var playersChipsList = document.getElementById('dc-players-chips');
   var playersDraftInput = document.getElementById('dc-players-draft');
+  var playersAddBtn = document.getElementById('dc-players-add');
   forceUppercaseInput(playersDraftInput);
   var playersErrorEl = document.getElementById('dc-players-error');
   var countInfoEl = document.getElementById('dc-count-info');
@@ -543,6 +545,12 @@
 
   playersDraftInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
+  });
+
+  playersAddBtn.addEventListener('click', addPlayerFromDraft);
+
+  playersDraftInput.addEventListener('focus', function(){
+    playersDraftInput.scrollIntoView({ block: 'center', behavior: 'smooth' });
   });
 
   playersChipsList.addEventListener('click', function(e){

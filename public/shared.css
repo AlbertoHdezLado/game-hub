@@ -836,10 +836,18 @@ button:focus-visible, input:focus-visible{
 }
 .btn-add-row:disabled{opacity:0.3; cursor:not-allowed;}
 
+/* ---- players label (heading above the chip list): centered and larger
+   than a regular field label, since it's the first thing setup asks for ---- */
+.players-label{
+  text-align:center;
+  font-size:1.05rem;
+}
+
 /* ---- player chips (name lists as removable pills above a single add-input) ---- */
 .player-chips-list{
   display:flex;
   flex-wrap:wrap;
+  justify-content:center;
   gap:8px;
   margin-bottom:8px;
 }
@@ -889,8 +897,32 @@ button:focus-visible, input:focus-visible{
   border-radius:12px;
   background:var(--surface);
   border:1px solid var(--glass-border);
+  scroll-margin-block:120px;
 }
-.player-input-row .player-name-input{padding:10px 4px;}
+.player-input-row .player-name-input{
+  padding:12px 4px;
+  text-align:center;
+  font-size:1.15rem;
+  font-weight:700;
+}
+.player-add-btn{
+  display:grid;
+  place-items:center;
+  width:40px;
+  height:40px;
+  flex-shrink:0;
+  border-radius:10px;
+  border:0;
+  background:var(--accent);
+  color:#fff;
+  font-size:1.3rem;
+  line-height:1;
+  cursor:pointer;
+  padding:0;
+  transition:transform .12s ease, opacity .15s ease;
+}
+.player-add-btn:active{transform:scale(.92);}
+.player-add-btn:disabled{opacity:0.35; cursor:not-allowed;}
 
 /* ---- roster reveal (Impostor / Detective Club / Hombres Lobo): a screen
    listing every player's name; tapping an unrevealed name opens their card

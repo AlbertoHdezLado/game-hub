@@ -286,10 +286,11 @@
 
       <div class="scr-body">
         <div id="setup-step-players">
-          <label><span class="label-icon">👥</span>Jugadores</label>
+          <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
           <div class="player-chips-list" id="mimica-players-chips"></div>
           <div class="player-input-row">
             <input type="text" class="player-name-input" id="mimica-players-draft" placeholder="Nombre del jugador..." maxlength="20">
+            <button type="button" class="player-add-btn" id="mimica-players-add" aria-label="Añadir jugador">+</button>
           </div>
           <div class="error-msg" id="players-error"></div>
         </div>
@@ -727,6 +728,7 @@
   var teamCountPlusBtn = document.getElementById('team-count-plus');
   var playersChipsList = document.getElementById('mimica-players-chips');
   var playersDraftInput = document.getElementById('mimica-players-draft');
+  var playersAddBtn = document.getElementById('mimica-players-add');
   var randomizeTeamsBtn = document.getElementById('randomize-teams-btn');
 
   function renderTeamCount(){
@@ -812,6 +814,12 @@
 
   playersDraftInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
+  });
+
+  playersAddBtn.addEventListener('click', addPlayerFromDraft);
+
+  playersDraftInput.addEventListener('focus', function(){
+    playersDraftInput.scrollIntoView({ block: 'center', behavior: 'smooth' });
   });
 
   playersChipsList.addEventListener('click', function(e){

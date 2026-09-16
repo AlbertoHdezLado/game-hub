@@ -365,10 +365,11 @@
 
       <div class="scr-body">
         <div id="setup-step-players">
-          <label><span class="label-icon">👥</span>Jugadores</label>
+          <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
           <div class="player-chips-list" id="players-chips"></div>
           <div class="player-input-row">
             <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
+            <button type="button" class="player-add-btn" id="players-add" aria-label="Añadir jugador">+</button>
           </div>
           <div class="error-msg" id="players-error"></div>
         </div>
@@ -589,6 +590,7 @@
   // ---------- setup: players ----------
   var playersChipsList = document.getElementById('players-chips');
   var playersDraftInput = document.getElementById('players-draft');
+  var playersAddBtn = document.getElementById('players-add');
   var playersErrorEl = document.getElementById('players-error');
   var teamsErrorEl = document.getElementById('teams-error');
   var setupError = document.getElementById('setup-error');
@@ -668,6 +670,12 @@
 
   playersDraftInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
+  });
+
+  playersAddBtn.addEventListener('click', addPlayerFromDraft);
+
+  playersDraftInput.addEventListener('focus', function(){
+    playersDraftInput.scrollIntoView({ block: 'center', behavior: 'smooth' });
   });
 
   playersChipsList.addEventListener('click', function(e){
