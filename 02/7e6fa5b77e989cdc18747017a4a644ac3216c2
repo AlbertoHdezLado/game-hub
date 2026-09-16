@@ -1,0 +1,41 @@
+public/games/detective-club/index.html
+  s_c1ed2353fc00b1::t_df0426227157c5 28,38,94,101,464
+public/games/hitster/index.html
+  s_c1ed2353fc00b1::t_96599decf5621b 23,42,119,207
+public/games/hot-potato/index.html
+  s_c1ed2353fc00b1::t_2ea73b4e07ce32 23,81
+public/games/impostor/index.html
+  s_c1ed2353fc00b1::t_8fa4f4236ebc92 23,44,124,531
+public/games/most-likely/index.html
+  s_c1ed2353fc00b1::t_4638eabfeac773 23
+public/games/never-have-i-ever/index.html
+  s_c1ed2353fc00b1::t_dd0b591f428b08 23
+public/games/picolo/index.html
+  s_c1ed2353fc00b1::t_99369650398cc8 23,209
+public/games/secret-code/index.html
+  s_c1ed2353fc00b1::t_17dfbd733ca179 23,45,103,119,140,175
+public/games/truth-or-dare/index.html
+  s_c1ed2353fc00b1::t_2c7443e696ad96 23,253
+public/games/werewolf/index.html
+  s_c1ed2353fc00b1::t_52fe94ddb56bc8 23,118,215,290,392,444,459,506,1146
+public/games/what-would-you-do/index.html
+  s_c1ed2353fc00b1::t_f922a696f904fe 23
+public/games/would-you-rather/index.html
+  s_c1ed2353fc00b1::t_9d59fa3647fd2f 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "027e6fa5b77e989cdc18747017a4a644ac3216c2",
+  "prompts": {},
+  "sessions": {
+    "s_c1ed2353fc00b1": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "025dad44-c595-44d1-9e19-fe5cb5ed6150",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
