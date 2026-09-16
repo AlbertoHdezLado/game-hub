@@ -1,0 +1,14 @@
+public/games/times-up/index.html
+  h_fed6a40af368f7 449
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d2c15a69a1c000094138e2be31bc8d72a1941293",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
