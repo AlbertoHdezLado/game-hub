@@ -1,0 +1,32 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 289,293,731,819-824
+public/games/detective-club/index.html
+  h_fed6a40af368f7 173,177,465,550-555
+public/games/impostor/index.html
+  h_fed6a40af368f7 205,209,532,658-663
+public/games/picolo/index.html
+  h_fed6a40af368f7 66,70,210,251-256
+public/games/taboo/index.html
+  h_fed6a40af368f7 288,292,569,655-660
+public/games/times-up/index.html
+  h_fed6a40af368f7 332-337,689-691,729,742-749,752-757,759-763,765,767-771,774-781
+public/games/trivia/index.html
+  h_fed6a40af368f7 368,372,593,675-680
+public/games/truth-or-dare/index.html
+  h_fed6a40af368f7 78,82,254,293-298
+public/games/werewolf/index.html
+  h_fed6a40af368f7 627,631,1147,1193-1198
+public/shared.css
+  h_fed6a40af368f7 839-845,850,900-922,924-925
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4749b92009a771f53f508b590099205ebf4fd44c",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
