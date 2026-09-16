@@ -1,0 +1,24 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 111,117
+public/games/detective-club/index.html
+  h_fed6a40af368f7 19-23,80-81
+public/games/taboo/index.html
+  h_fed6a40af368f7 153,159
+public/games/times-up/index.html
+  h_fed6a40af368f7 164,170
+public/games/trivia/index.html
+  h_fed6a40af368f7 130,136
+public/shared.css
+  h_fed6a40af368f7 153-155,162-163,165-167,1401-1409,1411-1412,1415
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "023e26f2aff2b0d6fb2c610e5dd356563a5b7dce",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
