@@ -16,6 +16,11 @@
     --accent:#3979d8;
     --accent2:#74b6ff;
     --reveal-b:#8fc1f0;
+    /* this game's accent/background are already blue, so the shared --safe
+       (also blue) blended into the backdrop and lost meaning — use an
+       emerald green here instead, which stays legible against the blue theme
+       and reads clearly opposite the red --danger. */
+    --safe:#2fae74;
   }
   html,body{
     /* flat solid fill — a multi-layer gradient here used to leave gaps of
@@ -72,8 +77,8 @@
     gap:5px;
     padding:5px 10px;
     border-radius:999px;
-    background:rgba(157,201,255,0.15);
-    border:1px solid rgba(157,201,255,0.4);
+    background:rgba(72,201,149,0.15);
+    border:1px solid rgba(72,201,149,0.4);
     color:var(--safe);
     font-size:0.78rem;
     font-weight:700;

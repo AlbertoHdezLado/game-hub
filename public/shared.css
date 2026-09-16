@@ -150,14 +150,21 @@ button{ touch-action:manipulation; }
 }
 /* scrollable middle region of a screen: everything between the app bar and
    the pinned action dock. Only actually scrolls when content can't fit —
-   most screens never trigger it. */
+   most screens never trigger it. A themed thin scrollbar (instead of the
+   bulky default one) keeps long results/scoreboard lists from looking broken
+   when they need to scroll. */
 .scr-body{
   flex:1 1 auto;
   min-height:0;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:var(--accent) transparent;
 }
+.scr-body::-webkit-scrollbar{width:6px;}
+.scr-body::-webkit-scrollbar-track{background:transparent;}
+.scr-body::-webkit-scrollbar-thumb{background:var(--accent); border-radius:999px;}
 /* pinned action dock: the step's primary/contextual controls (start, next,
    correct/skip...) always stay on screen instead of scrolling away */
 .scr-dock{
@@ -1391,16 +1398,21 @@ button:focus-visible, input:focus-visible{
   color:#f0a1a8;
 }
 
-/* party stage backdrop (Time's Up / Mímica in-game screen): solid indigo
-   fill plus a faint tiled shape pattern (circles/diamonds/triangles),
-   matching the reference party-game screenshot. Exclusive to these two
-   modes' #screen-game — untouched by every other screen/mode. */
+/* party stage backdrop (Time's Up / Mímica in-game screen): solid neutral
+   charcoal fill plus a faint tiled shape pattern (circles/diamonds/triangles),
+   matching the reference party-game screenshot. Deliberately NOT a blue/indigo
+   tone — the shared team-color chips (see team-color-0..3 below) include a
+   blue and a red team, and a blue-ish backdrop made the blue team badge blend
+   into the background while clashing with the red one. A neutral dark base
+   gives every team color (and --safe/--danger) the same, reliable contrast.
+   Exclusive to these two modes' #screen-game — untouched by every other
+   screen/mode. */
 .party-stage{
-  --party-bg:#5b71b3;
-  --party-label:#c2cdef;
+  --party-bg:#262433;
+  --party-label:#cfd0e6;
   --party-ring-track:rgba(255,255,255,0.22);
   --party-ring-arc:#f2c94c;
-  --party-ring-bg:rgba(20,28,56,0.35);
+  --party-ring-bg:rgba(14,13,20,0.4);
   background-color:var(--party-bg);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Ccircle cx='28' cy='34' r='13' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpath d='M118 16 L132 30 L118 44 L104 30 Z' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpolygon points='150,116 161,136 139,136' fill='none' stroke='rgba(255,255,255,0.14)' stroke-width='2'/%3E%3Ccircle cx='58' cy='150' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Ccircle cx='168' cy='62' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Cpath d='M30 110 L42 122 L30 134 L18 122 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='2'/%3E%3C/svg%3E");
   background-repeat:repeat;
