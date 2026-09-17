@@ -1,5 +1,4 @@
 @charset "UTF-8";
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap');
 /* ============================================================
    Shared design system for Impostor / Detective Club / Hombres Lobo
    Each mode file sets its own --accent / --accent2 / ambient glow
@@ -34,8 +33,8 @@
   --accent:#ff6b5f;
   --accent2:#ffad42;
 
-  --font-display:'Anton', 'Arial Black', sans-serif;
-  --font-body:'Archivo', 'Segoe UI', sans-serif;
+  --font-display:ui-rounded, 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-body:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 /* no image in the app should be selectable/draggable or trigger the
@@ -64,11 +63,9 @@ html,body{
   height:100%;
   margin:0;
   font-family:var(--font-body);
-  font-weight:700;
   -webkit-font-smoothing:antialiased;
   background-color:var(--bg2);
   color:var(--text);
-  letter-spacing:.01em;
   overflow-x:hidden;
   overscroll-behavior:none;
   -webkit-user-select:none;
@@ -190,15 +187,10 @@ button{ touch-action:manipulation; }
   -webkit-backdrop-filter:blur(18px);
   box-shadow:0 8px 32px rgba(0,0,0,0.35);
 }
-.title,
-h1,
-h2,
-h3{
+h1{
   margin:0 0 4px;
   font-family:var(--font-display);
   font-size:2rem;
-  font-weight:900;
-  line-height:1.1;
   text-align:center;
   text-wrap:balance;
   background:linear-gradient(90deg, var(--accent), var(--accent2));
@@ -215,39 +207,18 @@ h3{
   -webkit-background-clip:initial;
   background-clip:initial;
 }
-.subtitle,
-label{
-  display:block;
+.subtitle{
   text-align:center;
   color:var(--text-dim);
   margin:0 0 16px;
-  font-family:var(--font-body);
   font-size:0.9rem;
-  font-weight:700;
-  line-height:1.3;
-}
-.body{
-  font-family:var(--font-body);
-  font-weight:700;
-  line-height:1.4;
 }
 label{
   display:block;
-  font-size:0.9rem;
+  font-size:0.85rem;
   color:var(--text-dim);
   margin:16px 0 6px;
-  font-weight:700;
-}
-.selection-title{
-  display:block;
-  margin:18px 0 10px;
-  font-family:var(--font-display);
-  font-size:clamp(1.15rem, 4vw, 1.6rem);
-  line-height:1.2;
-  font-weight:800;
-  letter-spacing:0.02em;
-  text-align:center;
-  color:var(--text);
+  font-weight:600;
 }
 /* only the very first label right under the title skips the top margin —
    nested labels (inside optional-settings panels, wrap divs, etc.) always
@@ -582,7 +553,7 @@ input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
   text-align:center;
   font-family:var(--font-display);
   font-size:2.2rem;
-  font-weight:900;
+  font-weight:700;
   margin-bottom:8px;
   word-break:break-word;
   text-wrap:balance;
@@ -1866,21 +1837,7 @@ button:focus-visible, input:focus-visible{
   position:absolute;
   z-index:30;
   top:max(14px, env(safe-area-inset-top));
-  left:max(16px, env(safe-area-inset-left));
-  right:auto;
-  margin:0;
-  color:var(--text);
-  background:var(--surface-2);
-  border-color:var(--surface-border);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-}
-.ingame-help-btn{
-  position:absolute;
-  z-index:30;
-  top:max(14px, env(safe-area-inset-top));
   right:max(16px, env(safe-area-inset-right));
-  display:flex !important;
   margin:0;
   color:var(--text);
   background:var(--surface-2);
@@ -1888,7 +1845,7 @@ button:focus-visible, input:focus-visible{
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
 }
-/* pinned just to the right of the floating home icon — carries whatever game-specific
+/* pinned opposite the floating home icon — carries whatever game-specific
    controls/status used to live in the now-discarded boxed .setup-header
    (Código Secreto's ver-clave/compartir, Hombres Lobo's día/noche status +
    "Personajes"), see shared.js initIngameHomeControls */
@@ -1896,7 +1853,7 @@ button:focus-visible, input:focus-visible{
   position:absolute;
   z-index:30;
   top:max(14px, env(safe-area-inset-top));
-  left:calc(max(16px, env(safe-area-inset-left)) + 54px + 10px);
+  left:max(16px, env(safe-area-inset-left));
   display:flex;
   align-items:center;
   gap:8px;
@@ -1958,7 +1915,7 @@ button:focus-visible, input:focus-visible{
 /* Shared light-mode surfaces and the compact mobile rhythm. */
 .setup-header{display:none;}
 .back-to-setup-btn,
-.ayuda-trigger:not(.ingame-help-btn){display:none !important;}
+.ayuda-trigger{display:none !important;}
 .screen>.card{padding-top:max(14px, env(safe-area-inset-top));}
 .card-modal .card,
 .guide-modal,

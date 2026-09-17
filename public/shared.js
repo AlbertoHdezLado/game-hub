@@ -253,8 +253,7 @@ function initIngameHomeControls(){
     }
     home.classList.add('ingame-home-btn');
     if (help){
-      help.classList.remove('hidden');
-      help.classList.add('ingame-help-btn');
+      help.classList.add('hidden');
       card.appendChild(help);
     }
     // headers can carry extra game-specific controls/status beyond home/help
