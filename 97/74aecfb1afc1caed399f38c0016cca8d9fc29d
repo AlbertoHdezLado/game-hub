@@ -1,0 +1,24 @@
+public/games/detective-club/index.html
+  h_fed6a40af368f7 338
+public/games/hitster/index.html
+  h_fed6a40af368f7 309,314,321,657
+public/games/impostor/index.html
+  h_fed6a40af368f7 413
+public/games/secret-code/index.html
+  h_fed6a40af368f7 295
+public/games/werewolf/index.html
+  h_fed6a40af368f7 880,891,906,969,1007,2475,2501,2541,2572,2623,2645,2653,2663,2741,2755,2801,2818,2835,2878,2922
+public/shared.css
+  h_fed6a40af368f7 223-233
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9774aecfb1afc1caed399f38c0016cca8d9fc29d",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
