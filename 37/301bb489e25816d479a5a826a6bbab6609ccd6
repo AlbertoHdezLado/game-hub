@@ -1,0 +1,16 @@
+public/shared.css
+  h_fed6a40af368f7 2,37-38,67,71
+src/styles/index.css
+  h_fed6a40af368f7 1,9-10,56,59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "37301bb489e25816d479a5a826a6bbab6609ccd6",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
