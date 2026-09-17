@@ -270,9 +270,8 @@
             <div class="submode-toggle" id="impostor-mode-toggle">
               <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
               <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
-              <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">Mr. Blanco</button>
+              <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">A ciegas</button>
             </div>
-            <p class="count-info" id="impostor-mode-desc"></p>
           </div>
 
           <details class="setup-optional">
@@ -335,7 +334,7 @@
       <h3>Modo aleatorio</h3>
       <ul>
         <li>Elige los paquetes temáticos que quieras usar y cuántos impostores habrá.</li>
-        <li>Elige el modo de pista: <strong>Sin pista</strong> (el impostor solo ve que lo es), <strong>Con pista</strong> (ve que es impostor y además una palabra relacionada) o <strong>Mr. Blanco</strong> (recibe una palabra relacionada pero NUNCA se le dice que es el impostor).</li>
+        <li>Elige el modo de pista: <strong>Sin pista</strong>, <strong>Con pista</strong> o <strong>A ciegas</strong>.</li>
         <li>La app reparte la palabra y los impostores al azar.</li>
       </ul>
 
@@ -453,7 +452,7 @@
     word: "",
     randomImpostors: 1,
     customImpostorCount: 1,
-    impostorMode: "none", // 'none' | 'hint' | 'mrblanco'
+    impostorMode: "none", // 'none' | 'hint' | 'aciegas'
     debateMinutes: 0, // 0 = sin límite
     selectedPackages: [],
     rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; })
@@ -512,7 +511,7 @@
     word: "",
     hintWord: null,
     mrBlancoWord: null,
-    impostorMode: "none", // 'none' | 'hint' | 'mrblanco'
+    impostorMode: "none", // 'none' | 'hint' | 'aciegas'
     players: 0,
     roles: [],
     playerNames: [],
@@ -592,27 +591,19 @@
   var impostorModeNoneBtn = document.getElementById('impostor-mode-none-btn');
   var impostorModeHintBtn = document.getElementById('impostor-mode-hint-btn');
   var impostorModeMrBlancoBtn = document.getElementById('impostor-mode-mrblanco-btn');
-  var impostorModeDesc = document.getElementById('impostor-mode-desc');
   var debateMinutesMinus = document.getElementById('debate-minutes-minus');
   var debateMinutesPlus = document.getElementById('debate-minutes-plus');
   var debateMinutesValue = document.getElementById('debate-minutes-value');
-
-  var IMPOSTOR_MODE_DESC = {
-    none: 'Los impostores no reciben ninguna palabra.',
-    hint: 'Los impostores ven que lo son y reciben una palabra relacionada como pista.',
-    mrblanco: 'Los impostores reciben una palabra relacionada SIN saber que son impostores.'
-  };
 
   function setImpostorMode(mode){
     config.impostorMode = mode;
     impostorModeNoneBtn.classList.toggle('active', mode === 'none');
     impostorModeHintBtn.classList.toggle('active', mode === 'hint');
-    impostorModeMrBlancoBtn.classList.toggle('active', mode === 'mrblanco');
-    impostorModeDesc.textContent = IMPOSTOR_MODE_DESC[mode];
+    impostorModeMrBlancoBtn.classList.toggle('active', mode === 'aciegas');
   }
   impostorModeNoneBtn.addEventListener('click', function(){ setImpostorMode('none'); });
   impostorModeHintBtn.addEventListener('click', function(){ setImpostorMode('hint'); });
-  impostorModeMrBlancoBtn.addEventListener('click', function(){ setImpostorMode('mrblanco'); });
+  impostorModeMrBlancoBtn.addEventListener('click', function(){ setImpostorMode('aciegas'); });
 
   function renderDebateMinutes(){
     debateMinutesValue.textContent = config.debateMinutes === 0 ? 'Sin límite' : (config.debateMinutes + ' min');
@@ -923,7 +914,7 @@
     var isImpostor = state.roles[idx];
     // Mr. Blanco impostors get a related word with zero visual tell (same
     // styling as a civil) so the app itself never gives away who they are.
-    var isMrBlanco = isImpostor && state.impostorMode === 'mrblanco';
+    var isMrBlanco = isImpostor && state.impostorMode === 'aciegas';
     var displayWord = isMrBlanco ? (state.mrBlancoWord || state.word) :
       isImpostor ? (state.hintWord || "IMPOSTOR") : state.word;
     revealContent.textContent = displayWord;
@@ -1176,7 +1167,7 @@
       chosenWord = picked.word;
       impostorMode = config.impostorMode;
       if (impostorMode === 'hint') hintWord = picked.hint;
-      else if (impostorMode === 'mrblanco') mrBlancoWord = picked.hint;
+      else if (impostorMode === 'aciegas') mrBlancoWord = picked.hint;
       roles = buildRandomRoles(realRows.length, config.randomImpostors);
     }
     renderRows();
