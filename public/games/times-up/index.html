@@ -341,7 +341,7 @@
 
       <div class="scr-body">
         <div id="setup-step-players">
-          <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
+          <label class="players-label">Jugadores</label>
           <div class="player-chips-list" id="players-chips"></div>
           <div class="player-input-row">
             <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
@@ -351,7 +351,7 @@
         </div>
 
         <div id="setup-step-teams" class="hidden">
-          <label><span class="label-icon">🎯</span>Equipos</label>
+          <label>Equipos</label>
           <div class="stepper">
             <button type="button" id="team-count-minus">−</button>
             <div class="value" id="team-count-value">2</div>
@@ -368,7 +368,7 @@
           <details class="setup-optional">
             <summary>Ajustes adicionales</summary>
             <div class="setup-optional-content">
-              <label><span class="label-icon">🏷️</span>Categorías</label>
+              <label>Categorías</label>
               <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
                 <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
                 <span class="packages-dropdown-chevron">▾</span>
@@ -378,14 +378,14 @@
                 <div class="chip-list" id="package-list"></div>
               </div>
 
-              <label><span class="label-icon">⏱️</span>Duración de turno</label>
+              <label>Duración de turno</label>
               <div class="stepper">
                 <button type="button" id="turn-seconds-minus">−</button>
                 <div class="value" id="turn-seconds-value">1:00</div>
                 <button type="button" id="turn-seconds-plus">+</button>
               </div>
 
-              <label><span class="label-icon">⏭️</span>Segundos que resta saltar carta</label>
+              <label>Segundos que resta saltar carta</label>
               <div class="stepper">
                 <button type="button" id="skip-seconds-minus">−</button>
                 <div class="value" id="skip-seconds-value">5</div>
@@ -453,7 +453,7 @@
       </div>
       <h1 style="font-size:1.6rem;" id="phase-intro-title">RONDA I</h1>
       <div class="phase-rule-box" id="phase-intro-rule"></div>
-      <div class="phase-intro-cards-remaining"><span class="tu-cards-icon">🂠</span><span id="phase-intro-cards-value">x40</span></div>
+      <div class="phase-intro-cards-remaining"><span id="phase-intro-cards-value">x40</span></div>
       <div id="phase-intro-scores"></div>
       <button class="btn-main" id="phase-intro-start-btn">Empezar</button>
     </div>
@@ -550,7 +550,7 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="end-icon">🏁</div>
+        <div class="end-icon"></div>
         <h1 style="font-size:1.5rem;" id="phase-end-title">RONDA I TERMINADA</h1>
         <div id="phase-end-scoreboard"></div>
       </div>
@@ -571,7 +571,7 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="end-icon">🏆</div>
+        <div class="end-icon"></div>
         <h1 style="font-size:1.6rem;" id="end-title">RESULTADOS</h1>
         <p class="subtitle" id="end-subtitle"></p>
         <div id="end-scoreboard"></div>
@@ -1128,7 +1128,7 @@
     phaseIntroRule.textContent = phase.rule;
     phaseIntroCardsValueEl.textContent = 'x' + state.matchNames.length;
     if (phaseIdx > 0){
-      phaseIntroScores.innerHTML = '<label style="margin-top:0;"><span class="label-icon">🏆</span>Marcador</label><div id="phase-intro-scoreboard-rows"></div>';
+      phaseIntroScores.innerHTML = '<label style="margin-top:0;">Marcador</label><div id="phase-intro-scoreboard-rows"></div>';
       renderScoreboardRows(document.getElementById('phase-intro-scoreboard-rows'), false, false);
     } else {
       phaseIntroScores.innerHTML = '';

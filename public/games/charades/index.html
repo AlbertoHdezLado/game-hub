@@ -302,7 +302,7 @@
 
       <div class="scr-body">
         <div id="setup-step-players">
-          <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
+          <label class="players-label">Jugadores</label>
           <div class="player-chips-list" id="mimica-players-chips"></div>
           <div class="player-input-row">
             <input type="text" class="player-name-input" id="mimica-players-draft" placeholder="Nombre del jugador..." maxlength="20">
@@ -312,7 +312,7 @@
         </div>
 
         <div id="setup-step-teams" class="hidden">
-          <label><span class="label-icon">🎯</span>Equipos</label>
+          <label>Equipos</label>
           <div class="stepper">
             <button type="button" id="team-count-minus">−</button>
             <div class="value" id="team-count-value">2</div>
@@ -329,7 +329,7 @@
           <details class="setup-optional">
             <summary>Ajustes adicionales</summary>
             <div class="setup-optional-content">
-              <label><span class="label-icon">🏷️</span>Categorías</label>
+              <label>Categorías</label>
               <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
                 <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
                 <span class="packages-dropdown-chevron">▾</span>
@@ -339,21 +339,21 @@
                 <div class="chip-list" id="package-list"></div>
               </div>
 
-              <label><span class="label-icon">🔁</span>Rondas por equipo</label>
+              <label>Rondas por equipo</label>
               <div class="stepper">
                 <button type="button" id="rounds-minus">−</button>
                 <div class="value" id="rounds-value">3</div>
                 <button type="button" id="rounds-plus">+</button>
               </div>
 
-              <label><span class="label-icon">⏱️</span>Tiempo por turno</label>
+              <label>Tiempo por turno</label>
               <div class="stepper">
                 <button type="button" id="turn-seconds-minus">−</button>
                 <div class="value" id="turn-seconds-value">1:00</div>
                 <button type="button" id="turn-seconds-plus">+</button>
               </div>
 
-              <label><span class="label-icon">⏭️</span>Segundos que resta saltar palabra</label>
+              <label>Segundos que resta saltar palabra</label>
               <div class="stepper">
                 <button type="button" id="skip-seconds-minus">−</button>
                 <div class="value" id="skip-seconds-value">5</div>
@@ -390,7 +390,7 @@
 
       <h3>Usar la app</h3>
       <ol>
-        <li>Añade a los jugadores por su nombre. Después, en "Equipos", arrástralos a la caja de cada equipo (hasta 4 equipos) o usa el dado 🎲 para repartirlos al azar.</li>
+        <li>Añade a los jugadores por su nombre. Después, en "Equipos", arrástralos a la caja de cada equipo (hasta 4 equipos) o usa el dado para repartirlos al azar.</li>
         <li>Elige las categorías, cuántas rondas jugará cada equipo, cuánto dura cada turno y cuántos segundos resta pasar una palabra.</li>
         <li>Pasa el dispositivo a quien le toca actuar y pulsa "Empezar mi minuto".</li>
         <li>Cada palabra acertada suma un punto para el equipo y se guarda en la lista de aciertos del turno. Si os atascáis, saltadla: pasar palabra resta algunos segundos al cronómetro (configurable).</li>
@@ -490,7 +490,7 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="end-icon">🏆</div>
+        <div class="end-icon"></div>
         <h1 style="font-size:1.6rem;" id="end-title">RESULTADOS</h1>
         <p class="subtitle" id="end-subtitle"></p>
         <div id="end-scoreboard"></div>
@@ -794,7 +794,7 @@
   }
 
   // shuffles every real player, then redistributes round-robin — random
-  // AND balanced, for the "🎲 Aleatorio" button
+  // AND balanced, for the "Aleatorio" button
   function randomizeAllTeams(){
     var rows = config.rows;
     var realIdxs = [];
@@ -1135,7 +1135,7 @@
     if (maxScore === minScore){
       container.innerHTML =
         '<div class="end-player-extreme">' +
-          '<span class="end-player-extreme-label">🤝 Todos empatados</span>' +
+          '<span class="end-player-extreme-label">Todos empatados</span>' +
           '<span class="end-player-extreme-value">' + maxScore + (maxScore === 1 ? ' palabra' : ' palabras') + '</span>' +
         '</div>';
       return;
@@ -1144,11 +1144,11 @@
     var lowNames = state.playerNames.filter(function(n, i){ return scores[i] === minScore; });
     container.innerHTML =
       '<div class="end-player-extreme">' +
-        '<span class="end-player-extreme-label">🏅 ' + escapeHtml(topNames.join(', ')) + '</span>' +
+        '<span class="end-player-extreme-label">' + escapeHtml(topNames.join(', ')) + '</span>' +
         '<span class="end-player-extreme-value">' + maxScore + (maxScore === 1 ? ' palabra' : ' palabras') + '</span>' +
       '</div>' +
       '<div class="end-player-extreme">' +
-        '<span class="end-player-extreme-label">🥴 ' + escapeHtml(lowNames.join(', ')) + '</span>' +
+        '<span class="end-player-extreme-label">' + escapeHtml(lowNames.join(', ')) + '</span>' +
         '<span class="end-player-extreme-value">' + minScore + (minScore === 1 ? ' palabra' : ' palabras') + '</span>' +
       '</div>';
   }

@@ -230,7 +230,7 @@
       <h1>HITSTER</h1>
 
       <div class="scr-body">
-        <div class="device-note">🎧 El sonido se reproduce vía YouTube, sin mostrar el vídeo ni el título (para no chafar la sorpresa). Si alguna canción no suena, hay un enlace de repuesto para abrirla directamente en YouTube.</div>
+        <div class="device-note">El sonido se reproduce vía YouTube, sin mostrar el vídeo ni el título (para no chafar la sorpresa). Si alguna canción no suena, hay un enlace de repuesto para abrirla directamente en YouTube.</div>
 
         <label for="team-name-input">Nombre del equipo</label>
         <input type="text" id="team-name-input" placeholder="Ej: Los Melómanos" maxlength="24">
@@ -274,7 +274,7 @@
       </ol>
 
       <h3>Monedas y canción regalada</h3>
-      <p>Antes de escuchar la canción, intentad adivinar en voz alta también el título y el artista, no solo el año. Quien lleve el móvil hace de árbitro: tras revelar la respuesta, marca si acertasteis esa parte. Si es así, ganáis una moneda 🪙.</p>
+      <p>Antes de escuchar la canción, intentad adivinar en voz alta también el título y el artista, no solo el año. Quien lleve el móvil hace de árbitro: tras revelar la respuesta, marca si acertasteis esa parte. Si es así, ganáis una moneda.</p>
       <p>Al llegar a 3 monedas se desbloquea "Canción regalada": la gastáis y la app añade una canción directamente a vuestra línea de tiempo, ya bien colocada, sin necesidad de escucharla ni arriesgar el turno.</p>
     </div>
   </div>
@@ -291,20 +291,19 @@
       </div>
       <div class="score-bar">
         <span class="score-team" id="score-team-name">Equipo</span>
-        <span class="coin-count" id="coin-count-wrap">🪙 <b id="coin-count">0</b></span>
+        <span class="coin-count" id="coin-count-wrap"><b id="coin-count">0</b></span>
         <span class="score-count"><b id="score-count">0</b> / <span id="score-target">10</span></span>
       </div>
 
       <div class="scr-body">
-        <button type="button" class="gift-song-btn hidden" id="gift-song-btn">🎁 Canción regalada (gastar 3 🪙)</button>
+        <button type="button" class="gift-song-btn hidden" id="gift-song-btn">Canción regalada (gastar 3 monedas)</button>
 
         <button type="button" class="mystery-card" id="mystery-play-btn">
-          <span class="icon">🎵</span>
           <span class="label">Reproducir canción misteriosa</span>
         </button>
 
         <div class="audio-controls hidden" id="audio-controls">
-          <button type="button" class="btn-add-row" id="audio-restart-btn">🔁 Repetir</button>
+          <button type="button" class="btn-add-row" id="audio-restart-btn">Repetir</button>
           <button type="button" class="btn-add-row" id="audio-stop-btn">⏸️ Detener</button>
         </div>
         <a href="#" target="_blank" rel="noopener noreferrer" class="suggestion-link hidden" id="audio-fallback-link">¿No suena? Ábrela en YouTube</a>
@@ -314,7 +313,7 @@
         <div class="guess-check hidden" id="guess-check">
           <p>¿Han acertado también el título y el artista?</p>
           <div class="guess-check-btns">
-            <button type="button" id="guess-check-yes">🪙 Sí, acertaron</button>
+            <button type="button" id="guess-check-yes">Sí, acertaron</button>
             <button type="button" id="guess-check-no">No</button>
           </div>
         </div>
@@ -342,7 +341,7 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="end-icon" id="end-icon">🏆</div>
+        <div class="end-icon" id="end-icon"></div>
         <h1 style="font-size:1.6rem;" id="end-title">¡VICTORIA!</h1>
         <p class="subtitle" id="end-subtitle"></p>
       </div>
@@ -716,7 +715,7 @@
     var correct = (!before || before.anio <= song.anio) && (!after || song.anio <= after.anio);
 
     resultBanner.className = 'result-banner ' + (correct ? 'correct' : 'wrong');
-    resultBanner.innerHTML = (correct ? '✅ ¡Bien colocada!' : '❌ No iba ahí') +
+    resultBanner.innerHTML = (correct ? '¡Bien colocada!' : 'No iba ahí') +
       '<span class="result-song">' + escapeHtml(song.titulo) + ' — ' + escapeHtml(song.artista) + ' (' + song.anio + ')</span>';
     resultBanner.classList.remove('hidden');
 
@@ -769,7 +768,7 @@
     renderCoins(true);
 
     resultBanner.className = 'result-banner gift';
-    resultBanner.innerHTML = '🎁 ¡Canción regalada, directa a vuestra línea!' +
+    resultBanner.innerHTML = '¡Canción regalada, directa a vuestra línea!' +
       '<span class="result-song">' + escapeHtml(song.titulo) + ' — ' + escapeHtml(song.artista) + ' (' + song.anio + ')</span>';
     resultBanner.classList.remove('hidden');
     renderTimeline();
@@ -790,11 +789,11 @@
     var endTitle = document.getElementById('end-title');
     var endSubtitle = document.getElementById('end-subtitle');
     if (won){
-      endIcon.textContent = '🏆';
+      endIcon.textContent = '';
       endTitle.textContent = '¡VICTORIA!';
       endSubtitle.textContent = 'El equipo "' + config.teamName + '" ha completado su línea con ' + state.timeline.length + ' canciones.';
     } else {
-      endIcon.textContent = '🎵';
+      endIcon.textContent = '';
       endTitle.textContent = 'CANCIONES AGOTADAS';
       endSubtitle.textContent = 'El equipo "' + config.teamName + '" terminó con ' + state.timeline.length + ' canciones en su línea de ' + config.target + '.';
     }
