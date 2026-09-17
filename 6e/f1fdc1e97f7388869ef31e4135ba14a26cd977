@@ -1,0 +1,36 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 389-393
+public/games/detective-club/index.html
+  h_fed6a40af368f7 211-215,238-242,245-250
+public/games/hitster/index.html
+  h_fed6a40af368f7 265-269,281-285
+public/games/hot-potato/index.html
+  h_fed6a40af368f7 163-167
+public/games/most-likely/index.html
+  h_fed6a40af368f7 85-89
+public/games/picolo/index.html
+  h_fed6a40af368f7 88-92
+public/games/secret-code/index.html
+  h_fed6a40af368f7 267-271,274-279,282-287
+public/games/taboo/index.html
+  h_fed6a40af368f7 365-369,372-376,385-388
+public/games/times-up/index.html
+  h_fed6a40af368f7 422-427
+public/games/trivia/index.html
+  h_fed6a40af368f7 416-420,423-427,430-434,437-441,444-448
+public/games/what-would-you-do/index.html
+  h_fed6a40af368f7 84-88
+src/components/InfoDialog.tsx
+  h_fed6a40af368f7 9-21,40-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6ef1fdc1e97f7388869ef31e4135ba14a26cd977",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
