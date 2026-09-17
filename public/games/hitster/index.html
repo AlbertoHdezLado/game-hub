@@ -306,19 +306,19 @@
           <button type="button" class="btn-add-row" id="audio-restart-btn">Repetir</button>
           <button type="button" class="btn-add-row" id="audio-stop-btn">⏸️ Detener</button>
         </div>
-        <a href="#" target="_blank" rel="noopener noreferrer" class="suggestion-link hidden" id="audio-fallback-link">¿No suena? Ábrela en YouTube</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="suggestion-link hidden" id="audio-fallback-link">Si no suena, ábrela en YouTube</a>
 
         <div id="result-banner" class="result-banner hidden"></div>
 
         <div class="guess-check hidden" id="guess-check">
-          <p>¿Han acertado también el título y el artista?</p>
+          <p>Marca si han acertado también el título y el artista</p>
           <div class="guess-check-btns">
             <button type="button" id="guess-check-yes">Sí, acertaron</button>
             <button type="button" id="guess-check-no">No</button>
           </div>
         </div>
 
-        <p class="pass-hint" id="placement-hint">¿En qué punto de vuestra línea de tiempo va esta canción?</p>
+        <p class="pass-hint" id="placement-hint">Colocad esta canción en vuestra línea de tiempo</p>
 
         <div class="timeline-list" id="timeline-list"></div>
       </div>
@@ -654,7 +654,7 @@
     audioControls.classList.remove('hidden');
     audioFallbackLink.classList.remove('hidden');
     audioFallbackLink.href = ytSearchUrl(song);
-    audioFallbackLink.textContent = '¿No suena? Ábrela en YouTube';
+    audioFallbackLink.textContent = 'Si no suena, ábrela en YouTube';
   }
 
   audioRestartBtn.addEventListener('click', function(){

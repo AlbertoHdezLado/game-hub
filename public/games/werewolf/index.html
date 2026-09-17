@@ -877,7 +877,7 @@
             <div class="roster-list" id="vote-announce-list"></div>
 
             <div id="announce-cazador-shoot" class="hidden">
-              <label>El Cazador ha muerto: ¿a quién dispara?</label>
+              <label class="selection-title">El Cazador ha muerto: elegid a quién dispara</label>
               <div class="role-widget-checklist" id="announce-cazador-shoot-list"></div>
             </div>
           </div>
@@ -888,7 +888,7 @@
         </div>
         <div id="vote-select-view" class="hidden">
           <div class="scr-body">
-            <label>¿A quién ha votado el pueblo para linchar?</label>
+            <label class="selection-title">Señalad a quién ha votado el pueblo para linchar</label>
             <div class="vote-timer-wrap hidden" id="vote-timer-wrap">
               <div class="vote-timer">
                 <span class="vote-timer-part" id="vote-timer-mm">00</span><span class="vote-timer-colon">:</span><span class="vote-timer-part" id="vote-timer-ss">00</span>
@@ -903,7 +903,7 @@
         <div id="judge-prompt-view" class="hidden">
           <div class="scr-body">
             <p class="narrator-cue" id="judge-prompt-cue"></p>
-            <label>¿Usa su poder para repetir la votación?</label>
+            <label class="selection-title">Decid si usa su poder para repetir la votación</label>
           </div>
           <div class="scr-dock">
             <div class="night-nav">
@@ -966,7 +966,7 @@
     <div class="card-modal">
       <div class="card" style="text-align:center;">
         <div class="end-icon">▶️</div>
-        <h2 style="margin-top:0;">¿Todo listo?</h2>
+        <h2 style="margin-top:0;">Todo listo</h2>
         <p class="subtitle">Asegúrate de que el dispositivo ha vuelto al narrador y ningún jugador sigue mirando la pantalla de otro.</p>
         <p class="narrator-cue">Di en voz alta: «El pueblo se va a dormir» y continúa.</p>
         <button class="btn-main" id="start-confirm-btn">Continuar ›</button>
@@ -1004,7 +1004,7 @@
       <div id="death-guidance" class="hidden"></div>
 
       <div id="death-chain-shoot" class="hidden">
-        <label>¿A quién dispara el Cazador?</label>
+        <label class="selection-title">Elegid a quién dispara el Cazador</label>
         <div class="role-widget-checklist" id="death-chain-shoot-list"></div>
       </div>
 
@@ -2472,7 +2472,7 @@
       return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-action="cupido-toggle" data-idx="' + idx + '">' + escapeHtml(n) + '</button>';
     }).join('');
     return (
-      '<label>Elige a los dos enamorados (' + cupidoSelection.length + '/2)</label>' +
+      '<label class="selection-title">Elegid a los dos enamorados (' + cupidoSelection.length + '/2)</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2498,7 +2498,7 @@
     var selfIdx = roleActorIndex('vidente');
     var buttons = playerButtonsHtml('seer-pick', { selected: videntePickIdx, filter: function(idx){ return idx !== selfIdx && state.alive[idx]; } });
     return (
-      '<label>¿A quién mira la Vidente?</label>' +
+      '<label class="selection-title">Elegid a quién mira la Vidente</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2538,7 +2538,7 @@
       }
     }
     return (
-      '<label>Elige tres jugadores a comprobar (' + zorroSelection.length + '/3)</label>' +
+      '<label class="selection-title">Elegid tres jugadores para comprobar (' + zorroSelection.length + '/3)</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>' +
       extra
     );
@@ -2569,7 +2569,7 @@
       return idx !== selfIdx && idx !== state.lastProtectedIdx;
     } });
     return (
-      '<label>¿A quién protege esta noche?</label>' +
+      '<label class="selection-title">Elegid a quién protege esta noche</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2620,7 +2620,7 @@
       if (state.brujaLifeUsedThisRound){
         var savedIdx = state.brujaLifeSavedIdx;
         return tabsHtml +
-          '<label>¿A quién revive?</label>' +
+          '<label class="selection-title">Elegid a quién revive</label>' +
           '<div class="role-widget-checklist"><button type="button" class="chip selected" data-action="bruja-life-toggle" data-idx="' + savedIdx + '">' + escapeHtml(state.playerNames[savedIdx]) + '</button></div>';
       }
       // the life potion only ever saves one of THIS round's pending victims
@@ -2642,7 +2642,7 @@
         return '<button type="button" class="chip" data-action="bruja-life-toggle" data-idx="' + p.idx + '">' + escapeHtml(state.playerNames[p.idx]) + '</button>';
       }).join('');
       return tabsHtml +
-        '<label>¿A quién revive?</label>' +
+        '<label class="selection-title">Elegid a quién revive</label>' +
         '<div class="role-widget-checklist">' + lifeButtons + '</div>';
     }
 
@@ -2650,7 +2650,7 @@
     if (state.brujaDeathUsedThisRound){
       var poisonedIdx = state.brujaDeathPoisonedIdx;
       return tabsHtml +
-        '<label>¿A quién envenena?</label>' +
+        '<label class="selection-title">Elegid a quién envenena</label>' +
         '<div class="role-widget-checklist"><button type="button" class="chip selected" data-action="bruja-death-toggle" data-idx="' + poisonedIdx + '">' + escapeHtml(state.playerNames[poisonedIdx]) + '</button></div>';
     }
     // can't poison anyone already marked to die tonight (only saved or left to die), nor herself
@@ -2660,7 +2660,7 @@
       return state.alive[idx] && idx !== brujaIdx && pendingIdxs.indexOf(idx) === -1;
     } });
     return tabsHtml +
-      '<label>¿A quién envenena?</label>' +
+      '<label class="selection-title">Elegid a quién envenena</label>' +
       '<div class="role-widget-checklist">' + deathBtns + '</div>';
   }
   function actionBrujaTab(tab){
@@ -2738,7 +2738,7 @@
     var selfIdx = wildChildIndex();
     var buttons = playerButtonsHtml('wildchild-pick', { selected: state.wildChildModelIdx, filter: function(idx){ return idx !== selfIdx; } });
     return (
-      '<label>¿A quién elige como modelo?</label>' +
+      '<label class="selection-title">Elegid a quién elige como modelo</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>' +
       '<div class="role-widget-status">Esta elección solo se hace la primera noche.</div>'
     );
@@ -2752,7 +2752,7 @@
     var selfIdx = roleActorIndex('cuervo');
     var buttons = playerButtonsHtml('raven-pick', { selected: state.ravenMark, filter: function(idx){ return idx !== selfIdx; } });
     return (
-      '<label>¿A quién marca esta noche?</label>' +
+      '<label class="selection-title">Elegid a quién marca esta noche</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>' +
       '<div class="role-widget-status">La marca da +2 votos mañana.</div>'
     );
@@ -2798,7 +2798,7 @@
   function widgetWolfKillHtml(){
     var buttons = playerButtonsHtml('wolf-kill-pick', { selected: state.pendingNightKillIdx, filter: function(idx){ return state.alive[idx] && roleOf(idx).equipo !== 'lobos'; } });
     return (
-      '<label>¿A quién devoran los lobos esta noche?</label>' +
+      '<label class="selection-title">Elegid a quién devoran los lobos esta noche</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2815,7 +2815,7 @@
       return state.alive[idx] && idx !== selfIdx && roleOf(idx).equipo === 'lobos';
     } });
     return (
-      '<label>¿A qué otro Hombre Lobo elimina en secreto esta noche?</label>' +
+      '<label class="selection-title">Elegid a qué otro Hombre Lobo elimina en secreto esta noche</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2832,7 +2832,7 @@
     var status = current ?
       '<div class="role-widget-status">Toca de nuevo para cambiarlo.</div>' : '';
     return (
-      '<label>¿Cómo decide jugar el resto de la partida?</label>' +
+      '<label class="selection-title">Elegid cómo quiere jugar el resto de la partida</label>' +
       '<div class="role-widget-checklist">' +
         '<button type="button" class="chip' + (current === 'aldeano' ? ' selected' : '') + '" data-action="perrolobo-choose" data-choice="aldeano">Aldeano</button>' +
         '<button type="button" class="chip' + (current === 'lobo' ? ' selected' : '') + '" data-action="perrolobo-choose" data-choice="lobo">Lobo</button>' +
@@ -2875,7 +2875,7 @@
       );
     }).join('');
     return (
-      '<label>¿Cambia su carta (' + escapeHtml(currentRole.nombre) + ') por una de estas dos reservadas?</label>' +
+      '<label class="selection-title">Elegid la carta que cambia (' + escapeHtml(currentRole.nombre) + ') por una de estas dos reservadas</label>' +
       '<div class="role-picker-grid">' + cards + '</div>'
     );
   }
@@ -2919,7 +2919,7 @@
         '<div class="role-picker-name">Ninguno (pasa esta noche)</div>' +
       '</div>';
     return (
-      '<label>¿Qué poder toma prestado esta noche?</label>' +
+      '<label class="selection-title">Elegid qué poder toma prestado esta noche</label>' +
       '<div class="role-picker-grid">' + cards + skipCard + '</div>'
     );
   }
