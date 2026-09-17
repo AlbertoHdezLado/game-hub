@@ -228,7 +228,7 @@
 
       <div class="scr-body">
         <div id="setup-step-players">
-          <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
+          <label class="players-label">Jugadores</label>
           <div class="player-chips-list" id="impostor-players-chips"></div>
           <div class="player-input-row">
             <input type="text" class="player-name-input" id="impostor-players-draft" placeholder="Nombre del jugador..." maxlength="20">
@@ -244,12 +244,12 @@
           </div>
 
           <div id="custom-word-wrap">
-            <label for="word-input-imp"><span class="label-icon">🗣️</span>Palabra secreta</label>
+            <label for="word-input-imp">Palabra secreta</label>
             <input type="text" id="word-input-imp" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
-            <p class="count-info">🎲 La app asigna el impostor al azar entre los jugadores.</p>
+            <p class="count-info">La app asigna el impostor al azar entre los jugadores.</p>
 
             <div id="custom-random-count-wrap" class="hidden">
-              <label><span class="label-icon">🎭</span>Número de impostores</label>
+              <label>Número de impostores</label>
               <div class="stepper">
                 <button type="button" id="custom-impostors-minus">−</button>
                 <div class="value" id="custom-impostors-value">1</div>
@@ -259,14 +259,14 @@
           </div>
 
           <div id="random-impostors-wrap" class="hidden">
-            <label><span class="label-icon">🎭</span>Número de impostores</label>
+              <label>Número de impostores</label>
             <div class="stepper">
               <button type="button" id="random-impostors-minus">−</button>
               <div class="value" id="random-impostors-value">1</div>
               <button type="button" id="random-impostors-plus">+</button>
             </div>
 
-            <label><span class="label-icon">💡</span>Modo de juego</label>
+              <label>Modo de juego</label>
             <div class="submode-toggle" id="impostor-mode-toggle">
               <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
               <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
@@ -279,7 +279,7 @@
             <summary>Ajustes adicionales</summary>
             <div class="setup-optional-content">
               <div id="random-config-wrap" class="hidden">
-                <label><span class="label-icon">📦</span>Paquetes</label>
+                <label>Paquetes</label>
                 <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
                   <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona paquetes</span>
                   <span class="packages-dropdown-chevron">▾</span>
@@ -290,7 +290,7 @@
                 </div>
               </div>
 
-              <label><span class="label-icon">⏱️</span>Tiempo para debatir</label>
+              <label>Tiempo para debatir</label>
               <div class="stepper">
                 <button type="button" id="debate-minutes-minus">−</button>
                 <div class="value" id="debate-minutes-value">Sin límite</div>
@@ -373,7 +373,7 @@
     <div class="reveal-stage reveal-wrap" id="reveal-wrap">
       <div class="reveal-content" id="reveal-content"></div>
       <button type="button" class="reveal-btn" id="reveal-btn">
-        <span class="reveal-icon">👁️</span>
+        <span class="reveal-icon"></span>
         <span class="reveal-text">Revelar</span>
       </button>
     </div>
@@ -772,7 +772,7 @@
     packageListEl.innerHTML = PACKAGES.map(function(p){
       var selected = config.selectedPackages.indexOf(p.id) !== -1;
       return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-package-id="' + p.id + '">' +
-        '<span class="chip-icon">' + escapeHtml(p.icono || '📦') + '</span>' +
+        '<span class="chip-icon">' + escapeHtml(p.icono || '') + '</span>' +
         '<span class="chip-name">' + escapeHtml(p.nombre) + '</span>' +
       '</button>';
     }).join('');

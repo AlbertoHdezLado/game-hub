@@ -75,7 +75,7 @@
 
       <div class="scr-body">
         <div id="setup-step-players">
-          <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
+          <label class="players-label">Jugadores</label>
           <div class="player-chips-list" id="players-chips"></div>
           <div class="player-input-row">
             <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
@@ -88,7 +88,7 @@
           <details class="setup-optional">
             <summary>Ajustes adicionales</summary>
             <div class="setup-optional-content">
-              <label><span class="label-icon">🏷️</span>Categorías</label>
+              <label>Categorías</label>
               <button type="button" class="chip-toggle-all" id="category-toggle-all-btn">Seleccionar todas</button>
               <div class="chip-list" id="category-list"></div>
             </div>
@@ -182,7 +182,7 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <div class="end-icon">🔥</div>
+      <div class="end-icon"></div>
       <h1 style="font-size:1.6rem;">RONDA TERMINADA</h1>
       <div class="scr-body">
         <p class="subtitle">¡Que empiece la próxima tanda de verdades y retos!</p>
@@ -359,7 +359,7 @@
     categoryListEl.innerHTML = CATEGORIES.map(function(c){
       var selected = config.selectedCategories.indexOf(c.id) !== -1;
       return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-category-id="' + c.id + '">' +
-        '<span class="chip-icon">' + escapeHtml(c.icono || '📦') + '</span>' +
+        '<span class="chip-icon">' + escapeHtml(c.icono || '') + '</span>' +
         '<span class="chip-name">' + escapeHtml(c.nombre) + '</span>' +
       '</button>';
     }).join('');

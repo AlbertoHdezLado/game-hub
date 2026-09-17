@@ -309,7 +309,7 @@
       </div>
       <div class="cs-share-link-row">
         <input type="text" id="share-link-input" readonly aria-label="Enlace para compartir">
-        <button type="button" class="guide-btn" id="share-copy-btn" aria-label="Copiar enlace">📋</button>
+        <button type="button" class="guide-btn" id="share-copy-btn" aria-label="Copiar enlace"></button>
       </div>
       <p class="count-info" id="share-copy-msg"></p>
       <button type="button" class="btn-main hidden" id="share-native-btn" style="margin-top:10px;">Compartir enlace</button>
@@ -447,7 +447,7 @@
     packageListEl.innerHTML = PACKAGES.map(function(p){
       var selected = config.selectedPackages.indexOf(p.id) !== -1;
       return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-package-id="' + p.id + '">' +
-        '<span class="chip-icon">' + escapeHtml(p.icono || '📦') + '</span>' +
+        '<span class="chip-icon">' + escapeHtml(p.icono || '') + '</span>' +
         '<span class="chip-name">' + escapeHtml(p.nombre) + '</span>' +
       '</button>';
     }).join('');

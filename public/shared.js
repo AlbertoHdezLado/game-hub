@@ -411,7 +411,7 @@ function confirmAdultContent(onConfirm){
     adultConfirmBackdrop.id = 'adult-confirm-backdrop';
     adultConfirmBackdrop.innerHTML =
       '<div class="guide-modal">' +
-        '<h2>🔞 Contenido para adultos</h2>' +
+        '<h2>Contenido para adultos</h2>' +
         '<p>Esta categoría incluye contenido para mayores de 18 años. ¿Seguro que quieres activarla?</p>' +
         '<button type="button" class="btn-main" id="adult-confirm-accept-btn" style="margin-top:14px;">Sí, activar</button>' +
         '<button type="button" class="night-nav-btn" id="adult-confirm-cancel-btn" style="width:100%; margin-top:10px;">Cancelar</button>' +

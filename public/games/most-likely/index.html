@@ -178,7 +178,7 @@
     categoryListEl.innerHTML = CATEGORIAS.map(function(c){
       var selected = config.selectedCategories.indexOf(c.id) !== -1;
       return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-category-id="' + c.id + '">' +
-        '<span class="chip-icon">' + escapeHtml(c.icono || '📦') + '</span>' +
+        '<span class="chip-icon">' + escapeHtml(c.icono || '') + '</span>' +
         '<span class="chip-name">' + escapeHtml(c.nombre) + '</span>' +
       '</button>';
     }).join('');
