@@ -1,0 +1,42 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 305,315,332,342,349,356,393,493,688
+public/games/detective-club/index.html
+  h_fed6a40af368f7 173,187,245,267,303,325,331,333,354,360,381,385
+public/games/hitster/index.html
+  h_fed6a40af368f7 233,277,294,299,302,307,317,345,490,719,772
+public/games/hot-potato/index.html
+  h_fed6a40af368f7 199
+public/games/impostor/index.html
+  h_fed6a40af368f7 231,247,249,252,262,269,282,293,376,775
+public/games/most-likely/index.html
+  h_fed6a40af368f7 181
+public/games/never-have-i-ever/index.html
+  h_fed6a40af368f7 188
+public/games/picolo/index.html
+  h_fed6a40af368f7 66
+public/games/secret-code/index.html
+  h_fed6a40af368f7 312,450
+public/games/taboo/index.html
+  h_fed6a40af368f7 288,298,315,325,332,368,372-373,392,396,432,456,830
+public/games/times-up/index.html
+  h_fed6a40af368f7 344,354,371,381,388,456,530,553,574,962,1131
+public/games/truth-or-dare/index.html
+  h_fed6a40af368f7 78,91,185,362
+public/games/werewolf/index.html
+  h_fed6a40af368f7 673,683,704,821,969,972,982
+public/games/what-would-you-do/index.html
+  h_fed6a40af368f7 188
+public/shared.js
+  h_fed6a40af368f7 414
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1d9af5e93632971078c85ea99b316eedef79ec41",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
