@@ -6,6 +6,19 @@ interface InfoDialogProps {
   onClose: () => void;
 }
 
+interface WerewolfRole {
+  nombre: string;
+  equipo: string;
+  imagen: string;
+  descripcion: string;
+}
+
+const werewolfTeamLabels: Record<string, string> = {
+  lobos: 'Lobos',
+  aldeanos: 'Aldeanos',
+  solitario: 'Solitario',
+};
+
 export function InfoDialog({ game, onClose }: Readonly<InfoDialogProps>) {
   const [guideHtml, setGuideHtml] = useState<string | null>(null);
 
@@ -24,6 +37,55 @@ export function InfoDialog({ game, onClose }: Readonly<InfoDialogProps>) {
         const document = new DOMParser().parseFromString(html, 'text/html');
         const guide = document.querySelector('#guide-modal-backdrop .guide-modal');
         guide?.querySelector('.guide-modal-close')?.remove();
+
+        if (game.slug === 'werewolf') {
+          fetch('/data/werewolf-roles.json')
+            .then((response) => {
+              if (!response.ok) throw new Error('No se pudieron cargar los roles');
+              return response.json() as Promise<{ roles?: WerewolfRole[] }>;
+            })
+            .then((data) => {
+              if (cancelled) return;
+              const catalog = guide?.querySelector('#guide-roles-catalog');
+              if (catalog && data.roles) {
+                catalog.replaceChildren(...data.roles.map((role) => {
+                  const row = document.createElement('div');
+                  row.className = 'role-row';
+
+                  const image = document.createElement('img');
+                  image.className = 'role-thumb';
+                  image.src = `/${role.imagen}`;
+                  image.alt = '';
+                  image.loading = 'lazy';
+
+                  const info = document.createElement('div');
+                  info.className = 'role-info';
+
+                  const name = document.createElement('div');
+                  name.className = 'role-name';
+                  name.textContent = role.nombre;
+
+                  const team = document.createElement('div');
+                  team.className = 'role-team-tag';
+                  team.textContent = werewolfTeamLabels[role.equipo] ?? role.equipo;
+
+                  const description = document.createElement('div');
+                  description.className = 'guide-role-desc';
+                  description.textContent = role.descripcion;
+
+                  info.append(name, team, description);
+                  row.append(image, info);
+                  return row;
+                }));
+              }
+              setGuideHtml(guide?.innerHTML ?? null);
+            })
+            .catch(() => {
+              if (!cancelled) setGuideHtml(guide?.innerHTML ?? null);
+            });
+          return;
+        }
+
         setGuideHtml(guide?.innerHTML ?? null);
       })
       .catch(() => {
