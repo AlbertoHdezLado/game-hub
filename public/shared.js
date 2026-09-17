@@ -156,7 +156,6 @@ function initLandscapePrompt(){
   prompt.setAttribute('role', 'status');
   prompt.setAttribute('aria-label', 'Orientación recomendada');
   prompt.innerHTML =
-    '<a href="/" class="guide-btn landscape-prompt-home" aria-label="Inicio"><span class="home-icon"></span></a>' +
     '<span class="landscape-prompt-icon" aria-hidden="true"></span>' +
     '<p class="landscape-prompt-title">Gira el móvil</p>' +
     '<p class="landscape-prompt-text">Este juego se disfruta mejor con la pantalla en horizontal.</p>';
@@ -244,14 +243,6 @@ function initIngameHomeControls(){
     var header = card.querySelector(':scope > .setup-header');
     var home = header && header.querySelector('a[aria-label="Inicio"]');
     var help = header && header.querySelector('.ayuda-trigger');
-    if (!home){
-      home = document.createElement('a');
-      home.href = '/';
-      home.className = 'guide-btn';
-      home.setAttribute('aria-label', 'Inicio');
-      home.innerHTML = '<span class="home-icon"></span>';
-    }
-    home.classList.add('ingame-home-btn');
     if (help){
       help.classList.add('hidden');
       card.appendChild(help);
@@ -284,7 +275,6 @@ function initIngameHomeControls(){
         card.appendChild(extras);
       }
     }
-    card.appendChild(home);
     if (header) header.remove();
   });
 }
