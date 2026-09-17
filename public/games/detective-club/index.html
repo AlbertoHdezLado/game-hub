@@ -154,11 +154,6 @@
     flex:1 1 auto;
     min-height:0;
   }
-  #vote-reveal-stage .scr-body, #vote-result-stage .scr-body{
-    display:flex;
-    flex-direction:column;
-    justify-content:safe center;
-  }
 </style>
 </head>
 <body>
@@ -175,7 +170,7 @@
       <p class="subtitle">Necesitas una baraja de cartas Dixit físicas para jugar</p>
 
       <div class="scr-body">
-        <label class="players-label">Jugadores</label>
+        <label class="players-label"><span class="label-icon">🕵️</span>Jugadores</label>
         <div class="player-chips-list" id="dc-players-chips"></div>
         <div class="player-input-row">
           <input type="text" class="player-name-input" id="dc-players-draft" placeholder="Nombre del jugador..." maxlength="20">
@@ -189,7 +184,7 @@
         <details class="setup-optional">
           <summary>Ajustes adicionales</summary>
           <div class="setup-optional-content">
-            <label>Vueltas</label>
+            <label><span class="label-icon">🔁</span>Vueltas</label>
             <div class="stepper">
               <button type="button" id="laps-minus">−</button>
               <div class="value" id="laps-value">1</div>
@@ -247,7 +242,7 @@
   <div class="guide-modal-backdrop hidden" id="vote-warning-backdrop">
     <div class="guide-modal">
       <button type="button" class="guide-modal-close" id="vote-warning-close">✕</button>
-      <h2>Antes de votar</h2>
+      <h2>⚠️ Antes de votar</h2>
       <p>En esta partida la votación es <strong>manual</strong>: debatid y votad en voz alta o a mano alzada, sin pasar el dispositivo.</p>
       <p>Cuando el grupo esté listo, alguien pulsará <strong>«Revelar conspirador»</strong>. Esa acción <strong>no tiene vuelta atrás</strong> — asegúrate de que la votación ya ha terminado antes de pulsarla.</p>
       <button type="button" class="btn-main" id="vote-warning-ok-btn">Entendido</button>
@@ -269,7 +264,7 @@
         <div class="player-name" id="word-name">1</div>
         <div class="pass-hint">Pasa el dispositivo a este jugador. Solo debe mirarlo él o ella.</div>
 
-        <label>Elige una carta de Dixit y escribe una palabra o pista que la describa</label>
+        <label><span class="label-icon">🎴</span>Elige una carta de Dixit y escribe una palabra o pista que la describa</label>
         <input type="text" id="word-input" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
       </div>
 
@@ -305,7 +300,7 @@
     <div class="reveal-stage reveal-wrap" id="reveal-wrap">
       <div class="reveal-content" id="reveal-content"></div>
       <button type="button" class="reveal-btn" id="reveal-btn">
-        <span class="reveal-icon"></span>
+        <span class="reveal-icon">👁️</span>
         <span class="reveal-text">Revelar</span>
       </button>
     </div>
@@ -327,15 +322,15 @@
           <p class="pass-hint">Cuando el grupo termine de votar, revela al conspirador.</p>
         </div>
         <div class="scr-dock">
-          <button class="btn-main" id="vote-reveal-conspirador-btn">Revelar conspirador</button>
+          <button class="btn-main" id="vote-reveal-conspirador-btn">🔎 Revelar conspirador</button>
         </div>
       </div>
 
       <div id="vote-result-stage" class="hidden">
         <div class="scr-body">
-          <div class="result-icon"></div>
+          <div class="result-icon">🎭</div>
           <div class="result-title" id="vote-conspirador-name"></div>
-          <label class="selection-title">Marcad quién votó por el conspirador</label>
+          <label><span class="label-icon">🗳️</span>¿Quién votó por el conspirador?</label>
           <div class="chip-list" id="voter-select-list"></div>
         </div>
         <div class="scr-dock">
@@ -356,13 +351,13 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="result-icon" id="result-icon"></div>
+        <div class="result-icon" id="result-icon">🕵️</div>
         <div class="result-title" id="result-title"></div>
         <p class="subtitle" id="result-detail" style="margin-bottom:14px;"></p>
 
         <div class="result-deltas" id="result-deltas"></div>
 
-        <label>Marcador</label>
+        <label><span class="label-icon">🏆</span>Marcador</label>
         <div id="result-scoreboard"></div>
       </div>
 
@@ -383,11 +378,11 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="end-icon"></div>
+        <div class="end-icon">🏆</div>
         <h1 style="font-size:1.6rem;">PARTIDA TERMINADA</h1>
         <p class="subtitle" id="final-detail"></p>
 
-        <label>Marcador final</label>
+        <label><span class="label-icon">🏆</span>Marcador final</label>
         <div id="final-scoreboard"></div>
       </div>
 
@@ -713,7 +708,7 @@
       state.scores[state.activeIdx] += 4; deltas[state.activeIdx] = 4;
     }
 
-    resultIconEl.textContent = '';
+    resultIconEl.textContent = caught ? '🕵️' : '🎭';
     resultTitleEl.textContent = 'El conspirador era ' + state.playerNames[state.conspiradorIdx];
     resultTitleEl.className = 'result-title ' + (caught ? 'caught' : 'escaped');
     resultDetailEl.textContent = caught ?

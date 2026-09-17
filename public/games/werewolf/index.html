@@ -670,7 +670,7 @@
 
       <div class="scr-body">
         <div id="setup-step-players">
-          <label class="players-label">Jugadores</label>
+          <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
           <div class="player-chips-list" id="players-chips"></div>
           <div class="player-input-row">
             <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
@@ -680,7 +680,7 @@
         </div>
 
         <div id="setup-step-roles" class="hidden">
-          <label id="included-roles-label">Roles incluidos</label>
+          <label id="included-roles-label"><span class="label-icon">🎭</span>Roles incluidos</label>
           <div class="role-picker-grid" id="included-roles-grid"></div>
           <div class="error-msg" id="roles-setup-error"></div>
 
@@ -701,7 +701,7 @@
                 Modo no guiado
               </label>
 
-              <label>Tiempo para votar</label>
+              <label><span class="label-icon">⏱️</span>Tiempo para votar</label>
               <div class="stepper">
                 <button type="button" id="vote-minutes-minus">−</button>
                 <div class="value" id="vote-minutes-value">Sin límite</div>
@@ -730,9 +730,9 @@
         <div class="balance-fill-aldeanos" id="balance-fill-aldeanos"></div>
       </div>
       <div class="balance-legend">
-        <span>Lobos</span>
+        <span>🐺 Lobos</span>
         <span class="balance-verdict" id="balance-verdict"></span>
-        <span>Pueblo</span>
+        <span>Pueblo 🏘️</span>
       </div>
     </div>
   </div>
@@ -818,6 +818,7 @@
     <div class="reveal-stage reveal-wrap" id="reveal-wrap">
       <div class="reveal-content" id="reveal-content"></div>
       <button type="button" class="reveal-btn" id="reveal-btn">
+        <span class="reveal-icon">👁️</span>
         <span class="reveal-text">Revelar</span>
       </button>
     </div>
@@ -831,7 +832,7 @@
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
           <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
-          <span class="back-btn" style="cursor:default; margin-bottom:0;" id="day-night-status">Noche</span>
+          <span class="back-btn" style="cursor:default; margin-bottom:0;" id="day-night-status">🌙 Noche</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
@@ -877,7 +878,7 @@
             <div class="roster-list" id="vote-announce-list"></div>
 
             <div id="announce-cazador-shoot" class="hidden">
-              <label class="selection-title">El Cazador ha muerto: elegid a quién dispara</label>
+              <label>El Cazador ha muerto: ¿a quién dispara?</label>
               <div class="role-widget-checklist" id="announce-cazador-shoot-list"></div>
             </div>
           </div>
@@ -888,7 +889,7 @@
         </div>
         <div id="vote-select-view" class="hidden">
           <div class="scr-body">
-            <label class="selection-title">Señalad a quién ha votado el pueblo para linchar</label>
+            <label>¿A quién ha votado el pueblo para linchar?</label>
             <div class="vote-timer-wrap hidden" id="vote-timer-wrap">
               <div class="vote-timer">
                 <span class="vote-timer-part" id="vote-timer-mm">00</span><span class="vote-timer-colon">:</span><span class="vote-timer-part" id="vote-timer-ss">00</span>
@@ -903,7 +904,7 @@
         <div id="judge-prompt-view" class="hidden">
           <div class="scr-body">
             <p class="narrator-cue" id="judge-prompt-cue"></p>
-            <label class="selection-title">Decid si usa su poder para repetir la votación</label>
+            <label>¿Usa su poder para repetir la votación?</label>
           </div>
           <div class="scr-dock">
             <div class="night-nav">
@@ -944,7 +945,7 @@
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
           <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
-          <span class="back-btn" style="cursor:default;">Sin guía</span>
+          <span class="back-btn" style="cursor:default;">📋 Sin guía</span>
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
@@ -966,9 +967,9 @@
     <div class="card-modal">
       <div class="card" style="text-align:center;">
         <div class="end-icon">▶️</div>
-        <h2 style="margin-top:0;">Todo listo</h2>
+        <h2 style="margin-top:0;">¿Todo listo?</h2>
         <p class="subtitle">Asegúrate de que el dispositivo ha vuelto al narrador y ningún jugador sigue mirando la pantalla de otro.</p>
-        <p class="narrator-cue">Di en voz alta: «El pueblo se va a dormir» y continúa.</p>
+        <p class="narrator-cue">😴 Di en voz alta: «El pueblo se va a dormir» y continúa.</p>
         <button class="btn-main" id="start-confirm-btn">Continuar ›</button>
       </div>
     </div>
@@ -978,7 +979,7 @@
   <div class="card-modal-backdrop hidden" id="game-over-backdrop">
     <div class="card-modal">
       <div class="card" style="text-align:center;">
-        <div class="end-icon" id="game-over-icon"></div>
+        <div class="end-icon" id="game-over-icon">🎉</div>
         <h1 class="game-over-title" id="game-over-title"></h1>
         <p class="subtitle">La partida ha terminado.</p>
         <div class="game-over-summary" id="game-over-summary"></div>
@@ -995,16 +996,16 @@
       <div class="card-modal-team" id="death-modal-role"></div>
 
       <div class="cause-chip-list" id="death-cause-chips">
-        <button type="button" class="chip" data-cause="lobos">Devorado por los lobos</button>
-        <button type="button" class="chip" data-cause="votacion">Linchado en la votación</button>
-        <button type="button" class="chip" data-cause="otro">Otra causa (veneno, disparo…)</button>
+        <button type="button" class="chip" data-cause="lobos">🐺 Devorado por los lobos</button>
+        <button type="button" class="chip" data-cause="votacion">🗳️ Linchado en la votación</button>
+        <button type="button" class="chip" data-cause="otro">☠️ Otra causa (veneno, disparo…)</button>
       </div>
       <div class="role-widget-status hidden" id="death-cause-assumed"></div>
 
       <div id="death-guidance" class="hidden"></div>
 
       <div id="death-chain-shoot" class="hidden">
-        <label class="selection-title">Elegid a quién dispara el Cazador</label>
+        <label>¿A quién dispara el Cazador?</label>
         <div class="role-widget-checklist" id="death-chain-shoot-list"></div>
       </div>
 
@@ -1742,7 +1743,7 @@
     { id: 'gitana', freq: 'especial' }
   ];
   var CAUSE_LABELS = { lobos: 'Lobos', votacion: 'Votación', otro: 'Otra causa', amor: 'Pena de amor', disparo: 'Disparo del Cazador', veneno: 'Veneno de la Bruja', fuego: 'Fuego del Pirómano' };
-  var CAUSE_ICONS = { lobos: '', votacion: '', otro: '', amor: '', disparo: '', veneno: '', fuego: '' };
+  var CAUSE_ICONS = { lobos: '🐺', votacion: '🗳️', otro: '☠️', amor: '💔', disparo: '🔫', veneno: '🧪', fuego: '🔥' };
 
   var nightSteps = [];
   var reminderSeq = 1;
@@ -1918,7 +1919,7 @@
   function beginVotePhase(){
     suppressGameOverCheck = false; // recompute below: this is the point where a dawn-only tie/ending finally counts
     unlockVoteAlarmAudio();
-    dayNightStatusEl.textContent = 'Día';
+    dayNightStatusEl.textContent = '☀️ Día';
     setNarratorTab('vote');
     voteContinueViewEl.classList.add('hidden');
     voteSelectViewEl.classList.add('hidden');
@@ -1932,7 +1933,7 @@
     // always pause here so the narrator can wake the village and announce
     // the night's deaths (even "nobody died") before the debate/vote starts —
     // whether anyone actually died is said once, by renderDeathAnnouncement()
-    narratorWakeCueEl.textContent = 'El pueblo se despierta';
+    narratorWakeCueEl.textContent = '☀️ El pueblo se despierta';
     renderDeathAnnouncement();
     voteAnnounceViewEl.classList.remove('hidden');
     voteAnnounceContinueBtn.textContent = status.over ? 'Continuar ›' : 'Continuar al debate ›';
@@ -1940,8 +1941,8 @@
 
   function renderDeathAnnouncement(){
     var anyDeaths = state.deathsThisRound.length > 0;
-    voteAnnounceCueEl.textContent = !anyDeaths ? 'Esta noche no ha muerto nadie' :
-      state.deathsThisRound.length === 1 ? 'Esta noche ha muerto...' : 'Esta noche han muerto...';
+    voteAnnounceCueEl.textContent = !anyDeaths ? '🌅 Esta noche no ha muerto nadie' :
+      state.deathsThisRound.length === 1 ? '🌅 Esta noche ha muerto...' : '🌅 Esta noche han muerto...';
     // the roster box only makes sense when there's actually someone to list —
     // otherwise it'd just be a third "nobody died" message under the cue above
     voteAnnounceListEl.classList.toggle('hidden', !anyDeaths);
@@ -1992,7 +1993,7 @@
     state.alive[idx] = false;
     state.deathCause[idx] = 'disparo';
     state.deathsThisRound.push(idx);
-    logEvent('El Cazador (' + state.playerNames[cazadorIdx] + ') disparó a ' + state.playerNames[idx] + ' (' + roleOf(idx).nombre + ') al morir.');
+    logEvent('🔫 El Cazador (' + state.playerNames[cazadorIdx] + ') disparó a ' + state.playerNames[idx] + ' (' + roleOf(idx).nombre + ') al morir.');
     renderDeathAnnouncement();
   });
 
@@ -2016,8 +2017,8 @@
     voteContinueViewEl.classList.remove('hidden');
     // the vote is over — the village goes back to sleep, it hasn't "woken up"
     // again until the next round's own dawn/vote event
-    dayNightStatusEl.textContent = 'Noche';
-    narratorWakeCueEl.textContent = 'El pueblo se duerme...';
+    dayNightStatusEl.textContent = '🌙 Noche';
+    narratorWakeCueEl.textContent = '😴 El pueblo se duerme...';
   }
 
   // El Juez Tartamudo: once per game, may secretly ask the narrator for a
@@ -2032,7 +2033,7 @@
     voteSelectViewEl.classList.add('hidden');
     judgePromptViewEl.classList.remove('hidden');
     var idx = state.roleIds.indexOf('juez_tartamudo');
-    judgePromptCueEl.textContent = state.playerNames[idx] + ' (El Juez Tartamudo) pide en secreto repetir la votación...';
+    judgePromptCueEl.textContent = '🤫 ' + state.playerNames[idx] + ' (El Juez Tartamudo) pide en secreto repetir la votación...';
   }
   judgeSkipBtn.addEventListener('click', function(){
     // only now do we lock in whatever this vote's outcome was — the judge
@@ -2044,7 +2045,7 @@
   judgeUseBtn.addEventListener('click', function(){
     state.judgeUsed = true;
     var idx = state.roleIds.indexOf('juez_tartamudo');
-    logEvent('El Juez Tartamudo (' + state.playerNames[idx] + ') usó su poder: se repite la votación.');
+    logEvent('⚖️ El Juez Tartamudo (' + state.playerNames[idx] + ') usó su poder: se repite la votación.');
     judgePromptViewEl.classList.add('hidden');
     startVoteSelection();
   });
@@ -2145,7 +2146,7 @@
     if (gameOverShown) return; // already showing the overlay for this ending, don't re-trigger it
     gameOverShown = true;
     stopVoteTimer();
-    gameOverIconEl.textContent = '';
+    gameOverIconEl.textContent = status.winner === 'lobos' ? '🐺' : '🏘️';
     gameOverTitleEl.textContent = status.winner === 'lobos' ? 'GANAN LOS LOBOS' : 'GANAN LOS ALDEANOS';
     gameOverTitleEl.className = 'game-over-title winner-' + status.winner;
     gameOverSummaryEl.innerHTML = state.eventLog.length ?
@@ -2276,7 +2277,7 @@
   }
 
   function renderNightStep(){
-    dayNightStatusEl.textContent = 'Noche';
+    dayNightStatusEl.textContent = '🌙 Noche';
     nightNavErrorEl.textContent = '';
 
     if (nightSteps.length === 0){
@@ -2472,7 +2473,7 @@
       return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-action="cupido-toggle" data-idx="' + idx + '">' + escapeHtml(n) + '</button>';
     }).join('');
     return (
-      '<label class="selection-title">Elegid a los dos enamorados (' + cupidoSelection.length + '/2)</label>' +
+      '<label>Elige a los dos enamorados (' + cupidoSelection.length + '/2)</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2483,7 +2484,7 @@
     if (cupidoSelection.length === 2){
       var a = cupidoSelection[0], b = cupidoSelection[1];
       state.lovers = [a, b];
-      logEvent('Cupido (' + state.playerNames[roleActorIndex('cupido')] + ') enamoró a ' +
+      logEvent('💘 Cupido (' + state.playerNames[roleActorIndex('cupido')] + ') enamoró a ' +
         state.playerNames[a] + ' (' + roleOf(a).nombre + ') y ' + state.playerNames[b] + ' (' + roleOf(b).nombre + ').', 'cupido');
     } else {
       state.lovers = null;
@@ -2498,7 +2499,7 @@
     var selfIdx = roleActorIndex('vidente');
     var buttons = playerButtonsHtml('seer-pick', { selected: videntePickIdx, filter: function(idx){ return idx !== selfIdx && state.alive[idx]; } });
     return (
-      '<label class="selection-title">Elegid a quién mira la Vidente</label>' +
+      '<label>¿A quién mira la Vidente?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2531,14 +2532,14 @@
       if (zorroConfirmed){
         var hasWolf = zorroSelection.some(function(i){ return roleOf(i).equipo === 'lobos'; });
         extra = '<div class="role-widget-reveal danger">' +
-          (hasWolf ? 'Sí, hay un Hombre Lobo.' : 'No. Pierde su poder.') +
+          (hasWolf ? '🐺 Sí, hay un Hombre Lobo.' : '❌ No. Pierde su poder.') +
           '</div>';
       } else {
         extra = '<button type="button" class="btn-main" data-action="fox-confirm" style="margin-top:8px;">Comprobar</button>';
       }
     }
     return (
-      '<label class="selection-title">Elegid tres jugadores para comprobar (' + zorroSelection.length + '/3)</label>' +
+      '<label>Elige tres jugadores a comprobar (' + zorroSelection.length + '/3)</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>' +
       extra
     );
@@ -2558,7 +2559,7 @@
     // buildNightSteps drops him from future nights (see there)
     var hasWolf = zorroSelection.some(function(i){ return roleOf(i).equipo === 'lobos'; });
     state.zorroPowerLost = !hasWolf;
-    if (state.zorroPowerLost) logEvent('El Zorro (' + state.playerNames[roleActorIndex('zorro')] + ') falló su comprobación y perdió su poder.', 'zorro-power-lost');
+    if (state.zorroPowerLost) logEvent('🦊 El Zorro (' + state.playerNames[roleActorIndex('zorro')] + ') falló su comprobación y perdió su poder.', 'zorro-power-lost');
     else clearEventByKey('zorro-power-lost');
     renderRoleWidget(nightSteps[state.nightIdx]);
   }
@@ -2569,7 +2570,7 @@
       return idx !== selfIdx && idx !== state.lastProtectedIdx;
     } });
     return (
-      '<label class="selection-title">Elegid a quién protege esta noche</label>' +
+      '<label>¿A quién protege esta noche?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2611,8 +2612,8 @@
     if (brujaActiveTab === 'death' && (!deathAvailable || deathLocked)) brujaActiveTab = 'life';
 
     var tabsHtml = '<div class="submode-toggle">' +
-      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'life' ? ' active' : '') + '" data-action="bruja-tab" data-tab="life"' + (!lifeAvailable || lifeLocked ? ' disabled' : '') + '>Poción de vida</button>' +
-      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'death' ? ' active' : '') + '" data-action="bruja-tab" data-tab="death"' + (!deathAvailable || deathLocked ? ' disabled' : '') + '>Poción de muerte</button>' +
+      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'life' ? ' active' : '') + '" data-action="bruja-tab" data-tab="life"' + (!lifeAvailable || lifeLocked ? ' disabled' : '') + '><span class="submode-btn-icon">💚</span>Poción de vida</button>' +
+      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'death' ? ' active' : '') + '" data-action="bruja-tab" data-tab="death"' + (!deathAvailable || deathLocked ? ' disabled' : '') + '><span class="submode-btn-icon">☠️</span>Poción de muerte</button>' +
     '</div>';
 
     if (brujaActiveTab === 'life'){
@@ -2620,7 +2621,7 @@
       if (state.brujaLifeUsedThisRound){
         var savedIdx = state.brujaLifeSavedIdx;
         return tabsHtml +
-          '<label class="selection-title">Elegid a quién revive</label>' +
+          '<label>¿A quién revive?</label>' +
           '<div class="role-widget-checklist"><button type="button" class="chip selected" data-action="bruja-life-toggle" data-idx="' + savedIdx + '">' + escapeHtml(state.playerNames[savedIdx]) + '</button></div>';
       }
       // the life potion only ever saves one of THIS round's pending victims
@@ -2642,7 +2643,7 @@
         return '<button type="button" class="chip" data-action="bruja-life-toggle" data-idx="' + p.idx + '">' + escapeHtml(state.playerNames[p.idx]) + '</button>';
       }).join('');
       return tabsHtml +
-        '<label class="selection-title">Elegid a quién revive</label>' +
+        '<label>¿A quién revive?</label>' +
         '<div class="role-widget-checklist">' + lifeButtons + '</div>';
     }
 
@@ -2650,7 +2651,7 @@
     if (state.brujaDeathUsedThisRound){
       var poisonedIdx = state.brujaDeathPoisonedIdx;
       return tabsHtml +
-        '<label class="selection-title">Elegid a quién envenena</label>' +
+        '<label>¿A quién envenena?</label>' +
         '<div class="role-widget-checklist"><button type="button" class="chip selected" data-action="bruja-death-toggle" data-idx="' + poisonedIdx + '">' + escapeHtml(state.playerNames[poisonedIdx]) + '</button></div>';
     }
     // can't poison anyone already marked to die tonight (only saved or left to die), nor herself
@@ -2660,7 +2661,7 @@
       return state.alive[idx] && idx !== brujaIdx && pendingIdxs.indexOf(idx) === -1;
     } });
     return tabsHtml +
-      '<label class="selection-title">Elegid a quién envenena</label>' +
+      '<label>¿A quién envenena?</label>' +
       '<div class="role-widget-checklist">' + deathBtns + '</div>';
   }
   function actionBrujaTab(tab){
@@ -2693,7 +2694,7 @@
     state.brujaLifeSavedSource = source;
     if (source === 'lobos') state.pendingNightKillIdx = null;
     else state.pendingAlbinoKillIdx = null; // the wolves' (or Lobo Albino's) kill is cancelled — nothing to resolve at dawn
-    logEvent('La Bruja (' + state.playerNames[roleActorIndex('bruja')] + ') salvó a ' +
+    logEvent('🧪 La Bruja (' + state.playerNames[roleActorIndex('bruja')] + ') salvó a ' +
       state.playerNames[idx] + ' (' + roleOf(idx).nombre + ') de los lobos.', 'bruja-life-r' + state.round);
     renderRoleWidget(nightSteps[state.nightIdx]);
   }
@@ -2722,7 +2723,7 @@
     state.brujaDeathUsedThisRound = true;
     state.brujaDeathPoisonedIdx = idx;
     state.deathsThisRound.push(idx); // announced to the village before the vote
-    logEvent('La Bruja (' + state.playerNames[roleActorIndex('bruja')] + ') envenenó a ' +
+    logEvent('🧪 La Bruja (' + state.playerNames[roleActorIndex('bruja')] + ') envenenó a ' +
       state.playerNames[idx] + ' (' + roleOf(idx).nombre + ').', 'bruja-death-r' + state.round);
     renderRoleWidget(nightSteps[state.nightIdx]);
     renderDeathLists();
@@ -2733,12 +2734,12 @@
   }
   function widgetWildChildHtml(){
     if (state.wildChildTransformed){
-      return '<div class="role-widget-status">Su modelo murió: ya se ha convertido en Hombre Lobo, no necesita más acciones.</div>';
+      return '<div class="role-widget-status">🐺 Su modelo murió: ya se ha convertido en Hombre Lobo, no necesita más acciones.</div>';
     }
     var selfIdx = wildChildIndex();
     var buttons = playerButtonsHtml('wildchild-pick', { selected: state.wildChildModelIdx, filter: function(idx){ return idx !== selfIdx; } });
     return (
-      '<label class="selection-title">Elegid a quién elige como modelo</label>' +
+      '<label>¿A quién elige como modelo?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>' +
       '<div class="role-widget-status">Esta elección solo se hace la primera noche.</div>'
     );
@@ -2752,7 +2753,7 @@
     var selfIdx = roleActorIndex('cuervo');
     var buttons = playerButtonsHtml('raven-pick', { selected: state.ravenMark, filter: function(idx){ return idx !== selfIdx; } });
     return (
-      '<label class="selection-title">Elegid a quién marca esta noche</label>' +
+      '<label>¿A quién marca esta noche?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>' +
       '<div class="role-widget-status">La marca da +2 votos mañana.</div>'
     );
@@ -2771,7 +2772,7 @@
     return (
       '<label>Jugadores rociados con gasolina (toca para marcar)</label>' +
       '<div class="role-widget-checklist">' + chips + '</div>' +
-      '<button type="button" class="btn-main" data-action="pyro-ignite" style="margin-top:14px;"' + (state.pyroSoaked.length ? '' : ' disabled') + '>Prender fuego a los rociados</button>'
+      '<button type="button" class="btn-main" data-action="pyro-ignite" style="margin-top:14px;"' + (state.pyroSoaked.length ? '' : ' disabled') + '>🔥 Prender fuego a los rociados</button>'
     );
   }
   function actionPyroToggle(idx){
@@ -2798,7 +2799,7 @@
   function widgetWolfKillHtml(){
     var buttons = playerButtonsHtml('wolf-kill-pick', { selected: state.pendingNightKillIdx, filter: function(idx){ return state.alive[idx] && roleOf(idx).equipo !== 'lobos'; } });
     return (
-      '<label class="selection-title">Elegid a quién devoran los lobos esta noche</label>' +
+      '<label>¿A quién devoran los lobos esta noche?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2815,7 +2816,7 @@
       return state.alive[idx] && idx !== selfIdx && roleOf(idx).equipo === 'lobos';
     } });
     return (
-      '<label class="selection-title">Elegid a qué otro Hombre Lobo elimina en secreto esta noche</label>' +
+      '<label>¿A qué otro Hombre Lobo elimina en secreto esta noche?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2832,10 +2833,10 @@
     var status = current ?
       '<div class="role-widget-status">Toca de nuevo para cambiarlo.</div>' : '';
     return (
-      '<label class="selection-title">Elegid cómo quiere jugar el resto de la partida</label>' +
+      '<label>¿Cómo decide jugar el resto de la partida?</label>' +
       '<div class="role-widget-checklist">' +
-        '<button type="button" class="chip' + (current === 'aldeano' ? ' selected' : '') + '" data-action="perrolobo-choose" data-choice="aldeano">Aldeano</button>' +
-        '<button type="button" class="chip' + (current === 'lobo' ? ' selected' : '') + '" data-action="perrolobo-choose" data-choice="lobo">Lobo</button>' +
+        '<button type="button" class="chip' + (current === 'aldeano' ? ' selected' : '') + '" data-action="perrolobo-choose" data-choice="aldeano">🏘️ Aldeano</button>' +
+        '<button type="button" class="chip' + (current === 'lobo' ? ' selected' : '') + '" data-action="perrolobo-choose" data-choice="lobo">🐺 Lobo</button>' +
       '</div>' + status
     );
   }
@@ -2875,7 +2876,7 @@
       );
     }).join('');
     return (
-      '<label class="selection-title">Elegid la carta que cambia (' + escapeHtml(currentRole.nombre) + ') por una de estas dos reservadas</label>' +
+      '<label>¿Cambia su carta (' + escapeHtml(currentRole.nombre) + ') por una de estas dos reservadas?</label>' +
       '<div class="role-picker-grid">' + cards + '</div>'
     );
   }
@@ -2919,7 +2920,7 @@
         '<div class="role-picker-name">Ninguno (pasa esta noche)</div>' +
       '</div>';
     return (
-      '<label class="selection-title">Elegid qué poder toma prestado esta noche</label>' +
+      '<label>¿Qué poder toma prestado esta noche?</label>' +
       '<div class="role-picker-grid">' + cards + skipCard + '</div>'
     );
   }
@@ -3030,7 +3031,7 @@
       var role = roleOf(idx);
       var cause = state.deathCause[idx];
       var causeLabel = CAUSE_LABELS[cause] || 'Causa desconocida';
-      var causeIcon = CAUSE_ICONS[cause] || '';
+      var causeIcon = CAUSE_ICONS[cause] || '❓';
       return '<div class="vote-row dead" data-index="' + idx + '">' +
         '<span class="death-left">' +
           '<span class="death-cause-icon">' + causeIcon + '</span>' +
@@ -3244,16 +3245,16 @@
       return state.alive[i] && i !== idx && state.roleIds[i] === 'abnegada_sirvienta';
     });
     if (sirvientaAlive){
-      msgs.push('La Abnegada Sirvienta sigue viva: puede revelarse ahora y ocupar el lugar de la víctima.');
+      msgs.push('👤 La Abnegada Sirvienta sigue viva: puede revelarse ahora y ocupar el lugar de la víctima.');
     }
 
     if (cause === 'lobos' && idx === state.protectedIdx){
       result.survives = true;
-      msgs.push('Bloqueado: está protegido esta noche por El Protector, los lobos no pueden matarlo. Elige otra causa de muerte si murió de otra forma.');
+      msgs.push('🛡️ Bloqueado: está protegido esta noche por El Protector, los lobos no pueden matarlo. Elige otra causa de muerte si murió de otra forma.');
     }
 
     if (idx === state.wildChildModelIdx){
-      msgs.push('Era el modelo del Niño Salvaje: a partir de ahora se convierte en Hombre Lobo.');
+      msgs.push('🐺 Era el modelo del Niño Salvaje: a partir de ahora se convierte en Hombre Lobo.');
     }
 
     return { msgs: msgs, survives: result.survives, chainPrompt: result.chainPrompt, loverPartner: loverPartner };
@@ -3271,9 +3272,9 @@
       state.alive[idx] = false;
       state.deathCause[idx] = cause;
       if (announce) state.deathsThisRound.push(idx);
-      if (cause === 'lobos') logEvent('Los lobos mataron a ' + state.playerNames[idx] + ' (' + role.nombre + ').');
-      else if (cause === 'votacion') logEvent('El pueblo votó a ' + state.playerNames[idx] + ' (' + role.nombre + ').');
-      else logEvent(state.playerNames[idx] + ' (' + role.nombre + ') murió (otra causa).');
+      if (cause === 'lobos') logEvent('🐺 Los lobos mataron a ' + state.playerNames[idx] + ' (' + role.nombre + ').');
+      else if (cause === 'votacion') logEvent('🗳️ El pueblo votó a ' + state.playerNames[idx] + ' (' + role.nombre + ').');
+      else logEvent('☠️ ' + state.playerNames[idx] + ' (' + role.nombre + ') murió (otra causa).');
     } else if (role.id === 'anciano' && cause === 'lobos'){
       state.ancianoSurvived = true;
     }
@@ -3282,7 +3283,7 @@
       state.alive[chainShootIdx] = false;
       state.deathCause[chainShootIdx] = 'disparo';
       if (announce) state.deathsThisRound.push(chainShootIdx);
-      logEvent('El Cazador (' + state.playerNames[idx] + ') disparó a ' +
+      logEvent('🔫 El Cazador (' + state.playerNames[idx] + ') disparó a ' +
         state.playerNames[chainShootIdx] + ' (' + roleOf(chainShootIdx).nombre + ') al morir.');
     }
 
@@ -3295,7 +3296,7 @@
       state.alive[loverPartner] = false;
       state.deathCause[loverPartner] = 'amor';
       if (announce) state.deathsThisRound.push(loverPartner);
-      logEvent(state.playerNames[loverPartner] + ' (' + roleOf(loverPartner).nombre + ') murió de pena por amor.');
+      logEvent('💔 ' + state.playerNames[loverPartner] + ' (' + roleOf(loverPartner).nombre + ') murió de pena por amor.');
     }
 
     if (role.id === 'caballero_espada_oxidada' && cause === 'lobos' && !guidance.survives){
@@ -3394,7 +3395,7 @@
             '<div class="role-name">' + escapeHtml(role.nombre) + '</div>' +
             '<div class="role-team-tag">' + TEAM_LABELS[role.equipo] + '</div>' +
           '</div>' +
-          '<span class="roster-status-icon">' + (dead ? '' : '') + '</span>' +
+          '<span class="roster-status-icon">' + (dead ? '💀' : '✅') + '</span>' +
         '</div>'
       );
     }).join('');

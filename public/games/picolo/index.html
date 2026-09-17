@@ -63,7 +63,7 @@
       <h1>PICOLO</h1>
 
       <div class="scr-body">
-        <label class="players-label">Jugadores</label>
+        <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
         <div class="player-chips-list" id="players-chips"></div>
         <div class="player-input-row">
           <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
@@ -97,13 +97,13 @@
       <h3>Tipos de carta</h3>
       <p>Cada carta muestra su temática arriba con un color, para saber de un vistazo qué tipo de carta es:</p>
       <ul>
-        <li><strong>Trago:</strong> alguien bebe directamente.</li>
-        <li><strong>Reparte:</strong> alguien reparte tragos entre el resto.</li>
-        <li><strong>Reto:</strong> cumple el reto o bebes.</li>
-        <li><strong>Pregunta:</strong> responde con sinceridad o bebes.</li>
-        <li><strong>Interacción:</strong> dos jugadores hacen algo juntos (un gesto, un pulso, beber a la vez...) o ambos beben.</li>
-        <li><strong>Grupo:</strong> quien cumpla una condición bebe (llevar cierto color, nombre con cierta letra, ser el más joven...).</li>
-        <li><strong>Decisión:</strong> todos eligen en secreto entre dos opciones (mano arriba o abajo, por ejemplo) y luego se revela cuál de las dos bebe.</li>
+        <li><strong>🥃 Trago:</strong> alguien bebe directamente.</li>
+        <li><strong>🍹 Reparte:</strong> alguien reparte tragos entre el resto.</li>
+        <li><strong>😈 Reto:</strong> cumple el reto o bebes.</li>
+        <li><strong>🤔 Pregunta:</strong> responde con sinceridad o bebes.</li>
+        <li><strong>🤝 Interacción:</strong> dos jugadores hacen algo juntos (un gesto, un pulso, beber a la vez...) o ambos beben.</li>
+        <li><strong>👥 Grupo:</strong> quien cumpla una condición bebe (llevar cierto color, nombre con cierta letra, ser el más joven...).</li>
+        <li><strong>🙋 Decisión:</strong> todos eligen en secreto entre dos opciones (mano arriba o abajo, por ejemplo) y luego se revela cuál de las dos bebe.</li>
       </ul>
 
       <h3>Honestidad</h3>
@@ -132,8 +132,8 @@
       </div>
 
       <div class="scr-dock">
-        <button class="btn-main hidden" id="reveal-decision-btn">Revelar quién bebe</button>
-        <button class="btn-main" id="next-btn">Siguiente carta</button>
+        <button class="btn-main hidden" id="reveal-decision-btn">👀 Revelar quién bebe</button>
+        <button class="btn-main" id="next-btn">🥃 Siguiente carta</button>
       </div>
     </div>
   </div>
@@ -156,13 +156,13 @@
   }
 
   var CATEGORY_META = {
-    trago: { label: 'Trago', color: '#e0663f' },
-    reparte: { label: 'Reparte', color: '#f2c94c' },
-    reto: { label: 'Reto', color: '#a970e0' },
-    pregunta: { label: 'Pregunta', color: '#5b8fe0' },
-    interaccion: { label: 'Interacción', color: '#e05d9c' },
-    grupo: { label: 'Grupo', color: '#52c77a' },
-    decision: { label: 'Decisión', color: '#4fc3d9' }
+    trago: { label: 'Trago', icon: '🥃', color: '#e0663f' },
+    reparte: { label: 'Reparte', icon: '🍹', color: '#f2c94c' },
+    reto: { label: 'Reto', icon: '😈', color: '#a970e0' },
+    pregunta: { label: 'Pregunta', icon: '🤔', color: '#5b8fe0' },
+    interaccion: { label: 'Interacción', icon: '🤝', color: '#e05d9c' },
+    grupo: { label: 'Grupo', icon: '👥', color: '#52c77a' },
+    decision: { label: 'Decisión', icon: '🙋', color: '#4fc3d9' }
   };
 
   var CARDS = null;
@@ -175,7 +175,7 @@
     { tipo: 'reto', texto: "Reto para {P}: imitar a un animal durante 30 segundos o beber." },
     { tipo: 'interaccion', texto: "{P1} se sube a los hombros de {P2} durante 1 minuto o ambos beben." },
     { tipo: 'grupo', texto: "El último en tocarse la nariz bebe." },
-    { tipo: 'decision', prompt: "Contad hasta 3 en voz alta y decidid en secreto, sin miraros: ¿mano arriba o mano abajo?", opciones: ["Mano arriba", "Mano abajo"] }
+    { tipo: 'decision', prompt: "🙋 Contad hasta 3 en voz alta y decidid en secreto, sin miraros: ¿mano arriba o mano abajo?", opciones: ["Mano arriba", "Mano abajo"] }
   ];
 
   function loadCards(){
@@ -341,7 +341,7 @@
     state.currentCard = card;
     var meta = CATEGORY_META[card.tipo] || CATEGORY_META.trago;
 
-    picoloBadgeEl.textContent = meta.label;
+    picoloBadgeEl.textContent = meta.icon + ' ' + meta.label;
     picoloBadgeEl.style.background = meta.color;
     picoloBadgeEl.style.color = readableTextColor(meta.color);
     revealWrap.style.borderColor = meta.color;

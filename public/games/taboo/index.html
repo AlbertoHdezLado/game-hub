@@ -285,7 +285,7 @@
 
       <div class="scr-body">
         <div id="setup-step-players">
-          <label class="players-label">Jugadores</label>
+          <label class="players-label"><span class="label-icon">👥</span>Jugadores</label>
           <div class="player-chips-list" id="players-chips"></div>
           <div class="player-input-row">
             <input type="text" class="player-name-input" id="players-draft" placeholder="Nombre del jugador..." maxlength="20">
@@ -295,7 +295,7 @@
         </div>
 
         <div id="setup-step-teams" class="hidden">
-          <label>Equipos</label>
+          <label><span class="label-icon">🎯</span>Equipos</label>
           <div class="stepper">
             <button type="button" id="team-count-minus">−</button>
             <div class="value" id="team-count-value">2</div>
@@ -312,7 +312,7 @@
           <details class="setup-optional">
             <summary>Ajustes adicionales</summary>
             <div class="setup-optional-content">
-              <label>Categorías</label>
+              <label><span class="label-icon">🏷️</span>Categorías</label>
               <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
                 <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
                 <span class="packages-dropdown-chevron">▾</span>
@@ -322,14 +322,14 @@
                 <div class="chip-list" id="package-list"></div>
               </div>
 
-              <label>Duración de turno</label>
+              <label><span class="label-icon">⏱️</span>Duración de turno</label>
               <div class="stepper">
                 <button type="button" id="turn-seconds-minus">−</button>
                 <div class="value" id="turn-seconds-value">1:00</div>
                 <button type="button" id="turn-seconds-plus">+</button>
               </div>
 
-              <label>Segundos que resta decir palabra prohibida</label>
+              <label><span class="label-icon">⏭️</span>Segundos que resta decir palabra prohibida</label>
               <div class="stepper">
                 <button type="button" id="skip-seconds-minus">−</button>
                 <div class="value" id="skip-seconds-value">5</div>
@@ -365,12 +365,12 @@
       <p>Formad equipos (se recomienda de 2 en 2). Por turnos, cada jugador describe la palabra de su carta a su equipo sin decir la palabra en sí, sus derivados obvios, ni ninguna de las 5 palabras prohibidas que aparecen debajo.</p>
 
       <h3>Palabras prohibidas</h3>
-      <p>Todos los jugadores de los demás equipos vigilan la descripción. Si oyen la palabra a adivinar o alguna de sus prohibidas, pulsan "Prohibida" — no hace falta un juez fijo, cualquiera puede marcarlo.</p>
+      <p>Todos los jugadores de los demás equipos vigilan la descripción. Si oyen la palabra a adivinar o alguna de sus prohibidas, pulsan "❌ Prohibida" — no hace falta un juez fijo, cualquiera puede marcarlo.</p>
 
       <h3>Durante el turno</h3>
       <ul>
-        <li><strong>Acierto:</strong> el equipo suma un punto y pasáis a la siguiente carta.</li>
-        <li><strong>Prohibida:</strong> la carta vuelve al final del mazo sin puntos para nadie y resta unos segundos al cronómetro (configurable).</li>
+        <li><strong>✅ Acierto:</strong> el equipo suma un punto y pasáis a la siguiente carta.</li>
+        <li><strong>❌ Prohibida:</strong> la carta vuelve al final del mazo sin puntos para nadie y resta unos segundos al cronómetro (configurable).</li>
       </ul>
 
       <h3>Fin del turno y de la partida</h3>
@@ -389,11 +389,11 @@
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
           <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
-          <span class="back-btn" style="cursor:default;">Taboo</span>
+          <span class="back-btn" style="cursor:default;">🤫 Taboo</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
-          <div class="tb-cards-remaining" id="tb-cards-remaining"><span id="tb-cards-remaining-value">x30</span></div>
+          <div class="tb-cards-remaining" id="tb-cards-remaining"><span class="tb-cards-icon">🂠</span><span id="tb-cards-remaining-value">x30</span></div>
         </div>
       </div>
 
@@ -453,7 +453,7 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="end-icon"></div>
+        <div class="end-icon">🏆</div>
         <h1 style="font-size:1.6rem;" id="end-title">RESULTADOS</h1>
         <p class="subtitle" id="end-subtitle"></p>
         <div id="end-scoreboard"></div>
@@ -987,7 +987,7 @@
     var card = state.deck[0];
     tbWordEl.textContent = card.palabra;
     tbTabooListEl.innerHTML = card.prohibidas.map(function(w){
-      return '<div class="tb-taboo-item">' + escapeHtml(w) + '</div>';
+      return '<div class="tb-taboo-item"><span class="tb-taboo-icon">🚫</span>' + escapeHtml(w) + '</div>';
     }).join('');
   }
 
