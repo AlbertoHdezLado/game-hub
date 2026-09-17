@@ -41,16 +41,6 @@
     padding:0;
     margin-bottom:0;
   }
-  .reveal-close-hint{
-    text-align:center;
-    color:var(--text-dim);
-    font-size:0.82rem;
-    margin:14px 0 0;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .3s ease;
-  }
-  .reveal-wrap.revealed ~ .reveal-close-hint{opacity:1;}
   .packages-dropdown-btn{
     width:100%;
     display:flex;
@@ -365,20 +355,15 @@
     </div>
   </div>
 
-  <!-- role card modal, opened from the roster above -->
-  <div class="guide-modal-backdrop hidden" id="reveal-modal-backdrop">
-    <div class="guide-modal reveal-modal">
-      <button type="button" class="hidden" id="reveal-modal-close" disabled></button>
-      <div class="reveal-wrap" id="reveal-wrap">
-        <div class="reveal-content" id="reveal-content"></div>
-        <button type="button" class="reveal-btn" id="reveal-btn">
-          <span class="reveal-icon">👁️</span>
-          <span class="reveal-text">Revelar</span>
-        </button>
-      </div>
-      <p class="reveal-close-hint">Toca la pantalla para cerrar</p>
+  <dialog class="reveal-screen hidden" id="reveal-modal-backdrop" aria-label="Contenido privado">
+    <div class="reveal-stage reveal-wrap" id="reveal-wrap">
+      <div class="reveal-content" id="reveal-content"></div>
+      <button type="button" class="reveal-btn" id="reveal-btn">
+        <span class="reveal-icon">👁️</span>
+        <span class="reveal-text">Revelar</span>
+      </button>
     </div>
-  </div>
+  </dialog>
 
   <!-- STARTING PLAYER MODAL: independent from the role-reveal modal above, shown
        once at the start of the first debate of the match -->
@@ -902,16 +887,14 @@
   var revealRosterEl = document.getElementById('reveal-roster');
   var revealContinueBtn = document.getElementById('reveal-continue-btn');
   var revealModalBackdrop = document.getElementById('reveal-modal-backdrop');
-  var revealModalClose = document.getElementById('reveal-modal-close');
   var revealWrap = document.getElementById('reveal-wrap');
   var revealContent = document.getElementById('reveal-content');
   var revealBtn = document.getElementById('reveal-btn');
-
-  // reuses the modal's close button as the "nextBtn": createRevealCard keeps
-  // it disabled until the card has actually been tapped open, so a row can't
-  // be marked as viewed without being seen at least once
-  var revealCard = createRevealCard(revealWrap, revealContent, revealBtn, revealModalClose);
   var currentRevealIdx = -1;
+  var revealScreen = createRevealScreen(revealModalBackdrop, revealWrap, revealContent, revealBtn, function(){
+    state.viewed[currentRevealIdx] = true;
+    renderRevealRoster();
+  });
 
   function renderRevealRoster(){
     var html = '';
@@ -937,31 +920,13 @@
     revealContent.textContent = displayWord;
     revealContent.className = 'reveal-content ' + (isImpostor && !isMrBlanco ? 'impostor' : 'word');
 
-    revealCard.showFor(isImpostor && !isMrBlanco);
-    revealModalBackdrop.classList.remove('hidden');
+    revealScreen.open(isImpostor && !isMrBlanco);
   }
 
   revealRosterEl.addEventListener('click', function(e){
     var row = e.target.closest('.roster-row');
     if (!row) return;
     openRevealModal(parseInt(row.getAttribute('data-index'), 10));
-  });
-
-  // before reveal: tapping anywhere on the modal reveals the word, not just the
-  // "Revelar" button itself (revealBtn already covers the whole card via its own
-  // inset:0, so this just extends that same tap target to the full screen).
-  // After reveal: tapping anywhere closes it — but not the tap on "Revelar" itself,
-  // which bubbles up from revealBtn on the very click that just set .revealed, and
-  // would otherwise close the modal before it's seen.
-  revealModalBackdrop.addEventListener('click', function(e){
-    if (!revealWrap.classList.contains('revealed')){
-      if (!revealBtn.contains(e.target)) revealBtn.click();
-      return;
-    }
-    if (revealBtn.contains(e.target)) return;
-    revealModalBackdrop.classList.add('hidden');
-    state.viewed[currentRevealIdx] = true;
-    renderRevealRoster();
   });
 
   revealContinueBtn.addEventListener('click', function(){

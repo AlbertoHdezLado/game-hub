@@ -431,30 +431,29 @@ function confirmAdultContent(onConfirm){
   adultConfirmBackdrop.classList.remove('hidden');
 }
 
+function fitRevealContent(content){
+  var MAX_FONT_REM = 1.7;
+  var MIN_FONT_REM = 0.9;
+  content.style.fontSize = MAX_FONT_REM + 'rem';
+  var size = MAX_FONT_REM;
+  while (size > MIN_FONT_REM &&
+    (content.scrollHeight > content.clientHeight ||
+     content.scrollWidth > content.clientWidth)){
+    size -= 0.1;
+    content.style.fontSize = size.toFixed(2) + 'rem';
+  }
+}
+
 /* tap-to-reveal card: covers reveal-content with reveal-btn until tapped.
    showFor(isAlarm) re-covers instantly (no flash) and arms the optional
    danger-pulse border for the upcoming reveal; call it once per player,
    right after setting reveal-content's text/className for that player. */
 function createRevealCard(wrap, content, btn, nextBtn){
-  var MAX_FONT_REM = 1.7;
-  var MIN_FONT_REM = 0.9;
   var pendingAlarm = false;
-
-  function fitText(){
-    content.style.fontSize = '';
-    var size = MAX_FONT_REM;
-    content.style.fontSize = size + 'rem';
-    while (size > MIN_FONT_REM &&
-      (content.scrollHeight > content.clientHeight ||
-       content.scrollWidth > content.clientWidth)){
-      size -= 0.1;
-      content.style.fontSize = size.toFixed(2) + 'rem';
-    }
-  }
 
   function onReveal(){
     wrap.classList.add('revealed');
-    fitText();
+    fitRevealContent(content);
     if (pendingAlarm) wrap.classList.add('alarm');
     nextBtn.disabled = false;
   }
@@ -473,6 +472,58 @@ function createRevealCard(wrap, content, btn, nextBtn){
       btn.style.transition = '';
       nextBtn.disabled = true;
     }
+  };
+}
+
+/* Full-screen reveal for private information. The first tap progressively
+   uncovers arbitrary content; once the animation finishes, the next tap
+   anywhere dismisses the screen. */
+function createRevealScreen(screen, stage, content, trigger, onClose){
+  var REVEAL_DURATION = 1600;
+  var closeHandler = typeof onClose === 'function' ? onClose : function(){};
+  var revealTimer = null;
+  var isRevealed = false;
+
+  function reveal(){
+    if (screen.classList.contains('revealing') || isRevealed) return;
+    fitRevealContent(content);
+    screen.classList.add('revealing');
+    var duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 20 : REVEAL_DURATION;
+    revealTimer = window.setTimeout(function(){
+      screen.classList.remove('revealing');
+      screen.classList.add('revealed');
+      isRevealed = true;
+    }, duration);
+  }
+
+  function close(){
+    if (!isRevealed) return;
+    screen.classList.add('hidden');
+    if (screen.open && typeof screen.close === 'function') screen.close();
+    closeHandler();
+  }
+
+  trigger.addEventListener('click', function(event){
+    event.stopPropagation();
+    reveal();
+  });
+  screen.addEventListener('click', function(){
+    if (isRevealed) close();
+    else reveal();
+  });
+  screen.addEventListener('cancel', function(event){ event.preventDefault(); });
+
+  return {
+    open: function(isAlarm){
+      window.clearTimeout(revealTimer);
+      isRevealed = false;
+      screen.classList.remove('revealing', 'revealed');
+      stage.classList.toggle('alarm-pending', !!isAlarm);
+      content.style.fontSize = '';
+      screen.classList.remove('hidden');
+      if (!screen.open && typeof screen.showModal === 'function') screen.showModal();
+    },
+    close: close
   };
 }
 

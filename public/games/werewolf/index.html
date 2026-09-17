@@ -23,8 +23,10 @@
     background-color:var(--bg2);
   }
 
-  /* the role reveal card shows the portrait full-bleed; the name is a
-     caption below the card and the description stays hidden until tapped */
+  /* the narrator's inline night/lynch reveal cards (always "revealed",
+     never covered) still show the portrait full-bleed at a fixed height;
+     the private roster reveal below overrides this for its adaptive-size
+     full-screen modal instead */
   .reveal-wrap{
     height:280px;
   }
@@ -44,6 +46,19 @@
     object-fit:cover;
     border-radius:0;
     filter:none;
+  }
+  .reveal-screen .reveal-content{
+    cursor:default;
+  }
+  .reveal-screen .reveal-content img.reveal-portrait{
+    position:static;
+    width:auto;
+    height:auto;
+    max-width:min(70vw, 320px);
+    max-height:44vh;
+    object-fit:contain;
+    border-radius:16px;
+    filter:drop-shadow(0 10px 24px rgba(0,0,0,0.45));
   }
   .reveal-name-caption{
     text-align:center;
@@ -68,6 +83,18 @@
     font-weight:400;
     text-transform:none;
     letter-spacing:normal;
+    color:var(--text-dim);
+  }
+  .reveal-name-caption .reveal-role-description{
+    display:block;
+    max-width:340px;
+    margin-top:8px;
+    font-family:var(--font-body);
+    font-size:0.78rem;
+    font-weight:400;
+    text-transform:none;
+    letter-spacing:0;
+    line-height:1.45;
     color:var(--text-dim);
   }
   .reveal-content .reveal-desc-overlay{
@@ -787,22 +814,16 @@
     </div>
   </div>
 
-  <!-- role card modal, opened from the roster above -->
-  <div class="guide-modal-backdrop hidden" id="reveal-modal-backdrop">
-    <div class="guide-modal reveal-modal">
-      <button type="button" class="guide-modal-close" id="reveal-modal-close" disabled>✕</button>
-      <div class="pass-hint" style="margin-bottom:14px;">No se lo enseñes a nadie más.</div>
-
-      <div class="reveal-wrap" id="reveal-wrap">
-        <div class="reveal-content" id="reveal-content"></div>
-        <button type="button" class="reveal-btn" id="reveal-btn">
-          <span class="reveal-icon">👁️</span>
-          <span class="reveal-text">Revelar</span>
-        </button>
-      </div>
-      <div class="reveal-name-caption" id="reveal-name-caption"></div>
+  <dialog class="reveal-screen hidden" id="reveal-modal-backdrop" aria-label="Contenido privado">
+    <div class="reveal-stage reveal-wrap" id="reveal-wrap">
+      <div class="reveal-content" id="reveal-content"></div>
+      <button type="button" class="reveal-btn" id="reveal-btn">
+        <span class="reveal-icon">👁️</span>
+        <span class="reveal-text">Revelar</span>
+      </button>
     </div>
-  </div>
+    <div class="reveal-name-caption" id="reveal-name-caption"></div>
+  </dialog>
 
   <!-- NARRATOR SCREEN (post-reveal: night guide + death resolution) -->
   <div class="screen hidden" id="screen-narrator">
@@ -1603,40 +1624,15 @@
   var revealRosterEl = document.getElementById('reveal-roster');
   var revealContinueBtn = document.getElementById('reveal-continue-btn');
   var revealModalBackdrop = document.getElementById('reveal-modal-backdrop');
-  var revealModalClose = document.getElementById('reveal-modal-close');
   var revealWrap = document.getElementById('reveal-wrap');
   var revealContent = document.getElementById('reveal-content');
   var revealNameCaption = document.getElementById('reveal-name-caption');
   var revealBtn = document.getElementById('reveal-btn');
   var currentRevealIdx = -1;
-
-  // reuses the modal's close button as the "nextBtn": createRevealCard keeps
-  // it disabled until the card has actually been tapped open, so a row can't
-  // be marked as viewed without being seen at least once
-  var revealCard = createRevealCard(revealWrap, revealContent, revealBtn, revealModalClose);
-
-  // the description stays hidden behind the portrait until the card is
-  // tapped; showPlayer() resets revealContent's className each turn, which
-  // clears any leftover "desc-open" from the previous player automatically
-  revealContent.addEventListener('click', function(){
-    if (!revealWrap.classList.contains('revealed')) return;
-    revealContent.classList.toggle('desc-open');
+  var revealScreen = createRevealScreen(revealModalBackdrop, revealWrap, revealContent, revealBtn, function(){
+    state.viewed[currentRevealIdx] = true;
+    renderRevealRoster();
   });
-
-  // the name caption lives below reveal-wrap, so it isn't covered by
-  // reveal-btn the way the portrait is: it needs its own instant-hide /
-  // fade-in handling so the next player's name can never leak through
-  // its own opacity transition while it's being swapped out of view.
-  revealBtn.addEventListener('click', function(){
-    revealNameCaption.classList.add('visible');
-  });
-
-  function hideNameCaptionInstantly(){
-    revealNameCaption.style.transition = 'none';
-    revealNameCaption.classList.remove('visible');
-    void revealNameCaption.offsetWidth; // force the hide to apply before we restore the transition
-    revealNameCaption.style.transition = '';
-  }
 
   function renderRevealRoster(){
     var html = '';
@@ -1652,34 +1648,23 @@
 
   function openRevealModal(idx){
     currentRevealIdx = idx;
-    hideNameCaptionInstantly();
 
     var role = ROLES.filter(function(r){ return r.id === state.roleIds[idx]; })[0];
-    revealContent.innerHTML =
-      '<img class="reveal-portrait" src="' + role.imagen + '" alt="" draggable="false" oncontextmenu="return false">' +
-      '<div class="reveal-desc-overlay">' + escapeHtml(role.descripcion) + '</div>';
+    revealContent.innerHTML = '<img class="reveal-portrait" src="' + role.imagen + '" alt="" draggable="false" oncontextmenu="return false">';
     revealContent.className = 'reveal-content ' + TEAM_CLASS[role.equipo];
 
     revealNameCaption.innerHTML =
       escapeHtml(role.nombre) +
-      '<span class="reveal-hint">Toca la carta para ver su descripción</span>';
+      '<span class="reveal-role-description">' + escapeHtml(role.descripcion) + '</span>';
     revealNameCaption.className = 'reveal-name-caption ' + TEAM_CLASS[role.equipo];
 
-    revealCard.showFor(role.equipo === 'lobos');
-    revealModalBackdrop.classList.remove('hidden');
+    revealScreen.open(role.equipo === 'lobos');
   }
 
   revealRosterEl.addEventListener('click', function(e){
     var row = e.target.closest('.roster-row');
     if (!row) return;
     openRevealModal(parseInt(row.getAttribute('data-index'), 10));
-  });
-
-  revealModalClose.addEventListener('click', function(){
-    if (revealModalClose.disabled) return;
-    revealModalBackdrop.classList.add('hidden');
-    state.viewed[currentRevealIdx] = true;
-    renderRevealRoster();
   });
 
   var startConfirmBackdrop = document.getElementById('start-confirm-backdrop');

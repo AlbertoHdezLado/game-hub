@@ -296,19 +296,15 @@
     </div>
   </div>
 
-  <!-- role card modal, opened from the roster above -->
-  <div class="guide-modal-backdrop hidden" id="reveal-modal-backdrop">
-    <div class="guide-modal reveal-modal">
-      <button type="button" class="guide-modal-close" id="reveal-modal-close" disabled>✕</button>
-      <div class="reveal-wrap" id="reveal-wrap">
-        <div class="reveal-content" id="reveal-content"></div>
-        <button type="button" class="reveal-btn" id="reveal-btn">
-          <span class="reveal-icon">👁️</span>
-          <span class="reveal-text">Revelar</span>
-        </button>
-      </div>
+  <dialog class="reveal-screen hidden" id="reveal-modal-backdrop" aria-label="Contenido privado">
+    <div class="reveal-stage reveal-wrap" id="reveal-wrap">
+      <div class="reveal-content" id="reveal-content"></div>
+      <button type="button" class="reveal-btn" id="reveal-btn">
+        <span class="reveal-icon">👁️</span>
+        <span class="reveal-text">Revelar</span>
+      </button>
     </div>
-  </div>
+  </dialog>
 
   <!-- MANUAL VOTE: reveal the conspirador (no undo), then mark who voted for them -->
   <div class="screen hidden" id="screen-vote">
@@ -568,16 +564,14 @@
   var revealRosterEl = document.getElementById('reveal-roster');
   var revealContinueBtn = document.getElementById('reveal-continue-btn');
   var revealModalBackdrop = document.getElementById('reveal-modal-backdrop');
-  var revealModalClose = document.getElementById('reveal-modal-close');
   var revealWrap = document.getElementById('reveal-wrap');
   var revealContent = document.getElementById('reveal-content');
   var revealBtn = document.getElementById('reveal-btn');
-
-  // reuses the modal's close button as the "nextBtn": createRevealCard keeps
-  // it disabled until the card has actually been tapped open, so a row can't
-  // be marked as viewed without being seen at least once
-  var revealCard = createRevealCard(revealWrap, revealContent, revealBtn, revealModalClose);
   var currentRevealPos = -1;
+  var revealScreen = createRevealScreen(revealModalBackdrop, revealWrap, revealContent, revealBtn, function(){
+    state.revealViewed[currentRevealPos] = true;
+    renderRevealRoster();
+  });
 
   function renderRevealRoster(){
     var html = '';
@@ -608,21 +602,13 @@
     revealContent.innerHTML = html;
     revealContent.className = 'reveal-content ' + cls;
 
-    revealCard.showFor(isConspirador);
-    revealModalBackdrop.classList.remove('hidden');
+    revealScreen.open(isConspirador);
   }
 
   revealRosterEl.addEventListener('click', function(e){
     var row = e.target.closest('.roster-row');
     if (!row) return;
     openRevealModal(parseInt(row.getAttribute('data-pos'), 10));
-  });
-
-  revealModalClose.addEventListener('click', function(){
-    if (revealModalClose.disabled) return;
-    revealModalBackdrop.classList.add('hidden');
-    state.revealViewed[currentRevealPos] = true;
-    renderRevealRoster();
   });
 
   revealContinueBtn.addEventListener('click', function(){

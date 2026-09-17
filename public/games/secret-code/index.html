@@ -322,7 +322,6 @@
       <div class="setup-header">
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
-          <button type="button" class="guide-btn back-to-setup-btn" id="back-to-setup-btn" aria-label="Salir de la partida"><span class="back-icon"></span></button>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" class="guide-btn ayuda-trigger" id="guide-btn-game" aria-label="Ayuda">?</button>
@@ -512,7 +511,6 @@
   var startLineEls = [document.getElementById('cs-start-line-top'), document.getElementById('cs-start-line-bottom')];
   var boardEl = document.getElementById('cs-board');
   var keyToggleBtn = document.getElementById('key-toggle-btn');
-  var backToSetupBtn = document.getElementById('back-to-setup-btn');
   var keyWarningBackdrop = document.getElementById('key-warning-backdrop');
   var keyWarningOkBtn = document.getElementById('key-warning-ok-btn');
   var exitConfirmBackdrop = document.getElementById('exit-confirm-backdrop');
@@ -678,21 +676,7 @@
     enterSetup();
   }
 
-  // opened from a shared board link: no real match/key to lose, so skip the confirm dialog
-  backToSetupBtn.addEventListener('click', function(){
-    if (viewOnly){ exitViewOnly(); return; }
-    exitConfirmBackdrop.classList.remove('hidden');
-  });
-
-  exitCancelBtn.addEventListener('click', function(){
-    exitConfirmBackdrop.classList.add('hidden');
-  });
-
-  exitConfirmBtn.addEventListener('click', function(){
-    exitConfirmBackdrop.classList.add('hidden');
-    enterSetup();
-  });
-
+  // no back-to-setup shortcut: the game only exposes the home exit flow.
   startBtn.addEventListener('click', function(){
     if (!validateSetup()) return;
     buildBoard();
