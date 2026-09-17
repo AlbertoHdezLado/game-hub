@@ -93,6 +93,24 @@ function shuffle(arr){
   return arr;
 }
 
+function buildShuffledCategoryPool(groups){
+  var queues = groups.map(function(group){ return shuffle(group.slice()); });
+  var pool = [];
+  var hasItems = true;
+  while (hasItems){
+    hasItems = false;
+    var order = [];
+    for (var i = 0; i < queues.length; i++) order.push(i);
+    shuffle(order).forEach(function(index){
+      if (queues[index].length > 0){
+        pool.push(queues[index].pop());
+        hasItems = true;
+      }
+    });
+  }
+  return pool;
+}
+
 function buildRandomRoles(total, marked){
   var roles = [];
   for (var i = 0; i < total; i++) roles.push(i < marked);

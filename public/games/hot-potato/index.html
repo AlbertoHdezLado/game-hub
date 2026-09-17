@@ -273,11 +273,7 @@
   var startBtn = document.getElementById('start-btn');
 
   function buildDeck(){
-    var pool = [];
-    CATEGORIES.forEach(function(c){
-      pool = pool.concat(c.temas);
-    });
-    return shuffle(pool.slice());
+    return buildShuffledCategoryPool(CATEGORIES.map(function(c){ return c.temas; }));
   }
 
   function validateSetup(){

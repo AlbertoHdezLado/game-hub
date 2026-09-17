@@ -823,7 +823,8 @@
         p.palabras.forEach(function(w){ pool.push({ word: w, packageId: p.id, pkg: p }); });
       }
     });
-    var chosen = pool[Math.floor(Math.random() * pool.length)];
+    shuffle(pool);
+    var chosen = pool[0];
 
     // Related words are curated in impostor-words.json for the hint mode.
     // Related words are curated in impostor-words.json for the hint mode.

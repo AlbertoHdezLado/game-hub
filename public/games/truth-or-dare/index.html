@@ -235,7 +235,9 @@
 
   var state = {
     playerNames: [],
-    current: 0
+    current: 0,
+    promptDecks: {},
+    promptDeckKey: ''
   };
 
   var screenSetup = document.getElementById('screen-setup');
@@ -407,11 +409,17 @@
   });
 
   function pickPrompt(kind){
-    var pool = [];
-    CATEGORIES.forEach(function(c){
-      if (config.selectedCategories.indexOf(c.id) !== -1) pool = pool.concat(c[kind]);
-    });
-    return pool[Math.floor(Math.random() * pool.length)];
+    var deckKey = config.selectedCategories.slice().sort().join('|');
+    if (state.promptDeckKey !== deckKey){
+      state.promptDecks = {};
+      state.promptDeckKey = deckKey;
+    }
+    if (!state.promptDecks[kind] || state.promptDecks[kind].length === 0){
+      state.promptDecks[kind] = buildShuffledCategoryPool(CATEGORIES.filter(function(c){
+        return config.selectedCategories.indexOf(c.id) !== -1;
+      }).map(function(c){ return c[kind]; }));
+    }
+    return state.promptDecks[kind].shift();
   }
 
   function validateSetup(){

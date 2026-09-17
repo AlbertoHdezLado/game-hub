@@ -197,7 +197,6 @@
         "Escalera",
         "Cámara",
         "Toalla",
-        "Cepillo de dientes",
         "Peine",
         "Botella",
         "Sartén",
@@ -270,8 +269,7 @@
         "Percha",
         "Sillón",
         "Cafetera",
-        "Móvil",
-        "Cepillo de pelo"
+        "Móvil"
       ],
       "relacionadas": {
         "Paraguas": "Mochila",
@@ -294,8 +292,7 @@
         "Vela": "Escalera",
         "Escalera": "Cámara",
         "Cámara": "Toalla",
-        "Toalla": "Cepillo de dientes",
-        "Cepillo de dientes": "Peine",
+        "Toalla": "Peine",
         "Peine": "Botella",
         "Botella": "Sartén",
         "Sartén": "Despertador",
@@ -368,8 +365,7 @@
         "Percha": "Sillón",
         "Sillón": "Cafetera",
         "Cafetera": "Móvil",
-        "Móvil": "Cepillo de pelo",
-        "Cepillo de pelo": "Paraguas"
+        "Móvil": "Paraguas"
       }
     },
     {
@@ -675,16 +671,8 @@
         "Ferry",
         "Tractor",
         "Grúa",
-        "Bicicleta eléctrica",
-        "Coche eléctrico",
-        "Camión de bomberos",
-        "Coche de policía",
         "Lancha",
-        "Autobús escolar",
-        "Coche de carreras",
-        "Tren de mercancías",
-        "Motocicleta",
-        "Avioneta"
+        "Autobús escolar"
       ],
       "relacionadas": {
         "Avión": "Barco",
@@ -708,17 +696,9 @@
         "Bicicleta": "Ferry",
         "Ferry": "Tractor",
         "Tractor": "Grúa",
-        "Grúa": "Bicicleta eléctrica",
-        "Bicicleta eléctrica": "Coche eléctrico",
-        "Coche eléctrico": "Camión de bomberos",
-        "Camión de bomberos": "Coche de policía",
-        "Coche de policía": "Lancha",
+        "Grúa": "Lancha",
         "Lancha": "Autobús escolar",
-        "Autobús escolar": "Coche de carreras",
-        "Coche de carreras": "Tren de mercancías",
-        "Tren de mercancías": "Motocicleta",
-        "Motocicleta": "Avioneta",
-        "Avioneta": "Avión"
+        "Autobús escolar": "Avión"
       }
     },
     {

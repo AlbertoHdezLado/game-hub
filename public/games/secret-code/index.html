@@ -484,11 +484,9 @@
   });
 
   function buildWordPool(){
-    var pool = [];
-    PACKAGES.forEach(function(p){
-      if (config.selectedPackages.indexOf(p.id) !== -1) pool = pool.concat(p.palabras);
-    });
-    return pool;
+    return buildShuffledCategoryPool(PACKAGES.filter(function(p){
+      return config.selectedPackages.indexOf(p.id) !== -1;
+    }).map(function(p){ return p.palabras; }));
   }
 
   function validateSetup(){

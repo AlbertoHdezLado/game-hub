@@ -645,7 +645,7 @@
   ];
 
   function loadPackages(){
-    return fetch('/data/packages.json')
+    return fetch('/data/times-up-words.json')
       .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
       .then(function(data){ PACKAGES = data.paquetes; })
       .catch(function(){ PACKAGES = PACKAGES_FALLBACK; })
@@ -1014,11 +1014,9 @@
   });
 
   function buildWordPool(){
-    var pool = [];
-    PACKAGES.forEach(function(p){
-      if (config.selectedPackages.indexOf(p.id) !== -1) pool = pool.concat(p.palabras);
-    });
-    return pool;
+    return buildShuffledCategoryPool(PACKAGES.filter(function(p){
+      return config.selectedPackages.indexOf(p.id) !== -1;
+    }).map(function(p){ return p.palabras; }));
   }
 
   // ---------- turn duration ----------

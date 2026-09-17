@@ -235,11 +235,9 @@
   });
 
   function buildDeck(){
-    var pool = [];
-    CATEGORIES.forEach(function(c){
-      if (config.selectedCategories.indexOf(c.id) !== -1) pool = pool.concat(c.frases);
-    });
-    return shuffle(pool.slice());
+    return buildShuffledCategoryPool(CATEGORIES.filter(function(c){
+      return config.selectedCategories.indexOf(c.id) !== -1;
+    }).map(function(c){ return c.frases; }));
   }
 
   function validateSetup(){
