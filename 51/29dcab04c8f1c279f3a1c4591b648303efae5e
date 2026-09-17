@@ -1,0 +1,16 @@
+public/games/detective-club/index.html
+  h_fed6a40af368f7 157-161
+public/games/impostor/index.html
+  h_fed6a40af368f7 215-219
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5129dcab04c8f1c279f3a1c4591b648303efae5e",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
