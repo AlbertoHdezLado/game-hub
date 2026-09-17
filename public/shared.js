@@ -253,7 +253,9 @@ function initIngameHomeControls(){
     }
     home.classList.add('ingame-home-btn');
     if (help){
-      help.classList.add('hidden');
+      help.classList.add('ingame-info-btn');
+      help.setAttribute('aria-label', 'Información del juego');
+      help.innerHTML = '<span class="info-icon" aria-hidden="true"></span>';
       card.appendChild(help);
     }
     // headers can carry extra game-specific controls/status beyond home/help
