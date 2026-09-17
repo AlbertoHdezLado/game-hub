@@ -1,0 +1,35 @@
+public/games/detective-club/index.html
+  s_e96cd57926962d::t_0f85954a200491 299-305,307,571-574,605
+public/games/impostor/index.html
+  s_e96cd57926962d::t_a7f9f4c1a536cd 358-364,366,894-897,923
+public/games/secret-code/index.html
+  s_b50fcb364124d2::t_787d533c0c2df2 679
+public/shared.css
+  s_b50fcb364124d2::t_38c894241e0c86 985-1147
+public/shared.js
+  s_e96cd57926962d::t_d7749d1391be66 434-446,456,478-529
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9b60fd13eacb956dc1426cadbe5813960c48fcbb",
+  "prompts": {},
+  "sessions": {
+    "s_b50fcb364124d2": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "193da387-cccc-48a0-b4c8-7933f658f95c",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    },
+    "s_e96cd57926962d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "edef90e7-73e1-4886-aaa4-2f8556500eb2",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
