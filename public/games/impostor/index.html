@@ -26,8 +26,20 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
+    justify-content:safe center;
     gap:12px;
+  }
+  #screen-game .card,
+  #screen-debate .card{
+    justify-content:safe center;
+  }
+  #screen-game .scr-body,
+  #screen-debate #vote-section,
+  #screen-debate #vote-result{
+    flex:0 1 auto;
+  }
+  #screen-game .scr-body{
+    overflow-y:auto;
   }
   #screen-game .scr-body > .subtitle{
     width:100%;
