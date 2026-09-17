@@ -263,7 +263,7 @@ a { color: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: 24px max(16px, env(safe-area-inset-left)) 24px max(16px, env(safe-area-inset-right));
   background: rgb(0 0 0 / .95);
   animation: fadeIn .2s ease;
 }
@@ -285,7 +285,12 @@ a { color: inherit; }
 .desc-overlay {
   position: relative;
   inset: auto;
+  width: 100%;
   max-width: 380px;
+  max-height: calc(100dvh - 96px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(157 201 255 / .75) transparent;
   margin: 0;
   padding: 0;
   border: 0;
@@ -293,6 +298,15 @@ a { color: inherit; }
   color: inherit;
   text-align: center;
 }
+.desc-overlay::-webkit-scrollbar { width: 7px; }
+.desc-overlay::-webkit-scrollbar-track { background: transparent; }
+.desc-overlay::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgb(157 201 255 / .75);
+  background-clip: padding-box;
+}
+.desc-overlay::-webkit-scrollbar-thumb:hover { background: rgb(157 201 255 / .95); background-clip: padding-box; }
 .desc-overlay-icon {
   display: block;
   width: 64px;
@@ -319,6 +333,37 @@ a { color: inherit; }
   font-size: 1rem;
   line-height: 1.6;
 }
+.desc-overlay-content {
+  margin: 18px 0 0;
+  color: rgb(244 242 255 / .85);
+  font-family: var(--font-body);
+  font-size: .9rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: left;
+}
+.desc-overlay-content h2 {
+  margin: 0 0 14px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  text-align: center;
+}
+.desc-overlay-content h3 {
+  margin: 16px 0 6px;
+  color: var(--text);
+  font-size: 1rem;
+  text-align: left;
+}
+.desc-overlay-content p { margin: 0 0 10px; }
+.desc-overlay-content ul,
+.desc-overlay-content ol {
+  margin: 0 0 10px;
+  padding-left: 24px;
+}
+.desc-overlay-content ul { list-style-type: disc; }
+.desc-overlay-content li { padding-left: 4px; }
+.desc-overlay-content li::marker { color: rgb(157 201 255 / .9); font-weight: 900; }
 .hub-logo {
   width: 100%;
   max-width: 220px;

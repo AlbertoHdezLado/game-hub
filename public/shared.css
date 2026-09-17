@@ -1863,32 +1863,6 @@ button:focus-visible, input:focus-visible{
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
 }
-.ingame-info-btn{
-  position:absolute;
-  z-index:30;
-  top:max(14px, env(safe-area-inset-top));
-  left:max(16px, env(safe-area-inset-left));
-  margin:0;
-  color:var(--text);
-  background:var(--surface-2);
-  border-color:var(--surface-border);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-}
-.info-icon{
-  display:block;
-  width:20px;
-  height:20px;
-  background-color:currentColor;
-  mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="black" stroke-width="2"/><path d="M12 10.5v6M12 7.5h.01" fill="none" stroke="black" stroke-width="2.4" stroke-linecap="round"/></svg>');
-  -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="black" stroke-width="2"/><path d="M12 10.5v6M12 7.5h.01" fill="none" stroke="black" stroke-width="2.4" stroke-linecap="round"/></svg>');
-  mask-repeat:no-repeat;
-  mask-position:center;
-  mask-size:contain;
-  -webkit-mask-repeat:no-repeat;
-  -webkit-mask-position:center;
-  -webkit-mask-size:contain;
-}
 /* pinned opposite the floating home icon — carries whatever game-specific
    controls/status used to live in the now-discarded boxed .setup-header
    (Código Secreto's ver-clave/compartir, Hombres Lobo's día/noche status +
@@ -1960,7 +1934,6 @@ button:focus-visible, input:focus-visible{
 .setup-header{display:none;}
 .back-to-setup-btn,
 .ayuda-trigger{display:none !important;}
-.ingame-info-btn{display:flex !important;}
 .screen>.card{padding-top:max(14px, env(safe-area-inset-top));}
 .card-modal .card,
 .guide-modal,

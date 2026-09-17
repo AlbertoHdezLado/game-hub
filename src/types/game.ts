@@ -22,6 +22,7 @@ export interface GameDefinition {
   slug: GameSlug;
   title: string;
   description: string;
+  instructions: string[];
   icon: string;
   theme: ThemeName;
   players: string;
