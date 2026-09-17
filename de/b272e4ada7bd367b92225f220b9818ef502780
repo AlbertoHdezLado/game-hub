@@ -1,0 +1,40 @@
+public/data/charades-words.json
+  h_fed6a40af368f7 23,318,1364,1521
+public/data/impostor-words.json
+  h_fed6a40af368f7 272,295,368,675,699,701
+public/data/times-up-words.json
+  h_fed6a40af368f7 328,1508
+public/games/charades/index.html
+  h_fed6a40af368f7 1016-1018
+public/games/hot-potato/index.html
+  h_fed6a40af368f7 276
+public/games/impostor/index.html
+  h_fed6a40af368f7 826-827
+public/games/most-likely/index.html
+  h_fed6a40af368f7 211-213
+public/games/never-have-i-ever/index.html
+  h_fed6a40af368f7 238-240
+public/games/secret-code/index.html
+  h_fed6a40af368f7 487-489
+public/games/taboo/index.html
+  h_fed6a40af368f7 865-867
+public/games/times-up/index.html
+  h_fed6a40af368f7 648,1017-1019
+public/games/truth-or-dare/index.html
+  h_fed6a40af368f7 238-240,412-422
+public/games/what-would-you-do/index.html
+  h_fed6a40af368f7 218-220
+public/shared.js
+  h_fed6a40af368f7 96-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "deb272e4ada7bd367b92225f220b9818ef502780",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
