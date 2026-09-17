@@ -1,0 +1,16 @@
+public/games/impostor/index.html
+  h_fed6a40af368f7 25-43,358
+public/games/werewolf/index.html
+  h_fed6a40af368f7 156,158-163,780
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5b777aba65f90d17957b821d448e48b368697609",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
