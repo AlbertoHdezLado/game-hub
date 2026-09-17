@@ -201,11 +201,15 @@ h1{
 }
 /* extra breathing room between the game title and the setup form below it */
 #screen-setup h1{
-  margin-bottom:24px;
   color:var(--accent2);
   background:none;
   -webkit-background-clip:initial;
   background-clip:initial;
+}
+/* the title now lives inside .setup-header, not stacked above the form, so
+   it no longer needs the extra bottom margin the standalone heading had */
+#screen-setup .setup-header h1{
+  margin-bottom:0;
 }
 .subtitle{
   text-align:center;
@@ -388,12 +392,25 @@ input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
 .setup-header{
   display:flex;
   align-items:center;
-  justify-content:space-between;
   gap:10px;
   min-height:64px;
   margin:0 0 14px;
 }
 .setup-header .back-btn{margin-bottom:0;}
+/* title sits between the home/help icons: takes the remaining space, stays
+   centered, and shrinks its font (then wraps) instead of pushing the icons
+   apart or overflowing on long game names. */
+.setup-header h1{
+  flex:1 1 auto;
+  min-width:0;
+  margin:0;
+  font-size:clamp(1.05rem, 4.8vw, 2rem);
+  line-height:1.2;
+  overflow-wrap:break-word;
+}
+.setup-header .guide-btn{
+  flex:0 0 46px;
+}
 .guide-btn{
   width:46px;
   height:46px;

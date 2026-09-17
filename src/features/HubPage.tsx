@@ -66,7 +66,7 @@ function HubHeader() {
         rel="noopener noreferrer"
         className="suggestion-link"
       >
-        Enviar una sugerencia
+        💡 Enviar una sugerencia
       </a>
     </>
   );
