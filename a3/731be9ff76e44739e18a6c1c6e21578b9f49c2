@@ -1,0 +1,48 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 299
+public/games/detective-club/index.html
+  h_fed6a40af368f7 167
+public/games/hitster/index.html
+  h_fed6a40af368f7 228
+public/games/hot-potato/index.html
+  h_fed6a40af368f7 124
+public/games/impostor/index.html
+  h_fed6a40af368f7 225
+public/games/most-likely/index.html
+  h_fed6a40af368f7 55
+public/games/never-have-i-ever/index.html
+  h_fed6a40af368f7 50
+public/games/picolo/index.html
+  h_fed6a40af368f7 61
+public/games/secret-code/index.html
+  h_fed6a40af368f7 224
+public/games/taboo/index.html
+  h_fed6a40af368f7 282
+public/games/times-up/index.html
+  h_fed6a40af368f7 338
+public/games/trivia/index.html
+  h_fed6a40af368f7 364
+public/games/truth-or-dare/index.html
+  h_fed6a40af368f7 72
+public/games/werewolf/index.html
+  h_fed6a40af368f7 667
+public/games/what-would-you-do/index.html
+  h_fed6a40af368f7 54
+public/games/would-you-rather/index.html
+  h_fed6a40af368f7 61
+public/shared.css
+  h_fed6a40af368f7 209-213,400-413
+src/features/HubPage.tsx
+  h_fed6a40af368f7 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a3731be9ff76e44739e18a6c1c6e21578b9f49c2",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
