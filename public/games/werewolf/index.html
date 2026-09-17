@@ -153,7 +153,14 @@
   .roster-list{margin-bottom:20px;}
   #screen-game .scr-body{
     display:flex;
+    flex-direction:column;
     align-items:center;
+    justify-content:center;
+    gap:12px;
+  }
+  #screen-game .scr-body > .subtitle{
+    width:100%;
+    margin:0;
   }
   #reveal-roster{
     width:100%;
@@ -769,9 +776,8 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <p class="subtitle">Toca tu nombre para ver tu carta. Nadie más debe mirar.</p>
-
       <div class="scr-body">
+        <p class="subtitle">Toca tu nombre para ver tu carta. Nadie más debe mirar.</p>
         <div class="roster-list" id="reveal-roster"></div>
       </div>
 
