@@ -76,14 +76,31 @@
     margin-top:10px;
   }
   /* ---- debate / vote screen ---- */
-  .start-player-line{
+  #screen-start-player{
+    border:0;
+    background:transparent;
+    color:inherit;
+    font:inherit;
+    align-items:center;
+    justify-content:center;
     text-align:center;
-    color:var(--text-dim);
-    font-size:1.1rem;
-    font-weight:600;
-    margin:0 0 20px;
+    cursor:pointer;
+    padding:24px;
   }
-  .start-player-line strong{color:var(--text); font-size:1.2em;}
+  .start-player-label{
+    color:var(--text-dim);
+    font-size:1.15rem;
+    font-weight:600;
+    margin:0 0 12px;
+  }
+  .start-player-name{
+    color:var(--text);
+    font-family:var(--font-display);
+    font-size:clamp(2.8rem, 12vw, 6rem);
+    line-height:1;
+    overflow-wrap:anywhere;
+    margin:0 0 28px;
+  }
   .debate-title{transition:color .2s;}
   .debate-title.game-over-impostores{
     background:none;
@@ -349,9 +366,6 @@
         <div class="roster-list" id="reveal-roster"></div>
       </div>
 
-      <div class="scr-dock">
-        <button class="btn-main" id="reveal-continue-btn" disabled>Empezar debate</button>
-      </div>
     </div>
   </div>
 
@@ -365,18 +379,11 @@
     </div>
   </dialog>
 
-  <!-- STARTING PLAYER MODAL: independent from the role-reveal modal above, shown
-       once at the start of the first debate of the match -->
-  <div class="guide-modal-backdrop hidden" id="start-player-modal-backdrop">
-    <div class="guide-modal" style="text-align:center;">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-        <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
-        <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
-      </div>
-      <p class="start-player-line" id="start-player-line" style="margin:0 0 14px;"></p>
-      <p class="subtitle" style="margin:0;">Toca la pantalla para continuar</p>
-    </div>
-  </div>
+  <button type="button" class="screen hidden" id="screen-start-player" aria-label="Continuar al debate">
+    <p class="start-player-label">Empieza a hablar</p>
+    <p class="start-player-name" id="start-player-name" aria-live="polite"></p>
+    <p class="subtitle">Toca la pantalla para continuar</p>
+  </button>
 
   <!-- DEBATE / VOTE SCREEN -->
   <div class="screen hidden" id="screen-debate">
@@ -517,8 +524,9 @@
 
   var screenSetup = document.getElementById('screen-setup');
   var screenGame = document.getElementById('screen-game');
+  var screenStartPlayer = document.getElementById('screen-start-player');
   var screenDebate = document.getElementById('screen-debate');
-  var ALL_SCREENS = [screenSetup, screenGame, screenDebate];
+  var ALL_SCREENS = [screenSetup, screenGame, screenStartPlayer, screenDebate];
 
   function switchScreen(target){
     ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
@@ -533,7 +541,7 @@
   var playersChipsList = document.getElementById('impostor-players-chips');
   var playersDraftInput = document.getElementById('impostor-players-draft');
   var playersAddBtn = document.getElementById('impostor-players-add');
-  forceUppercaseInput(playersDraftInput);
+  forceTitleCaseInput(playersDraftInput);
   var impostorCountInfo = document.getElementById('impostor-count-info');
   var setupError = document.getElementById('impostor-setup-error');
   var playersErrorEl = document.getElementById('impostor-players-error');
@@ -885,7 +893,6 @@
 
   // ---------- role reveal roster: tap your own name to show your card ----------
   var revealRosterEl = document.getElementById('reveal-roster');
-  var revealContinueBtn = document.getElementById('reveal-continue-btn');
   var revealModalBackdrop = document.getElementById('reveal-modal-backdrop');
   var revealWrap = document.getElementById('reveal-wrap');
   var revealContent = document.getElementById('reveal-content');
@@ -905,7 +912,9 @@
       '</button>';
     }
     revealRosterEl.innerHTML = html;
-    revealContinueBtn.disabled = state.viewed.some(function(v){ return !v; });
+    if (state.viewed.length > 0 && state.viewed.every(function(v){ return v; })){
+      showStartingPlayerScreen();
+    }
   }
 
   function openRevealModal(idx){
@@ -929,12 +938,6 @@
     openRevealModal(parseInt(row.getAttribute('data-index'), 10));
   });
 
-  revealContinueBtn.addEventListener('click', function(){
-    if (revealContinueBtn.disabled) return;
-    switchScreen(screenDebate);
-    startDebatePhase();
-  });
-
   function aliveIndexes(){
     var arr = [];
     for (var i = 0; i < state.players; i++) if (state.alive[i]) arr.push(i);
@@ -942,11 +945,7 @@
   }
 
   // ---------- debate + vote ----------
-  var startPlayerLineEl = document.getElementById('start-player-line');
-  var startPlayerModalBackdrop = document.getElementById('start-player-modal-backdrop');
-  startPlayerModalBackdrop.addEventListener('click', function(){
-    startPlayerModalBackdrop.classList.add('hidden');
-  });
+  var startPlayerNameEl = document.getElementById('start-player-name');
   var debateTimerWrap = document.getElementById('debate-timer-wrap');
   var debateTimerMm = document.getElementById('debate-timer-mm');
   var debateTimerSs = document.getElementById('debate-timer-ss');
@@ -1037,9 +1036,21 @@
   function pickStartingPlayer(){
     var alive = aliveIndexes();
     var starter = alive[Math.floor(Math.random() * alive.length)];
-    startPlayerLineEl.innerHTML = 'Empieza a hablar: <strong>' + escapeHtml(state.playerNames[starter]) + '</strong>';
-    startPlayerModalBackdrop.classList.remove('hidden');
+    startPlayerNameEl.textContent = state.playerNames[starter];
   }
+
+  function showStartingPlayerScreen(){
+    pickStartingPlayer();
+    isFirstDebate = false;
+    switchScreen(screenStartPlayer);
+  }
+
+  function continueToDebate(){
+    switchScreen(screenDebate);
+    startDebatePhase();
+  }
+
+  screenStartPlayer.addEventListener('click', continueToDebate);
 
   function startDebatePhase(){
     unlockAlarmAudio();

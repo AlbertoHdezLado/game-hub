@@ -1184,7 +1184,7 @@
   var playersChipsList = document.getElementById('players-chips');
   var playersDraftInput = document.getElementById('players-draft');
   var playersAddBtn = document.getElementById('players-add');
-  forceUppercaseInput(playersDraftInput);
+  forceTitleCaseInput(playersDraftInput);
 
   // players are only added once a non-empty name is committed from the draft input;
   // config.rows never carries an empty slot, so effectivePlayerCount is just rows.length.
