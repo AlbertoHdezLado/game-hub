@@ -1,0 +1,18 @@
+public/games/impostor/index.html
+  h_fed6a40af368f7 44-46,120,135-146,431
+public/shared.css
+  h_fed6a40af368f7 1851-1863,1868,1876,1884,1946
+public/shared.js
+  h_fed6a40af368f7 256-257
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1cda01cc4367e5d3b94ef6812fc408d978f7701d",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
