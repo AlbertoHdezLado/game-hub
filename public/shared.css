@@ -1440,12 +1440,37 @@ button:focus-visible, input:focus-visible{
 }
 
 /* ---- setup shell: a calmer, denser control surface shared by every game ---- */
+/* setup screens used to read top/bottom-heavy: header pinned at the very
+   top, start button pinned at the very bottom, big empty gap between them
+   on short forms. Center the whole group (header + form + start button) as
+   one block instead — nothing stays fixed. `overflow-y:auto` + the "safe"
+   keyword keep it scrollable from the top (instead of clipped/unreachable)
+   on the rare setup long enough to not fit the screen. */
 #screen-setup .card{
   position:relative;
-  overflow:hidden;
+  overflow-x:hidden;
+  overflow-y:auto;
+  justify-content:center;
+  justify-content:safe center;
 }
 #screen-setup .setup-header{
+  display:flex;
+  flex:0 0 auto;
   margin-bottom:8px;
+}
+/* the global rules further down hide the boxed header/help trigger in favor
+   of the floating in-game home button (see initIngameHomeControls) — setup
+   screens opt out of that floating control and keep the real header instead,
+   so bring it back here. */
+#screen-setup .ayuda-trigger{
+  display:flex !important;
+}
+#screen-setup .scr-body{
+  flex:0 1 auto;
+  overflow:visible;
+}
+#screen-setup .scr-dock{
+  flex:0 0 auto;
 }
 #screen-setup .subtitle{
   max-width:34ch;

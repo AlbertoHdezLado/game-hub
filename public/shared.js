@@ -232,9 +232,12 @@ function createDots(container){
 
 /* In-game screens use one unobtrusive home control instead of an app bar.
    Reuse each screen's existing link before removing the header so every game
-   gets the same placement without duplicating markup across all mode files. */
+   gets the same placement without duplicating markup across all mode files.
+   #screen-setup keeps its boxed .setup-header untouched — it's part of the
+   vertically-centered setup group (see #screen-setup .card in shared.css),
+   not a floating control pinned over gameplay content. */
 function initIngameHomeControls(){
-  var screens = document.querySelectorAll('.screen');
+  var screens = document.querySelectorAll('.screen:not(#screen-setup)');
   Array.prototype.forEach.call(screens, function(screen){
     var card = screen.querySelector(':scope > .card');
     if (!card) return;
