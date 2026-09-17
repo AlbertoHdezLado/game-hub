@@ -1,0 +1,25 @@
+public/games/hot-potato/index.html
+  s_f8ea6bc6c31712::t_1b9d78c87a6d02 134,141
+public/games/most-likely/index.html
+  s_f8ea6bc6c31712::t_418a56a3cd9cec 63
+public/games/never-have-i-ever/index.html
+  s_f8ea6bc6c31712::t_ece5a2234af3b5 58
+public/games/what-would-you-do/index.html
+  s_f8ea6bc6c31712::t_27a47b681cda2f 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "552b5d04d0332865fccb2fc6e249c8877661cc5f",
+  "prompts": {},
+  "sessions": {
+    "s_f8ea6bc6c31712": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "3f3d5e5a-08ad-4b99-969f-c1cfc7c9015d",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
