@@ -19,6 +19,13 @@ const werewolfTeamLabels: Record<string, string> = {
   solitario: 'Solitario',
 };
 
+const orderedGuideSections = new Set([
+  'usar la app',
+  'cómo jugar',
+  'cómo jugar la ronda',
+  'cómo se juega una ronda',
+]);
+
 export function InfoDialog({ game, onClose }: Readonly<InfoDialogProps>) {
   const [guideHtml, setGuideHtml] = useState<string | null>(null);
 
@@ -27,6 +34,7 @@ export function InfoDialog({ game, onClose }: Readonly<InfoDialogProps>) {
 
     let cancelled = false;
     setGuideHtml(null);
+
     fetch(`/games/${game.slug}/`)
       .then((response) => {
         if (!response.ok) throw new Error('No se pudo cargar la guía');
@@ -34,9 +42,34 @@ export function InfoDialog({ game, onClose }: Readonly<InfoDialogProps>) {
       })
       .then((html) => {
         if (cancelled) return;
-        const document = new DOMParser().parseFromString(html, 'text/html');
-        const guide = document.querySelector('#guide-modal-backdrop .guide-modal');
+
+        const guideDocument = new DOMParser().parseFromString(html, 'text/html');
+        const guide = guideDocument.querySelector('#guide-modal-backdrop .guide-modal');
         guide?.querySelector('.guide-modal-close')?.remove();
+
+        guide?.querySelectorAll('li').forEach((item) => {
+          if (item.textContent?.trim().toLocaleLowerCase().startsWith('no hace falta')) {
+            item.remove();
+          }
+        });
+
+        guide?.querySelectorAll('ul, ol').forEach((list) => {
+          if (!list.children.length) list.remove();
+        });
+
+        guide?.querySelectorAll('h3').forEach((heading) => {
+          const sectionTitle = heading.textContent?.trim().toLocaleLowerCase() ?? '';
+          const list = heading.nextElementSibling;
+          if (list?.tagName !== 'UL' && list?.tagName !== 'OL') return;
+
+          const shouldBeOrdered = orderedGuideSections.has(sectionTitle);
+          if (shouldBeOrdered && list.tagName === 'OL') return;
+          if (!shouldBeOrdered && list.tagName === 'UL') return;
+
+          const normalizedList = guideDocument.createElement(shouldBeOrdered ? 'ol' : 'ul');
+          normalizedList.replaceChildren(...Array.from(list.childNodes));
+          list.replaceWith(normalizedList);
+        });
 
         if (game.slug === 'werewolf') {
           fetch('/data/werewolf-roles.json')
@@ -49,32 +82,36 @@ export function InfoDialog({ game, onClose }: Readonly<InfoDialogProps>) {
               const catalog = guide?.querySelector('#guide-roles-catalog');
               if (catalog && data.roles) {
                 catalog.replaceChildren(...data.roles.map((role) => {
-                  const row = document.createElement('div');
+                  const row = guideDocument.createElement('details');
                   row.className = 'role-row';
 
-                  const image = document.createElement('img');
+                  const summary = guideDocument.createElement('summary');
+                  summary.className = 'role-summary';
+
+                  const image = guideDocument.createElement('img');
                   image.className = 'role-thumb';
                   image.src = `/${role.imagen}`;
                   image.alt = '';
                   image.loading = 'lazy';
 
-                  const info = document.createElement('div');
+                  const info = guideDocument.createElement('div');
                   info.className = 'role-info';
 
-                  const name = document.createElement('div');
+                  const name = guideDocument.createElement('div');
                   name.className = 'role-name';
                   name.textContent = role.nombre;
 
-                  const team = document.createElement('div');
+                  const team = guideDocument.createElement('div');
                   team.className = 'role-team-tag';
                   team.textContent = werewolfTeamLabels[role.equipo] ?? role.equipo;
 
-                  const description = document.createElement('div');
+                  const description = guideDocument.createElement('div');
                   description.className = 'guide-role-desc';
                   description.textContent = role.descripcion;
 
-                  info.append(name, team, description);
-                  row.append(image, info);
+                  info.append(name, team);
+                  summary.append(image, info);
+                  row.append(summary, description);
                   return row;
                 }));
               }

@@ -362,8 +362,67 @@ a { color: inherit; }
   padding-left: 24px;
 }
 .desc-overlay-content ul { list-style-type: disc; }
+.desc-overlay-content ol { list-style-type: decimal; }
 .desc-overlay-content li { padding-left: 4px; }
 .desc-overlay-content li::marker { color: rgb(157 201 255 / .9); font-weight: 900; }
+.desc-overlay-content .guide-roles-catalog {
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background: rgb(255 255 255 / .04);
+  padding: 0 12px;
+}
+.desc-overlay-content .role-row {
+  display: block;
+  border-top: 1px solid var(--glass-border);
+}
+.desc-overlay-content .role-row:first-child { border-top: none; }
+.desc-overlay-content .role-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  width: 100%;
+  padding: 8px 0;
+  cursor: pointer;
+  list-style: none;
+}
+.desc-overlay-content .role-summary::-webkit-details-marker { display: none; }
+.desc-overlay-content .role-summary::after {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+  border-right: 2px solid var(--text-dim);
+  border-bottom: 2px solid var(--text-dim);
+  content: '';
+  transform: rotate(-45deg);
+}
+.desc-overlay-content .role-row[open] .role-summary::after { transform: rotate(45deg); }
+.desc-overlay-content .role-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  object-fit: cover;
+  background: rgb(0 0 0 / .3);
+}
+.desc-overlay-content .role-info {
+  flex: 1;
+  min-width: 0;
+}
+.desc-overlay-content .role-name {
+  color: var(--text);
+  font-size: .9rem;
+  font-weight: 700;
+}
+.desc-overlay-content .guide-role-desc {
+  width: 100%;
+  margin: 0 0 10px;
+  color: rgb(244 242 255 / .85);
+  font-size: .82rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
 .hub-logo {
   width: 100%;
   max-width: 220px;
