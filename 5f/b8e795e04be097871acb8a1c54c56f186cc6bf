@@ -1,0 +1,35 @@
+public/games/charades/index.html
+  s_48ddda4154fe5d::t_12af32aece4e3e 753
+public/games/detective-club/index.html
+  s_48ddda4154fe5d::t_7c1bb459d717a8 462
+public/games/hitster/index.html
+  s_48ddda4154fe5d::t_48de7343c85c44 462
+public/games/impostor/index.html
+  s_48ddda4154fe5d::t_e0f11ee5670ca3 79-85,87-90,92,94-102,382-386,527,529,544,915-917,948,1039,1042-1054
+public/games/picolo/index.html
+  s_48ddda4154fe5d::t_091e150d31fdeb 211
+public/games/taboo/index.html
+  s_48ddda4154fe5d::t_2665a18c8f4755 570
+public/games/times-up/index.html
+  s_48ddda4154fe5d::t_8aee412d5003b9 704
+public/games/truth-or-dare/index.html
+  s_48ddda4154fe5d::t_99636a3880f275 257
+public/games/werewolf/index.html
+  s_48ddda4154fe5d::t_cba978f5b79a97 1187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5fb8e795e04be097871acb8a1c54c56f186cc6bf",
+  "prompts": {},
+  "sessions": {
+    "s_48ddda4154fe5d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "7f64e0c7-8254-4976-b0cc-d70e9df76fff",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
