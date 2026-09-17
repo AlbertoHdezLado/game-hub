@@ -1851,7 +1851,8 @@ button:focus-visible, input:focus-visible{
   position:absolute;
   z-index:30;
   top:max(14px, env(safe-area-inset-top));
-  right:max(16px, env(safe-area-inset-right));
+  left:max(16px, env(safe-area-inset-left));
+  right:auto;
   margin:0;
   color:var(--text);
   background:var(--surface-2);
@@ -1859,7 +1860,20 @@ button:focus-visible, input:focus-visible{
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
 }
-/* pinned opposite the floating home icon — carries whatever game-specific
+.ingame-help-btn{
+  position:absolute;
+  z-index:30;
+  top:max(14px, env(safe-area-inset-top));
+  right:max(16px, env(safe-area-inset-right));
+  display:flex !important;
+  margin:0;
+  color:var(--text);
+  background:var(--surface-2);
+  border-color:var(--surface-border);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+/* pinned just to the right of the floating home icon — carries whatever game-specific
    controls/status used to live in the now-discarded boxed .setup-header
    (Código Secreto's ver-clave/compartir, Hombres Lobo's día/noche status +
    "Personajes"), see shared.js initIngameHomeControls */
@@ -1867,7 +1881,7 @@ button:focus-visible, input:focus-visible{
   position:absolute;
   z-index:30;
   top:max(14px, env(safe-area-inset-top));
-  left:max(16px, env(safe-area-inset-left));
+  left:calc(max(16px, env(safe-area-inset-left)) + 54px + 10px);
   display:flex;
   align-items:center;
   gap:8px;
@@ -1929,7 +1943,7 @@ button:focus-visible, input:focus-visible{
 /* Shared light-mode surfaces and the compact mobile rhythm. */
 .setup-header{display:none;}
 .back-to-setup-btn,
-.ayuda-trigger{display:none !important;}
+.ayuda-trigger:not(.ingame-help-btn){display:none !important;}
 .screen>.card{padding-top:max(14px, env(safe-area-inset-top));}
 .card-modal .card,
 .guide-modal,

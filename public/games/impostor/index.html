@@ -41,6 +41,9 @@
   #screen-game .scr-body{
     overflow-y:auto;
   }
+  #vote-result .scr-body{
+    overflow-x:hidden;
+  }
   #screen-game .scr-body > .subtitle{
     width:100%;
     margin:0;
@@ -114,6 +117,7 @@
     margin:0 0 28px;
   }
   .debate-title{transition:color .2s;}
+  #debate-title{display:none;}
   .debate-title.game-over-impostores{
     background:none;
     -webkit-background-clip:unset;
@@ -127,6 +131,18 @@
     background-clip:unset;
     -webkit-text-fill-color:currentColor;
     color:var(--safe);
+  }
+  #victory-modal-backdrop{
+    background:transparent;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    padding:16px;
+    z-index:100;
+  }
+  #victory-modal-backdrop .guide-modal{
+    background:var(--surface);
+    box-shadow:0 10px 28px rgba(0,0,0,0.12);
+    border-color:var(--glass-border);
   }
   .debate-timer{
     display:flex;
@@ -412,7 +428,7 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <h1 class="debate-title" style="font-size:1.6rem;" id="debate-title">A DEBATIR</h1>
+      <h1 class="debate-title" style="font-size:1.6rem;" id="debate-title"></h1>
 
       <div id="debate-timer-wrap" class="hidden">
         <div class="debate-timer" id="debate-timer">
