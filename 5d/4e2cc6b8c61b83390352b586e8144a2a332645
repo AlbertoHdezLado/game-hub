@@ -1,0 +1,22 @@
+public/shared.js
+  h_fed6a40af368f7 256
+src/components/InfoDialog.tsx
+  h_fed6a40af368f7 1,10-35,45-47
+src/data/games.ts
+  h_fed6a40af368f7 4-19
+src/styles/index.css
+  h_fed6a40af368f7 266,288,290-293,301-309,336-366
+src/types/game.ts
+  h_fed6a40af368f7 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5d4e2cc6b8c61b83390352b586e8144a2a332645",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
