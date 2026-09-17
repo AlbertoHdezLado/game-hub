@@ -1,0 +1,16 @@
+src/components/InfoDialog.tsx
+  h_fed6a40af368f7 22-28,37,45-47,50-73,85,88-91,97,100,104,108,112-114
+src/styles/index.css
+  h_fed6a40af368f7 365,368-425
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "be5ffdf8c17b19c38e9f1dc6d03a3f7bd934a7ce",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
