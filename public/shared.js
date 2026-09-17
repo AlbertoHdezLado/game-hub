@@ -253,6 +253,34 @@ function initIngameHomeControls(){
       help.classList.add('hidden');
       card.appendChild(help);
     }
+    // headers can carry extra game-specific controls/status beyond home/help
+    // (Código Secreto's "ver clave"/compartir tablero, Hombres Lobo's
+    // día/noche status + "Personajes" button) — the boxed header itself is
+    // always discarded below, so pull anything else worth keeping into a
+    // small pinned row instead of silently losing it.
+    if (header){
+      var leftover = [];
+      Array.prototype.forEach.call(header.querySelectorAll('button, a'), function(el){
+        if (el === home || el === help) return;
+        // only elements with an id are ever wired up by a game's own script
+        // (every real control here — tab-deaths-btn, key-toggle-btn,
+        // share-board-btn, back-to-setup-btn... — is looked up by id); the
+        // other games' unused/idless back-to-setup-btn markup stays discarded
+        if (!el.id) return;
+        leftover.push(el);
+      });
+      Array.prototype.forEach.call(header.querySelectorAll('span'), function(el){
+        if (el.children.length) return; // icon glyphs / wrapper spans
+        if (el.closest('button, a')) return; // travels with its own control above
+        leftover.push(el);
+      });
+      if (leftover.length){
+        var extras = document.createElement('div');
+        extras.className = 'ingame-extra-controls';
+        leftover.forEach(function(el){ extras.appendChild(el); });
+        card.appendChild(extras);
+      }
+    }
     card.appendChild(home);
     if (header) header.remove();
   });

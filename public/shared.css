@@ -1657,6 +1657,43 @@ button:focus-visible, input:focus-visible{
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
 }
+/* pinned opposite the floating home icon — carries whatever game-specific
+   controls/status used to live in the now-discarded boxed .setup-header
+   (Código Secreto's ver-clave/compartir, Hombres Lobo's día/noche status +
+   "Personajes"), see shared.js initIngameHomeControls */
+.ingame-extra-controls{
+  position:absolute;
+  z-index:30;
+  top:max(14px, env(safe-area-inset-top));
+  left:max(16px, env(safe-area-inset-left));
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.ingame-extra-controls .guide-btn{
+  background:var(--surface-2);
+  border-color:var(--surface-border);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+/* .back-to-setup-btn is globally display:none !important (unused legacy
+   markup in most games) — Código Secreto's copy is the one exception that's
+   actually wired up (its own "exit match" flow), so once it's relocated
+   here it needs to be shown again. */
+.ingame-extra-controls .back-to-setup-btn{
+  display:flex !important;
+}
+.ingame-extra-controls .back-btn{
+  margin:0;
+  padding:8px 14px;
+  border-radius:999px;
+  background:var(--surface-2);
+  border:1px solid var(--surface-border);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  font-size:0.85rem;
+  cursor:default;
+}
 
 .guide-modal-help{
   position:absolute;
