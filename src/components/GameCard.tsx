@@ -15,7 +15,7 @@ export function GameCard({ game, onInfo }: Readonly<GameCardProps>) {
   return (
     <div className={`card mode-card theme-${game.theme}${game.disabled ? ' disabled' : ''}`}>
       <button type="button" className="mode-info-btn" aria-label="Descripción" onClick={() => onInfo(game)}>
-        ⓘ
+        <span className="info-icon" aria-hidden="true" />
       </button>
 
       {game.disabled ? (
