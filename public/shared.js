@@ -665,11 +665,15 @@ function createCardStack(rootEl, options){
         outgoingInner.classList.add('flip-card-inner-no-transition');
         outgoingInner.classList.remove('is-flipped');
         void outgoingInner.offsetWidth;
-        outgoingInner.classList.remove('flip-card-inner-no-transition');
       }
       slots.shift();
       slots.push(outgoing); // snaps straight to the back of the stack, no transition
       reveal(word, remaining);
+      if (outgoingInner){
+        window.requestAnimationFrame(function(){
+          outgoingInner.classList.remove('flip-card-inner-no-transition');
+        });
+      }
       timer = null;
     }, 220);
     return true;

@@ -219,6 +219,19 @@
     justify-content:center;
     word-break:break-word;
   }
+  .turn-player-label{
+    margin-bottom:2px;
+    color:var(--text-dim);
+    font-size:1rem;
+    font-weight:700;
+    text-align:center;
+  }
+  .flip-card-front-face{background-color:#fff;}
+  .flip-card-back-design{
+    background-color:var(--reveal-b);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M-7 7 L7 -7 M0 28 L28 0 M21 35 L35 21' stroke='white' stroke-width='3' opacity='.42'/%3E%3C/svg%3E");
+    background-repeat:repeat;
+  }
   #turn-end-icon{filter:grayscale(1);}
 
   /* each turn phase fills the remaining card height: its own content grows
@@ -233,6 +246,14 @@
     display:flex;
     flex-direction:column;
     justify-content:center;
+  }
+  #turn-intro .scr-body,
+  #turn-end .scr-body{
+    width:100%;
+    box-sizing:border-box;
+  }
+  #turn-intro .pass-hint{
+    max-width:100%;
   }
 
   .team-score-row{
@@ -254,68 +275,130 @@
   .team-score-value{font-family:var(--font-display); font-weight:800; font-size:1.1rem;}
 
   .tu-word-pill-wrap{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(82px, 1fr));
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
     gap:6px;
     width:100%;
     margin:8px 0 12px;
+    align-self:stretch;
   }
   .tu-word-pill{
-    display:block;
-    min-width:0;
-    width:100%;
-    padding:6px 10px;
+    flex:0 1 auto;
+    width:auto;
+    max-width:100%;
+    padding:6px 12px;
     border-radius:999px;
     color:#fff;
     font-size:0.76rem;
     font-weight:700;
     line-height:1.15;
     text-align:center;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    white-space:normal;
+    overflow-wrap:break-word;
+    word-break:normal;
   }
-  .tu-word-pill.turn-missed{background:var(--danger); opacity:.72; text-decoration:line-through;}
+  .tu-word-pill.turn-missed{
+    background:#5b6169 !important;
+    color:#fff !important;
+    opacity:1;
+    text-decoration:line-through;
+    text-decoration-thickness:1.5px;
+  }
   button.tu-word-pill{border:0; cursor:pointer; font:inherit;}
   #turn-end .scr-body{
     display:grid;
-    grid-template-columns:auto minmax(0, auto);
+    grid-template-columns:minmax(0, 1fr);
     grid-template-areas:
-      "icon title"
-      "words words"
-      "scores scores";
-    justify-content:center;
+      "title"
+      "words";
     align-content:start;
-    column-gap:10px;
+    justify-content:stretch;
+    column-gap:8px;
+    width:100%;
+    max-width:none;
+    box-sizing:border-box;
+    padding:0 clamp(12px, 4vw, 28px);
+    overflow-y:auto;
+    padding-bottom:18px;
+    padding-top:31vh;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  #turn-end .scr-body::-webkit-scrollbar{
+    display:none;
+  }
+  #turn-end .scr-body::before{
+    content:'Resumen del turno';
+    position:fixed;
+    top:calc(env(safe-area-inset-top) + clamp(4rem, 14vh, 6rem));
+    left:0;
+    z-index:20;
+    display:block;
+    width:100vw;
+    box-sizing:border-box;
+    margin:0;
+    padding:1vh 0 1.5vh;
+    color:var(--accent);
+    background:transparent;
+    font-family:var(--font-display);
+    font-size:clamp(1rem, 4.5vw, 1.35rem);
+    font-weight:900;
+    letter-spacing:0.02em;
+    text-align:center;
+    pointer-events:none;
   }
   #turn-end .end-icon{
-    grid-area:icon;
-    align-self:center;
-    margin-bottom:0;
-    font-size:2.4rem;
+    display:none;
   }
-  #turn-end h1{
-    grid-area:title;
-    align-self:center;
-    margin-bottom:2px;
-    text-align:left;
+  #turn-end .tu-word-pill-wrap{
+    grid-area:words;
+    justify-content:center;
+    margin-top:6vh;
   }
-  #turn-end .tu-word-pill-wrap{grid-area:words;}
   #turn-end-scoreboard{
-    grid-area:scores;
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:6px;
-    width:100%;
+    position:fixed;
+    top:calc(env(safe-area-inset-top) + clamp(1rem, 3vh, 2rem));
+    left:50%;
+    z-index:21;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:1vw;
+    width:max-content;
+    max-width:calc(100% - 6vw);
+    margin:0;
   }
   #turn-end-scoreboard .team-score-row{
+    flex:0 1 auto;
+    width:auto;
+    min-width:22vw;
+    max-width:38vw;
     margin-bottom:0;
-    padding:8px 10px;
-    gap:8px;
+    padding:1vh 2vw;
+    gap:1vw;
+    border:0;
+    border-radius:999px;
+    color:#fff;
+    box-shadow:none;
   }
+  #turn-end-scoreboard .team-score-row.team-color-0{background:#5b8fe0;}
+  #turn-end-scoreboard .team-score-row.team-color-1{background:#c9525c;}
+  #turn-end-scoreboard .team-score-row .mini-score-pill{display:none;}
   #turn-end-scoreboard .team-score-name{
     min-width:0;
+    gap:0;
+    color:inherit;
+    white-space:nowrap;
   }
+  #turn-end-scoreboard .team-score-value{
+    color:inherit;
+    font-size:0.95rem;
+  }
+  .party-stage #turn-end .scr-dock{padding-top:2px;}
   .phase-rule-box{
     text-align:center;
     font-size:0.92rem;
@@ -326,8 +409,9 @@
   @media (max-height:640px){
     #turn-end .end-icon{font-size:1.9rem;}
     #turn-end h1{font-size:1.2rem !important;}
-    .tu-word-pill-wrap{grid-template-columns:repeat(auto-fit, minmax(72px, 1fr)); gap:5px; margin:6px 0 10px;}
-    .tu-word-pill{padding:5px 8px; font-size:0.7rem;}
+    #turn-end .scr-body{align-content:start; padding-top:31vh; padding-bottom:4vh;}
+    .tu-word-pill-wrap{gap:5px; margin:4px 0 8px;}
+    .tu-word-pill{padding:4px 6px; font-size:0.68rem;}
     #turn-end-scoreboard .team-score-row{padding:7px 8px;}
     #turn-end-scoreboard .team-score-value{font-size:1rem;}
   }
@@ -491,6 +575,7 @@
       <div id="turn-intro">
         <div class="scr-body">
           <div class="team-turn-badge" id="turn-team-badge">ROJO</div>
+          <div class="turn-player-label">Turno de</div>
           <div class="player-name" id="turn-player-name">Nombre</div>
           <p class="pass-hint">Pasa el dispositivo a esta persona.</p>
         </div>
@@ -539,7 +624,6 @@
       <div id="turn-end" class="hidden">
         <div class="scr-body">
           <div class="end-icon" id="turn-end-icon"></div>
-          <h1 style="font-size:1.4rem;">¡Tiempo!</h1>
           <div class="tu-word-pill-wrap" id="turn-end-words"></div>
           <div id="turn-end-scoreboard"></div>
         </div>
@@ -1118,7 +1202,7 @@
     container.innerHTML = state.teams.map(function(team, t){
       var isTop = highlightWinner && team.score === maxScore;
       var pillLabel = showRank ? (scoresDesc.indexOf(team.score) + 1) + 'º' : (t + 1);
-      return '<div class="team-score-row' + (isTop ? ' winner' : '') + '">' +
+      return '<div class="team-score-row team-color-' + t + (isTop ? ' winner' : '') + '">' +
         '<span class="team-score-name"><span class="mini-score-pill team-color-' + t + '">' + pillLabel + '</span>' + escapeHtml(TEAM_NAMES[t]) + '</span>' +
         '<span class="team-score-value">' + team.score + '</span>' +
       '</div>';
@@ -1194,7 +1278,7 @@
     state.turnResults = [];
     state.timeRemaining = carriedTurn ? carriedTurn.timeRemaining : config.turnSeconds;
 
-    phaseStatusEl.textContent = PHASES[state.phase].title + ' / 3 · ' + PHASES[state.phase].subtitle;
+    phaseStatusEl.textContent = 'RONDA ' + (state.phase + 1) + ': ' + PHASES[state.phase].subtitle;
     renderCardsRemaining();
     turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
     turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
@@ -1209,7 +1293,7 @@
 
   // ---- countdown + alarm (same pattern as Impostor/Hombres Lobo/Mímica) ----
   function updateTimerDisplay(totalSeconds){
-    tuTimerEl.textContent = formatMMSS(totalSeconds);
+    tuTimerEl.textContent = totalSeconds;
     var progress = config.turnSeconds > 0 ? clamp(totalSeconds / config.turnSeconds, 0, 1) : 0;
     tuTimerWrapEl.style.setProperty('--progress', progress);
   }
