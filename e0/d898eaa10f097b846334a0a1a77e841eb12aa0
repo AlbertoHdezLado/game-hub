@@ -1,0 +1,20 @@
+public/games/secret-code/index.html
+  h_fed6a40af368f7 32,35-45,96-98,101,103-111,118,123,132-134,152,176,178-187,189,191-200,202-248,343,368-371,375-376,383,387,393-396,398-400,574,587-588,590-602,604-606,611-617,620-631,634-644,654-665,668-680,701-703,715,737,773-774,777-779,782,805-816
+public/games/werewolf/index.html
+  h_fed6a40af368f7 1007,1104,1903-1904
+public/shared.css
+  h_fed6a40af368f7 1794-1796,1800,1808-1817
+public/shared.js
+  h_fed6a40af368f7 136,290-292,294,329,359-378
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e0d898eaa10f097b846334a0a1a77e841eb12aa0",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
