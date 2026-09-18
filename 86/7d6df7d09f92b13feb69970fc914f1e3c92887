@@ -1,0 +1,18 @@
+public/games/werewolf/index.html
+  h_fed6a40af368f7 99,104
+public/shared.css
+  h_fed6a40af368f7 1021-1022,1030-1032,1036,1056-1061,1064
+public/shared.js
+  h_fed6a40af368f7 487
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "867d6df7d09f92b13feb69970fc914f1e3c92887",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
