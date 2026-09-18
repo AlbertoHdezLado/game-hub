@@ -484,7 +484,7 @@ function RevealComponent(options){
   this.trigger = options.trigger;
   this.caption = options.caption || null;
   this.closeHandler = typeof options.onClose === 'function' ? options.onClose : function(){};
-  this.revealDuration = options.revealDuration || 1600;
+  this.revealDuration = options.revealDuration || 450;
   var revealTimer = null;
   var isRevealed = false;
   var component = this;

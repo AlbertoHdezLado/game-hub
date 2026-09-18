@@ -1018,8 +1018,8 @@ input:focus-visible{
   margin:0;
   padding:22px;
   overflow:hidden;
-  background:var(--surface);
-  border-color:var(--surface-border);
+  background:color-mix(in srgb, var(--text) 88%, var(--accent) 12%);
+  border-color:color-mix(in srgb, var(--accent2) 45%, var(--text) 55%);
   box-shadow:0 6px 0 var(--shadow);
 }
 .reveal-screen .reveal-content{
@@ -1027,28 +1027,18 @@ input:focus-visible{
   width:auto;
   max-width:100%;
   padding:6px;
-  opacity:.001;
-  transform:scale(.97);
-  filter:blur(3px);
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0%, transparent 40%, #000 60%, #000 100%);
-  mask-image:linear-gradient(to bottom, transparent 0%, transparent 40%, #000 60%, #000 100%);
-  -webkit-mask-size:100% 300%;
-  mask-size:100% 300%;
-  -webkit-mask-repeat:no-repeat;
-  mask-repeat:no-repeat;
-  -webkit-mask-position:0 0;
-  mask-position:0 0;
+  opacity:0;
+  transform:scale(1);
+  filter:blur(14px) brightness(.45);
   transition:none;
 }
 .reveal-screen.revealing .reveal-content{
-  animation:magicReveal 1.6s cubic-bezier(.22,.6,.2,1) forwards;
+  animation:focusReveal .45s ease-out forwards;
 }
 .reveal-screen.revealed .reveal-content{
   opacity:1;
   transform:scale(1);
   filter:none;
-  -webkit-mask-image:none;
-  mask-image:none;
 }
 .reveal-screen.revealing .reveal-btn,
 .reveal-screen.revealed .reveal-btn{
@@ -1063,81 +1053,15 @@ input:focus-visible{
   transition:opacity .5s ease, transform .5s ease;
 }
 .reveal-screen.revealing .alarm-pending{animation:alarmPulse 1s ease-in-out infinite;}
-@keyframes magicReveal{
-  0%{opacity:.001; transform:scale(.97); filter:blur(3px); -webkit-mask-position:0 0; mask-position:0 0;}
-  8%{opacity:.9; filter:blur(1px);}
-  20%{opacity:1; filter:blur(0);}
-  100%{opacity:1; transform:scale(1); filter:blur(0); -webkit-mask-position:0 -200%; mask-position:0 -200%;}
-}
-/* glow pulse around the card + a bright sweep band riding the mask's edge
-   down the card + a drift of dust motes caught in its light, all one-shot
-   and layered via the stage's own pseudo-elements so no extra markup is
-   needed per game */
-.reveal-screen.revealing .reveal-stage,
-.reveal-screen.revealed .reveal-stage{
-  animation:magicStageGlow 1.6s ease-out;
-}
-@keyframes magicStageGlow{
-  0%{box-shadow:0 6px 0 var(--shadow), 0 0 0 rgba(180,140,255,0);}
-  45%{box-shadow:0 6px 0 var(--shadow), 0 0 36px 10px var(--reveal-b, var(--accent2));}
-  100%{box-shadow:0 6px 0 var(--shadow), 0 0 0 rgba(180,140,255,0);}
-}
-.reveal-screen .reveal-stage::before{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  height:38%;
-  top:-40%;
-  z-index:3;
-  background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,.55) 48%, rgba(255,255,255,.15) 68%, transparent 100%);
-  filter:blur(3px);
-  mix-blend-mode:screen;
-  pointer-events:none;
-}
-.reveal-screen.revealing .reveal-stage::before{
-  animation:magicSweep 1.6s cubic-bezier(.22,.6,.2,1) forwards;
-}
-@keyframes magicSweep{
-  0%{top:-40%; opacity:.95;}
-  85%{opacity:.9;}
-  100%{top:104%; opacity:0;}
-}
-.reveal-screen .reveal-stage::after{
-  content:"";
-  position:absolute;
-  inset:-20%;
-  z-index:2;
-  background-image:
-    radial-gradient(circle, #fff 0 1px, transparent 2px),
-    radial-gradient(circle, #fff 0 1.3px, transparent 2.3px),
-    radial-gradient(circle, #fff 0 1px, transparent 2px),
-    radial-gradient(circle, #fff 0 1.2px, transparent 2.2px),
-    radial-gradient(circle, #fff 0 1px, transparent 2px),
-    radial-gradient(circle, #fff 0 1.4px, transparent 2.4px),
-    radial-gradient(circle, #fff 0 1px, transparent 2px),
-    radial-gradient(circle, #fff 0 1.2px, transparent 2.2px);
-  background-repeat:no-repeat;
-  background-position:8% 96%, 18% 74%, 30% 102%, 42% 58%, 55% 92%, 68% 42%, 80% 100%, 92% 66%;
-  filter:blur(.6px);
-  opacity:0;
-  mix-blend-mode:screen;
-  pointer-events:none;
-}
-.reveal-screen.revealing .reveal-stage::after{
-  animation:magicDust 1.6s ease-out forwards;
-}
-@keyframes magicDust{
-  0%{opacity:0; background-position:8% 108%, 18% 88%, 30% 114%, 42% 70%, 55% 104%, 68% 54%, 80% 112%, 92% 78%;}
-  25%{opacity:.9;}
-  70%{opacity:.55;}
-  100%{opacity:0; background-position:8% 14%, 18% -6%, 30% 22%, 42% -12%, 55% 16%, 68% -16%, 80% 24%, 92% -8%;}
+@keyframes focusReveal{
+  0%{opacity:0; filter:blur(14px) brightness(.45);}
+  25%{opacity:.35; filter:blur(10px) brightness(.6);}
+  50%{opacity:.65; filter:blur(6px) brightness(.78);}
+  75%{opacity:.88; filter:blur(2px) brightness(.94);}
+  100%{opacity:1; filter:blur(0) brightness(1);}
 }
 @media (prefers-reduced-motion:reduce){
-  .reveal-screen.revealing .reveal-content{animation-duration:.01ms;}
-  .reveal-screen.revealing .reveal-stage,
-  .reveal-screen.revealing .reveal-stage::before,
-  .reveal-screen.revealing .reveal-stage::after{animation:none;}
+  .reveal-screen.revealing .reveal-content{animation:none; opacity:1; filter:none;}
   .reveal-screen.revealing .reveal-name-caption{transition-duration:.01ms; transition-delay:0s;}
 }
 
