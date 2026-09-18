@@ -1,0 +1,18 @@
+public/games/times-up/index.html
+  h_fed6a40af368f7 222-234,250-257,278-281,285,288-291,298-307,312,314-315,317-350,353,355-358,361-373,376-379,381-386,388-390,393-399,401,412-414,578,1205,1281,1296
+public/shared.css
+  h_fed6a40af368f7 573,1315-1317,1320,1322-1323,1326-1330,1335,1340,1344-1345,1350,1354,1357-1358,1360-1368,1371,1375,1378-1379,1381-1389,1489-1490,1577-1591,1593,1616,1697-1701,1743
+public/shared.js
+  h_fed6a40af368f7 672-676
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7fa0eef7310d58f1a96ea47e1881cc63df793a2c",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
