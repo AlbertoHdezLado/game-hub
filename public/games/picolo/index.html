@@ -127,7 +127,7 @@
       </div>
 
       <div class="scr-body">
-        <div class="reveal-wrap revealed" id="reveal-wrap">
+        <div class="reveal-wrap revealed prompt-card" id="reveal-wrap">
           <div class="reveal-content picolo" id="reveal-content">
             <span class="picolo-badge" id="picolo-badge"></span>
             <span class="picolo-text" id="picolo-text"></span>
@@ -308,11 +308,9 @@
 
   // ---------- card screen (infinite: reshuffles and keeps going, no round count) ----------
   var revealWrap = document.getElementById('reveal-wrap');
-  var revealContent = document.getElementById('reveal-content');
-  var picoloBadgeEl = document.getElementById('picolo-badge');
-  var picoloTextEl = document.getElementById('picolo-text');
   var nextBtn = document.getElementById('next-btn');
   var revealDecisionBtn = document.getElementById('reveal-decision-btn');
+  var picoloStack = createCardStack(revealWrap, { render: renderPicoloCard });
 
   // tints the whole card (reveal-wrap + text), not just the small category badge
   function hexToRgba(hex, alpha){
@@ -328,7 +326,8 @@
   var REVEAL_MAX_FONT_REM = 1.4;
   var REVEAL_MIN_FONT_REM = 0.85;
 
-  function fitRevealText(){
+  function fitRevealText(target){
+    var revealContent = target || revealWrap.querySelector('.picolo');
     revealContent.style.fontSize = '';
     var size = REVEAL_MAX_FONT_REM;
     revealContent.style.fontSize = size + 'rem';
@@ -340,18 +339,17 @@
     }
   }
 
-  function showRound(i){
-    var card = state.deck[i];
+  function renderPicoloCard(content, card){
     state.currentCard = card;
     var meta = CATEGORY_META[card.tipo] || CATEGORY_META.trago;
-
-    picoloBadgeEl.textContent = meta.icon + ' ' + meta.label;
+    content.className = 'flip-card-word-text reveal-content picolo';
+    content.innerHTML = '<span class="picolo-badge">' + meta.icon + ' ' + meta.label + '</span><span class="picolo-text"></span>';
+    var picoloBadgeEl = content.querySelector('.picolo-badge');
+    var picoloTextEl = content.querySelector('.picolo-text');
     picoloBadgeEl.style.background = meta.color;
     picoloBadgeEl.style.color = readableTextColor(meta.color);
-    revealWrap.style.borderColor = meta.color;
-    revealWrap.style.background = 'linear-gradient(160deg, ' + hexToRgba(meta.color, 0.3) + ', rgba(0,0,0,0.3))';
-    revealWrap.style.boxShadow = '0 0 0 1px ' + hexToRgba(meta.color, 0.35) + ' inset, 0 8px 24px ' + hexToRgba(meta.color, 0.25);
-    revealContent.style.color = meta.color;
+    content.style.color = meta.color;
+    content.style.background = hexToRgba(meta.color, 0.22);
     picoloTextEl.classList.remove('pulse');
 
     if (card.tipo === 'decision'){
@@ -364,12 +362,19 @@
       nextBtn.classList.remove('hidden');
     }
 
-    revealContent.style.fontSize = '';
-    fitRevealText();
+    fitRevealText(content);
+  }
+
+  function showRound(i, animate){
+    var card = state.deck[i];
+    if (animate) picoloStack.discard('right', card, 3);
+    else picoloStack.reveal(card, 3);
   }
 
   revealDecisionBtn.addEventListener('click', function(){
+    if (picoloStack.isBusy()) return;
     var card = state.currentCard;
+    var picoloTextEl = revealWrap.querySelector('.picolo-text');
     var chosen = card.opciones[Math.floor(Math.random() * card.opciones.length)];
     picoloTextEl.textContent = '¡Beben los que eligieron «' + chosen + '»!';
     picoloTextEl.classList.add('pulse');
@@ -381,16 +386,17 @@
   var revealResizeTimer = null;
   window.addEventListener('resize', function(){
     clearTimeout(revealResizeTimer);
-    revealResizeTimer = setTimeout(fitRevealText, 150);
+    revealResizeTimer = setTimeout(function(){ fitRevealText(); }, 150);
   });
 
   nextBtn.addEventListener('click', function(){
+    if (picoloStack.isBusy()) return;
     state.index++;
     if (state.index >= state.deck.length){
       state.deck = buildDeck(); // reshuffle and keep going — the deck never runs out
       state.index = 0;
     }
-    showRound(state.index);
+    showRound(state.index, true);
   });
 
   startBtn.addEventListener('click', function(){
@@ -401,7 +407,7 @@
     state.deck = buildDeck();
     state.index = 0;
 
-    showRound(0);
+    showRound(0, false);
     switchScreen(screenGame);
   });
 

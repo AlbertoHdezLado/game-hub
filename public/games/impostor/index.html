@@ -33,6 +33,17 @@
     width:100%;
     margin:0;
   }
+  .selector-subtitle{
+    width:100%;
+    margin:0 0 14px;
+    color:var(--accent);
+    font-family:var(--font-display);
+    font-size:1.15rem;
+    font-weight:700;
+    line-height:1.2;
+    text-align:center;
+    text-transform:uppercase;
+  }
   #screen-game #reveal-roster{
     width:100%;
     border:0;
@@ -41,13 +52,32 @@
     padding:0;
     margin-bottom:0;
   }
+  #screen-game.reveal-complete > .card{
+    justify-content:center;
+  }
+  #screen-game.reveal-complete .scr-body{
+    flex:0 0 auto;
+  }
+  #screen-game.reveal-complete .scr-dock{
+    width:100%;
+    padding-top:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .reveal-continue-hint{
+    margin:0;
+    color:var(--text-dim);
+    font-size:0.9rem;
+    text-align:center;
+  }
   .packages-dropdown-btn{
     width:100%;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    padding:12px 14px;
+    padding:12px 24px;
     border-radius:14px;
     border:1px solid var(--glass-border);
     background:var(--surface);
@@ -75,32 +105,40 @@
   .packages-dropdown-panel{
     margin-top:10px;
   }
+  #impostor-blind-toggle-wrap.is-disabled{
+    opacity:0.5;
+  }
+  #impostor-blind-toggle-wrap.is-disabled .submode-btn{
+    cursor:not-allowed;
+  }
   /* ---- debate / vote screen ---- */
-  #screen-start-player{
-    border:0;
-    background:transparent;
-    color:inherit;
-    font:inherit;
-    align-items:center;
-    justify-content:center;
+  .start-player-line{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:1.1rem;
+    font-weight:600;
+    margin:0 0 20px;
+  }
+  .start-player-line strong{color:var(--text); font-size:1.2em;}
+  .reveal-start-player-line{
+    margin:0 0 12px;
+    line-height:1.2;
+  }
+  .reveal-start-player-line strong{
+    display:block;
+    margin-top:6px;
+    font-family:var(--font-display);
+    font-size:clamp(1.6rem, 8vw, 2.2rem);
+    line-height:1.1;
+  }
+  .start-player-inline{
+    flex:0 0 auto;
+    padding:18px 18px 0;
     text-align:center;
     cursor:pointer;
-    padding:24px;
   }
-  .start-player-label{
-    color:var(--text-dim);
-    font-size:1.15rem;
-    font-weight:600;
-    margin:0 0 12px;
-  }
-  .start-player-name{
-    color:var(--text);
-    font-family:var(--font-display);
-    font-size:clamp(2.8rem, 12vw, 6rem);
-    line-height:1;
-    overflow-wrap:anywhere;
-    margin:0 0 28px;
-  }
+  .start-player-inline .start-player-line{margin:0 0 8px;}
+  .start-player-inline .subtitle{margin:0;}
   .debate-title{transition:color .2s;}
   .debate-title.game-over-impostores{
     background:none;
@@ -143,16 +181,7 @@
     animation:debateTimerBlink 0.5s steps(1) infinite;
   }
   .vote-row{
-    display:flex;
-    align-items:center;
-    padding:12px 14px;
-    border-radius:12px;
-    background:var(--surface);
-    border:1px solid var(--glass-border);
-    margin-bottom:8px;
-    cursor:pointer;
-    font-weight:600;
-    transition:background .15s, border-color .15s, transform .1s;
+    margin-bottom:0;
   }
   .vote-row:active{transform:scale(0.98);}
   .vote-row.selected{
@@ -212,6 +241,43 @@
     flex:1 1 auto;
     min-height:0;
   }
+  #vote-section{
+    justify-content:center;
+  }
+  #vote-section .scr-body,
+  #vote-result .scr-body{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+  }
+  #vote-section .scr-body{
+    flex:0 0 auto;
+  }
+  #vote-section .scr-body > label,
+  #vote-section #vote-players-list{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    width:100%;
+  }
+  #vote-section .scr-body > label{text-align:center;}
+  #vote-section #vote-players-list{margin-top:10px;}
+  #vote-section .vote-row{
+    width:100%;
+    justify-content:center;
+    padding:20px 10px;
+    text-align:center;
+  }
+  #vote-section .scr-dock{
+    display:flex;
+    justify-content:center;
+    padding-top:12px;
+  }
+  #vote-section #confirm-vote-btn{
+    width:auto;
+    min-width:180px;
+  }
 </style>
 </head>
 <body>
@@ -222,9 +288,9 @@
     <div class="card">
       <div class="setup-header">
         <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
-        <h1>IMPOSTOR</h1>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
+      <h1>IMPOSTOR</h1>
 
       <div class="scr-body">
         <div id="setup-step-players">
@@ -244,12 +310,12 @@
           </div>
 
           <div id="custom-word-wrap">
-            <label for="word-input-imp">Palabra secreta</label>
+            <label for="word-input-imp"><span class="label-icon">🗣️</span>Palabra secreta</label>
             <input type="text" id="word-input-imp" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
-            <p class="count-info">La app asigna el impostor al azar entre los jugadores.</p>
+            <p class="count-info">🎲 La app asigna el impostor al azar entre los jugadores.</p>
 
             <div id="custom-random-count-wrap" class="hidden">
-              <label>Número de impostores</label>
+              <label><span class="label-icon">🎭</span>Número de impostores</label>
               <div class="stepper">
                 <button type="button" id="custom-impostors-minus">−</button>
                 <div class="value" id="custom-impostors-value">1</div>
@@ -259,18 +325,24 @@
           </div>
 
           <div id="random-impostors-wrap" class="hidden">
-              <label>Número de impostores</label>
+            <label><span class="label-icon">🎭</span>Número de impostores</label>
             <div class="stepper">
               <button type="button" id="random-impostors-minus">−</button>
               <div class="value" id="random-impostors-value">1</div>
               <button type="button" id="random-impostors-plus">+</button>
             </div>
 
-              <label>Modo de juego</label>
-            <div class="submode-toggle" id="impostor-mode-toggle">
+            <label>Pista</label>
+            <div class="submode-toggle" id="impostor-hint-toggle">
               <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
               <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
-              <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">A ciegas</button>
+            </div>
+            <div id="impostor-blind-toggle-wrap">
+              <label>Impostor a ciegas</label>
+              <div class="submode-toggle" id="impostor-blind-toggle">
+                <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">No</button>
+                <button type="button" class="submode-btn" id="impostor-mode-normal-btn">Sí</button>
+              </div>
             </div>
           </div>
 
@@ -278,7 +350,7 @@
             <summary>Ajustes adicionales</summary>
             <div class="setup-optional-content">
               <div id="random-config-wrap" class="hidden">
-                <label>Paquetes</label>
+                <label><span class="label-icon">📦</span>Paquetes</label>
                 <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
                   <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona paquetes</span>
                   <span class="packages-dropdown-chevron">▾</span>
@@ -289,7 +361,7 @@
                 </div>
               </div>
 
-              <label>Tiempo para debatir</label>
+              <label><span class="label-icon">⏱️</span>Tiempo para debatir</label>
               <div class="stepper">
                 <button type="button" id="debate-minutes-minus">−</button>
                 <div class="value" id="debate-minutes-value">Sin límite</div>
@@ -334,7 +406,7 @@
       <h3>Modo aleatorio</h3>
       <ul>
         <li>Elige los paquetes temáticos que quieras usar y cuántos impostores habrá.</li>
-        <li>Elige el modo de pista: <strong>Sin pista</strong>, <strong>Con pista</strong> o <strong>A ciegas</strong>.</li>
+        <li>Activa o desactiva la pista. Si la activas, puedes elegir también si el impostor está a ciegas: recibirá una palabra relacionada, pero no se le dirá que es el impostor.</li>
         <li>La app reparte la palabra y los impostores al azar.</li>
       </ul>
 
@@ -361,10 +433,14 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <p class="subtitle">Toca tu nombre para ver tu rol. Nadie más debe mirar.</p>
+        <p class="selector-subtitle" id="reveal-instructions">REVELA TU ROL</p>
         <div class="roster-list" id="reveal-roster"></div>
       </div>
 
+      <div class="scr-dock">
+        <p class="start-player-line reveal-start-player-line hidden" id="reveal-start-player-line"></p>
+        <p class="reveal-continue-hint hidden" id="reveal-continue-hint">Toca la pantalla para continuar</p>
+      </div>
     </div>
   </div>
 
@@ -372,17 +448,10 @@
     <div class="reveal-stage reveal-wrap" id="reveal-wrap">
       <div class="reveal-content" id="reveal-content"></div>
       <button type="button" class="reveal-btn" id="reveal-btn">
-        <span class="reveal-icon"></span>
-        <span class="reveal-text">Revelar</span>
+        <span class="reveal-text">REVELAR</span>
       </button>
     </div>
   </dialog>
-
-  <button type="button" class="screen hidden" id="screen-start-player" aria-label="Continuar al debate">
-    <p class="start-player-label">Empieza a hablar</p>
-    <p class="start-player-name" id="start-player-name" aria-live="polite"></p>
-    <p class="subtitle">Toca la pantalla para continuar</p>
-  </button>
 
   <!-- DEBATE / VOTE SCREEN -->
   <div class="screen hidden" id="screen-debate">
@@ -394,8 +463,6 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <h1 class="debate-title" style="font-size:1.6rem;" id="debate-title">A DEBATIR</h1>
-
       <div id="debate-timer-wrap" class="hidden">
         <div class="debate-timer" id="debate-timer">
           <span class="debate-timer-part" id="debate-timer-mm">00</span><span class="debate-timer-colon">:</span><span class="debate-timer-part" id="debate-timer-ss">00</span>
@@ -403,8 +470,12 @@
       </div>
 
       <div id="vote-section">
+        <div class="start-player-inline hidden" id="start-player-inline">
+          <p class="start-player-line" id="start-player-line"></p>
+          <p class="subtitle">Toca aquí para continuar</p>
+        </div>
         <div class="scr-body">
-          <label>¿Quién creéis que es el impostor?</label>
+          <p class="selector-subtitle">ELEGID AL IMPOSTOR</p>
           <div id="vote-players-list"></div>
         </div>
         <div class="scr-dock">
@@ -452,7 +523,7 @@
     word: "",
     randomImpostors: 1,
     customImpostorCount: 1,
-    impostorMode: "none", // 'none' | 'hint' | 'aciegas'
+    impostorMode: "none", // 'none' | 'hint' | 'mrblanco'
     debateMinutes: 0, // 0 = sin límite
     selectedPackages: [],
     rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; })
@@ -511,7 +582,7 @@
     word: "",
     hintWord: null,
     mrBlancoWord: null,
-    impostorMode: "none", // 'none' | 'hint' | 'aciegas'
+    impostorMode: "none", // 'none' | 'hint' | 'mrblanco'
     players: 0,
     roles: [],
     playerNames: [],
@@ -523,9 +594,8 @@
 
   var screenSetup = document.getElementById('screen-setup');
   var screenGame = document.getElementById('screen-game');
-  var screenStartPlayer = document.getElementById('screen-start-player');
   var screenDebate = document.getElementById('screen-debate');
-  var ALL_SCREENS = [screenSetup, screenGame, screenStartPlayer, screenDebate];
+  var ALL_SCREENS = [screenSetup, screenGame, screenDebate];
 
   function switchScreen(target){
     ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
@@ -540,7 +610,7 @@
   var playersChipsList = document.getElementById('impostor-players-chips');
   var playersDraftInput = document.getElementById('impostor-players-draft');
   var playersAddBtn = document.getElementById('impostor-players-add');
-  forceTitleCaseInput(playersDraftInput);
+  forceUppercaseInput(playersDraftInput);
   var impostorCountInfo = document.getElementById('impostor-count-info');
   var setupError = document.getElementById('impostor-setup-error');
   var playersErrorEl = document.getElementById('impostor-players-error');
@@ -590,20 +660,41 @@
   var packagesDropdownSummary = document.getElementById('packages-dropdown-summary');
   var impostorModeNoneBtn = document.getElementById('impostor-mode-none-btn');
   var impostorModeHintBtn = document.getElementById('impostor-mode-hint-btn');
+  var impostorBlindToggleWrap = document.getElementById('impostor-blind-toggle-wrap');
+  var impostorModeNormalBtn = document.getElementById('impostor-mode-normal-btn');
   var impostorModeMrBlancoBtn = document.getElementById('impostor-mode-mrblanco-btn');
   var debateMinutesMinus = document.getElementById('debate-minutes-minus');
   var debateMinutesPlus = document.getElementById('debate-minutes-plus');
   var debateMinutesValue = document.getElementById('debate-minutes-value');
 
-  function setImpostorMode(mode){
-    config.impostorMode = mode;
-    impostorModeNoneBtn.classList.toggle('active', mode === 'none');
-    impostorModeHintBtn.classList.toggle('active', mode === 'hint');
-    impostorModeMrBlancoBtn.classList.toggle('active', mode === 'aciegas');
+  function renderImpostorOptions(){
+    var hintEnabled = config.impostorMode !== 'none';
+    var isMrBlanco = config.impostorMode !== 'hint';
+    impostorModeNoneBtn.classList.toggle('active', !hintEnabled);
+    impostorModeHintBtn.classList.toggle('active', hintEnabled);
+    impostorModeNormalBtn.classList.toggle('active', !isMrBlanco);
+    impostorModeMrBlancoBtn.classList.toggle('active', isMrBlanco);
+    impostorBlindToggleWrap.classList.toggle('is-disabled', !hintEnabled);
+    impostorBlindToggleWrap.setAttribute('aria-disabled', String(!hintEnabled));
+    impostorModeNormalBtn.disabled = !hintEnabled;
+    impostorModeMrBlancoBtn.disabled = !hintEnabled;
   }
-  impostorModeNoneBtn.addEventListener('click', function(){ setImpostorMode('none'); });
-  impostorModeHintBtn.addEventListener('click', function(){ setImpostorMode('hint'); });
-  impostorModeMrBlancoBtn.addEventListener('click', function(){ setImpostorMode('aciegas'); });
+  impostorModeNoneBtn.addEventListener('click', function(){
+    config.impostorMode = 'none';
+    renderImpostorOptions();
+  });
+  impostorModeHintBtn.addEventListener('click', function(){
+    config.impostorMode = 'mrblanco';
+    renderImpostorOptions();
+  });
+  impostorModeNormalBtn.addEventListener('click', function(){
+    config.impostorMode = 'hint';
+    renderImpostorOptions();
+  });
+  impostorModeMrBlancoBtn.addEventListener('click', function(){
+    config.impostorMode = 'mrblanco';
+    renderImpostorOptions();
+  });
 
   function renderDebateMinutes(){
     debateMinutesValue.textContent = config.debateMinutes === 0 ? 'Sin límite' : (config.debateMinutes + ' min');
@@ -688,7 +779,7 @@
     randomConfigWrap.classList.toggle('hidden', isCustom);
     randomImpostorsWrap.classList.toggle('hidden', isCustom);
     impostorCountInfo.classList.toggle('hidden', !isCustom);
-    setImpostorMode(config.impostorMode);
+    renderImpostorOptions();
     refreshRandomImpostorBounds();
     refreshCustomImpostorBounds();
     renderPackageList();
@@ -763,7 +854,7 @@
     packageListEl.innerHTML = PACKAGES.map(function(p){
       var selected = config.selectedPackages.indexOf(p.id) !== -1;
       return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-package-id="' + p.id + '">' +
-        '<span class="chip-icon">' + escapeHtml(p.icono || '') + '</span>' +
+        '<span class="chip-icon">' + escapeHtml(p.icono || '📦') + '</span>' +
         '<span class="chip-name">' + escapeHtml(p.nombre) + '</span>' +
       '</button>';
     }).join('');
@@ -884,15 +975,32 @@
 
   // ---------- role reveal roster: tap your own name to show your card ----------
   var revealRosterEl = document.getElementById('reveal-roster');
+  var revealContinueHint = document.getElementById('reveal-continue-hint');
   var revealModalBackdrop = document.getElementById('reveal-modal-backdrop');
   var revealWrap = document.getElementById('reveal-wrap');
   var revealContent = document.getElementById('reveal-content');
   var revealBtn = document.getElementById('reveal-btn');
+  var revealStartPlayerLineEl = document.getElementById('reveal-start-player-line');
+  var revealInstructionsEl = document.getElementById('reveal-instructions');
   var currentRevealIdx = -1;
-  var revealScreen = createRevealScreen(revealModalBackdrop, revealWrap, revealContent, revealBtn, function(){
-    state.viewed[currentRevealIdx] = true;
-    renderRevealRoster();
+  var firstStarter = null;
+  var revealScreen = new WordRevealComponent({
+    screen: revealModalBackdrop,
+    stage: revealWrap,
+    content: revealContent,
+    trigger: revealBtn,
+    onClose: function(){
+      state.viewed[currentRevealIdx] = true;
+      renderRevealRoster();
+    }
   });
+
+  function chooseFirstStarter(){
+    if (firstStarter !== null) return firstStarter;
+    var alive = aliveIndexes();
+    firstStarter = alive[Math.floor(Math.random() * alive.length)];
+    return firstStarter;
+  }
 
   function renderRevealRoster(){
     var html = '';
@@ -903,8 +1011,18 @@
       '</button>';
     }
     revealRosterEl.innerHTML = html;
-    if (state.viewed.length > 0 && state.viewed.every(function(v){ return v; })){
-      showStartingPlayerScreen();
+    var allViewed = !state.viewed.some(function(v){ return !v; });
+    revealContinueHint.classList.toggle('hidden', !allViewed);
+    if (allViewed){
+      var starter = chooseFirstStarter();
+      revealStartPlayerLineEl.innerHTML = 'Empieza a hablar:<strong>' + escapeHtml(state.playerNames[starter]) + '</strong>';
+      revealStartPlayerLineEl.classList.remove('hidden');
+      revealInstructionsEl.classList.add('hidden');
+      screenGame.classList.add('reveal-complete');
+    } else {
+      revealStartPlayerLineEl.classList.add('hidden');
+      revealInstructionsEl.classList.remove('hidden');
+      screenGame.classList.remove('reveal-complete');
     }
   }
 
@@ -914,11 +1032,10 @@
     var isImpostor = state.roles[idx];
     // Mr. Blanco impostors get a related word with zero visual tell (same
     // styling as a civil) so the app itself never gives away who they are.
-    var isMrBlanco = isImpostor && state.impostorMode === 'aciegas';
+    var isMrBlanco = isImpostor && state.impostorMode === 'mrblanco';
     var displayWord = isMrBlanco ? (state.mrBlancoWord || state.word) :
       isImpostor ? (state.hintWord || "IMPOSTOR") : state.word;
-    revealContent.textContent = displayWord;
-    revealContent.className = 'reveal-content ' + (isImpostor && !isMrBlanco ? 'impostor' : 'word');
+    revealScreen.show(displayWord, isImpostor && !isMrBlanco ? 'impostor' : 'word');
 
     revealScreen.open(isImpostor && !isMrBlanco);
   }
@@ -929,6 +1046,13 @@
     openRevealModal(parseInt(row.getAttribute('data-index'), 10));
   });
 
+  screenGame.addEventListener('click', function(e){
+    if (!screenGame.classList.contains('reveal-complete') || e.target.closest('.roster-row')) return;
+    startPlayerInline.classList.add('hidden');
+    switchScreen(screenDebate);
+    startDebatePhase();
+  });
+
   function aliveIndexes(){
     var arr = [];
     for (var i = 0; i < state.players; i++) if (state.alive[i]) arr.push(i);
@@ -936,7 +1060,11 @@
   }
 
   // ---------- debate + vote ----------
-  var startPlayerNameEl = document.getElementById('start-player-name');
+  var startPlayerLineEl = document.getElementById('start-player-line');
+  var startPlayerInline = document.getElementById('start-player-inline');
+  startPlayerInline.addEventListener('click', function(){
+    startPlayerInline.classList.add('hidden');
+  });
   var debateTimerWrap = document.getElementById('debate-timer-wrap');
   var debateTimerMm = document.getElementById('debate-timer-mm');
   var debateTimerSs = document.getElementById('debate-timer-ss');
@@ -1025,23 +1153,10 @@
   }
 
   function pickStartingPlayer(){
-    var alive = aliveIndexes();
-    var starter = alive[Math.floor(Math.random() * alive.length)];
-    startPlayerNameEl.textContent = state.playerNames[starter];
+    var starter = chooseFirstStarter();
+    startPlayerLineEl.innerHTML = 'Empieza a hablar: <strong>' + escapeHtml(state.playerNames[starter]) + '</strong>';
+    startPlayerInline.classList.remove('hidden');
   }
-
-  function showStartingPlayerScreen(){
-    pickStartingPlayer();
-    isFirstDebate = false;
-    switchScreen(screenStartPlayer);
-  }
-
-  function continueToDebate(){
-    switchScreen(screenDebate);
-    startDebatePhase();
-  }
-
-  screenStartPlayer.addEventListener('click', continueToDebate);
 
   function startDebatePhase(){
     unlockAlarmAudio();
@@ -1052,10 +1167,7 @@
     confirmVoteBtn.disabled = true;
     stopDebateTimer();
 
-    if (isFirstDebate){
-      pickStartingPlayer();
-      isFirstDebate = false;
-    }
+    if (isFirstDebate) isFirstDebate = false;
     renderVotePlayers();
     voteSection.classList.remove('hidden');
 
@@ -1077,7 +1189,9 @@
   function renderVotePlayers(){
     votePlayersList.innerHTML = state.playerNames.map(function(name, idx){
       if (!state.alive[idx]) return '';
-      return '<div class="vote-row" data-index="' + idx + '">' + escapeHtml(name) + '</div>';
+      return '<div class="roster-row vote-row" data-index="' + idx + '">' +
+        '<span class="roster-row-name">' + escapeHtml(name) + '</span>' +
+      '</div>';
     }).join('');
   }
 
@@ -1129,7 +1243,7 @@
     voteResult.classList.remove('hidden');
 
     setTimeout(function(){
-      voteResultIcon.textContent = wasImpostor ? '🎭' : '😇';
+      voteResultIcon.textContent = wasImpostor ? '😈' : '😇';
       voteResultTitle.textContent = wasImpostor ? '¡IMPOSTOR!' : '¡CIVIL!';
       voteResultTitle.className = 'vote-result-title ' + (wasImpostor ? 'reveal-impostor pulse-impostor' : 'reveal-civil pulse-civil');
       voteResultDetail.textContent = detailText;
@@ -1167,7 +1281,7 @@
       chosenWord = picked.word;
       impostorMode = config.impostorMode;
       if (impostorMode === 'hint') hintWord = picked.hint;
-      else if (impostorMode === 'aciegas') mrBlancoWord = picked.hint;
+      else if (impostorMode === 'mrblanco') mrBlancoWord = picked.hint;
       roles = buildRandomRoles(realRows.length, config.randomImpostors);
     }
     renderRows();
@@ -1181,6 +1295,7 @@
     state.players = state.playerNames.length;
     state.alive = state.playerNames.map(function(){ return true; });
     state.viewed = state.playerNames.map(function(){ return false; });
+    firstStarter = null;
 
     resetDebateHeader();
     renderRevealRoster();

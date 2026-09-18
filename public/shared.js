@@ -34,26 +34,34 @@ function savePlayerNames(names){
   }
 }
 
-/* forces a text input's value to uppercase as the user types, preserving caret position */
-function forceUppercaseInput(inputEl){
-  inputEl.addEventListener('input', function(){
-    var selStart = inputEl.selectionStart, selEnd = inputEl.selectionEnd;
-    inputEl.value = inputEl.value.toUpperCase();
-    inputEl.setSelectionRange(selStart, selEnd);
+/* capitalizes the first letter of each word as text is entered, preserving
+   the caret position so the value is updated visibly while typing */
+function capitalizeInputValue(inputEl){
+  var selStart = inputEl.selectionStart, selEnd = inputEl.selectionEnd;
+  inputEl.value = inputEl.value.replace(/\p{L}[\p{L}'-]*/gu, function(word){
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   });
+  inputEl.setSelectionRange(selStart, selEnd);
 }
 
-/* forces a text input's value to Title Case (first letter of each word
-   uppercase, rest lowercase) as the user types, preserving caret position */
+function forceUppercaseInput(inputEl){
+  inputEl.addEventListener('input', function(){ capitalizeInputValue(inputEl); });
+}
+
 function forceTitleCaseInput(inputEl){
-  inputEl.addEventListener('input', function(){
-    var selStart = inputEl.selectionStart, selEnd = inputEl.selectionEnd;
-    inputEl.value = inputEl.value.replace(/\p{L}[\p{L}'-]*/gu, function(word){
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-    });
-    inputEl.setSelectionRange(selStart, selEnd);
+  inputEl.addEventListener('input', function(){ capitalizeInputValue(inputEl); });
+}
+
+function initInputCapitalization(){
+  document.addEventListener('input', function(event){
+    var inputEl = event.target;
+    if (!inputEl || !/^(INPUT|TEXTAREA)$/.test(inputEl.tagName) ||
+        inputEl.readOnly || inputEl.disabled ||
+        (inputEl.tagName === 'INPUT' && inputEl.type !== 'text')) return;
+    capitalizeInputValue(inputEl);
   });
 }
+initInputCapitalization();
 
 /* Hombres Lobo: the chosen role loadout (roleId -> count) carries over
    between matches the same way the player list does */
@@ -231,18 +239,16 @@ function createDots(container){
 
 /* In-game screens use one unobtrusive home control instead of an app bar.
    Reuse each screen's existing link before removing the header so every game
-   gets the same placement without duplicating markup across all mode files.
-   #screen-setup keeps its boxed .setup-header untouched — it's part of the
-   vertically-centered setup group (see #screen-setup .card in shared.css),
-   not a floating control pinned over gameplay content. */
+   gets the same placement without duplicating markup across all mode files. */
 function initIngameHomeControls(){
-  var screens = document.querySelectorAll('.screen:not(#screen-setup)');
+  var screens = document.querySelectorAll('.screen');
   Array.prototype.forEach.call(screens, function(screen){
     var card = screen.querySelector(':scope > .card');
     if (!card) return;
     var header = card.querySelector(':scope > .setup-header');
     var home = header && header.querySelector('a[aria-label="Inicio"]');
     var help = header && header.querySelector('.ayuda-trigger');
+    if (home) home.remove();
     if (help){
       help.classList.add('hidden');
       card.appendChild(help);
@@ -255,7 +261,7 @@ function initIngameHomeControls(){
     if (header){
       var leftover = [];
       Array.prototype.forEach.call(header.querySelectorAll('button, a'), function(el){
-        if (el === home || el === help) return;
+        if (el === help) return;
         // only elements with an id are ever wired up by a game's own script
         // (every real control here — tab-deaths-btn, key-toggle-btn,
         // share-board-btn, back-to-setup-btn... — is looked up by id); the
@@ -401,7 +407,7 @@ function confirmAdultContent(onConfirm){
     adultConfirmBackdrop.id = 'adult-confirm-backdrop';
     adultConfirmBackdrop.innerHTML =
       '<div class="guide-modal">' +
-        '<h2>Contenido para adultos</h2>' +
+        '<h2>🔞 Contenido para adultos</h2>' +
         '<p>Esta categoría incluye contenido para mayores de 18 años. ¿Seguro que quieres activarla?</p>' +
         '<button type="button" class="btn-main" id="adult-confirm-accept-btn" style="margin-top:14px;">Sí, activar</button>' +
         '<button type="button" class="night-nav-btn" id="adult-confirm-cancel-btn" style="width:100%; margin-top:10px;">Cancelar</button>' +
@@ -471,53 +477,93 @@ function createRevealCard(wrap, content, btn, nextBtn){
 /* Full-screen reveal for private information. The first tap progressively
    uncovers arbitrary content; once the animation finishes, the next tap
    anywhere dismisses the screen. */
-function createRevealScreen(screen, stage, content, trigger, onClose){
-  var REVEAL_DURATION = 1600;
-  var closeHandler = typeof onClose === 'function' ? onClose : function(){};
+function RevealComponent(options){
+  this.screen = options.screen;
+  this.stage = options.stage;
+  this.content = options.content;
+  this.trigger = options.trigger;
+  this.caption = options.caption || null;
+  this.closeHandler = typeof options.onClose === 'function' ? options.onClose : function(){};
+  this.revealDuration = options.revealDuration || 1600;
   var revealTimer = null;
   var isRevealed = false;
+  var component = this;
 
   function reveal(){
-    if (screen.classList.contains('revealing') || isRevealed) return;
-    fitRevealContent(content);
-    screen.classList.add('revealing');
-    var duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 20 : REVEAL_DURATION;
+    if (component.screen.classList.contains('revealing') || isRevealed) return;
+    fitRevealContent(component.content);
+    component.screen.classList.add('revealing');
+    var duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 20 : component.revealDuration;
     revealTimer = window.setTimeout(function(){
-      screen.classList.remove('revealing');
-      screen.classList.add('revealed');
+      component.screen.classList.remove('revealing');
+      component.screen.classList.add('revealed');
       isRevealed = true;
     }, duration);
   }
 
   function close(){
     if (!isRevealed) return;
-    screen.classList.add('hidden');
-    if (screen.open && typeof screen.close === 'function') screen.close();
-    closeHandler();
+    component.screen.classList.add('hidden');
+    if (component.screen.open && typeof component.screen.close === 'function') component.screen.close();
+    component.closeHandler();
   }
 
-  trigger.addEventListener('click', function(event){
+  this.trigger.addEventListener('click', function(event){
     event.stopPropagation();
     reveal();
   });
-  screen.addEventListener('click', function(){
+  this.screen.addEventListener('click', function(){
     if (isRevealed) close();
     else reveal();
   });
-  screen.addEventListener('cancel', function(event){ event.preventDefault(); });
+  this.screen.addEventListener('cancel', function(event){ event.preventDefault(); });
 
-  return {
-    open: function(isAlarm){
-      window.clearTimeout(revealTimer);
-      isRevealed = false;
-      screen.classList.remove('revealing', 'revealed');
-      stage.classList.toggle('alarm-pending', !!isAlarm);
-      content.style.fontSize = '';
-      screen.classList.remove('hidden');
-      if (!screen.open && typeof screen.showModal === 'function') screen.showModal();
-    },
-    close: close
+  this.open = function(isAlarm){
+    window.clearTimeout(revealTimer);
+    isRevealed = false;
+    component.screen.classList.remove('revealing', 'revealed');
+    component.stage.classList.toggle('alarm-pending', !!isAlarm);
+    component.content.style.fontSize = '';
+    component.screen.classList.remove('hidden');
+    if (!component.screen.open && typeof component.screen.showModal === 'function') component.screen.showModal();
   };
+  this.close = close;
+}
+
+function WordRevealComponent(options){
+  RevealComponent.call(this, options);
+}
+WordRevealComponent.prototype = Object.create(RevealComponent.prototype);
+WordRevealComponent.prototype.constructor = WordRevealComponent;
+WordRevealComponent.prototype.show = function(value, className, description){
+  this.content.innerHTML = '<div>' + escapeHtml(value) + '</div>' +
+    (description ? '<div class="reveal-desc">' + escapeHtml(description) + '</div>' : '');
+  this.content.className = 'reveal-content ' + className;
+};
+
+function ImageRevealComponent(options){
+  RevealComponent.call(this, options);
+  this.stage.classList.add('reveal-image-stage');
+}
+ImageRevealComponent.prototype = Object.create(RevealComponent.prototype);
+ImageRevealComponent.prototype.constructor = ImageRevealComponent;
+ImageRevealComponent.prototype.show = function(image, title, description, className){
+  this.content.innerHTML = '<img class="reveal-portrait" src="' + escapeHtml(image) + '" alt="" draggable="false" oncontextmenu="return false">';
+  this.content.className = 'reveal-content ' + className;
+  if (this.caption){
+    this.caption.innerHTML = escapeHtml(title) + '<span class="reveal-role-description">' + escapeHtml(description) + '</span>';
+    this.caption.className = 'reveal-name-caption ' + className;
+  }
+};
+
+function createRevealScreen(screen, stage, content, trigger, onClose){
+  return new RevealComponent({
+    screen: screen,
+    stage: stage,
+    content: content,
+    trigger: trigger,
+    onClose: onClose
+  });
 }
 
 /* card-stack component for Time's Up / Mímica: rootEl is a `.flip-card-stack`
@@ -529,9 +575,22 @@ function createRevealScreen(screen, stage, content, trigger, onClose){
    correct action taken on it. `remaining` is how many cards are left
    counting the one about to show, so the stack visually shrinks down to a
    single card near the end of the deck. */
-function createCardStack(rootEl){
+function createCardStack(rootEl, options){
   var slots = Array.prototype.slice.call(rootEl.querySelectorAll('.flip-card'));
   var timer = null;
+  var busy = false;
+  var renderContent = typeof options === 'function' ? options : options && options.render;
+
+  if (!slots.length){
+    var isTabooCard = rootEl.classList.contains('tb-play-card');
+    rootEl.classList.remove('prompt-card', 'tb-play-card');
+    rootEl.classList.add('flip-card-stack');
+    rootEl.classList.add(isTabooCard ? 'taboo-card-stack' : 'prompt-stack');
+    rootEl.innerHTML = [0, 1, 2].map(function(){
+      return '<div class="flip-card"><div class="flip-card-inner"><div class="flip-card-face flip-card-back-design"></div><div class="flip-card-face flip-card-front-face"><div class="flip-card-word-text"></div></div></div></div>';
+    }).join('');
+    slots = Array.prototype.slice.call(rootEl.querySelectorAll('.flip-card'));
+  }
 
   function applyDepths(remaining){
     for (var i = 0; i < slots.length; i++){
@@ -543,8 +602,11 @@ function createCardStack(rootEl){
   }
 
   function reveal(word, remaining){
+    busy = false;
     var front = slots[0];
-    front.querySelector('.flip-card-word-text').textContent = word;
+    var content = front.querySelector('.flip-card-word-text');
+    if (renderContent) renderContent(content, word);
+    else content.textContent = word;
     var inner = front.querySelector('.flip-card-inner');
     if (inner) inner.classList.add('is-flipped');
     applyDepths(remaining);
@@ -554,6 +616,8 @@ function createCardStack(rootEl){
   // 'right' for correct), then rotates the stack so the card behind it
   // becomes the new front and flips face-up to reveal the next word
   function discard(direction, word, remaining){
+    if (busy || !slots.length) return false;
+    busy = true;
     if (timer){ clearTimeout(timer); timer = null; }
     var outgoing = slots[0];
     outgoing.classList.add(direction === 'left' ? 'flip-card-exit-left' : 'flip-card-exit-right');
@@ -572,8 +636,9 @@ function createCardStack(rootEl){
       slots.push(outgoing); // snaps straight to the back of the stack, no transition
       reveal(word, remaining);
       timer = null;
-    }, 300);
+    }, 220);
+    return true;
   }
 
-  return { reveal: reveal, discard: discard };
+  return { reveal: reveal, discard: discard, isBusy: function(){ return busy; } };
 }

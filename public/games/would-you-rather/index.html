@@ -102,9 +102,11 @@
       <p class="subtitle" style="margin-top:0;">¿Qué preferirías...?</p>
 
       <div class="scr-body">
-        <div class="qpref-option qpref-option-a" id="qpref-option-a"></div>
-        <div class="qpref-divider">O</div>
-        <div class="qpref-option qpref-option-b" id="qpref-option-b"></div>
+        <div class="prompt-card">
+          <div class="qpref-option qpref-option-a" id="qpref-option-a"></div>
+          <div class="qpref-divider">O</div>
+          <div class="qpref-option qpref-option-b" id="qpref-option-b"></div>
+        </div>
       </div>
 
       <div class="scr-dock">
@@ -155,8 +157,7 @@
   }
 
   var startBtn = document.getElementById('start-btn');
-  var optionAEl = document.getElementById('qpref-option-a');
-  var optionBEl = document.getElementById('qpref-option-b');
+  var optionStack = createCardStack(document.querySelector('.prompt-card'), { render: renderPairCard });
   var nextBtn = document.getElementById('next-btn');
 
   // picks 2 distinct options at random, but only from the same nivel (desirability
@@ -177,17 +178,23 @@
     return [optionA, optionB];
   }
 
-  function showPair(){
-    var pair = pickPair();
-    optionAEl.textContent = pair[0];
-    optionBEl.textContent = pair[1];
+  function renderPairCard(content, pair){
+    content.innerHTML = '<div class="qpref-option qpref-option-a">' + escapeHtml(pair[0]) + '</div><div class="qpref-divider">O</div><div class="qpref-option qpref-option-b">' + escapeHtml(pair[1]) + '</div>';
   }
 
-  nextBtn.addEventListener('click', showPair);
+  function showPair(animate){
+    var pair = pickPair();
+    if (animate) optionStack.discard('right', pair, 3);
+    else optionStack.reveal(pair, 3);
+  }
+
+  nextBtn.addEventListener('click', function(){
+    if (!optionStack.isBusy()) showPair(true);
+  });
 
   startBtn.addEventListener('click', function(){
     if (!OPTIONS || OPTIONS.length < 2) return;
-    showPair();
+    showPair(false);
     switchScreen(screenGame);
   });
 

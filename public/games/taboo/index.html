@@ -192,11 +192,30 @@
     word-break:break-word;
     text-align:center;
   }
+  .tb-play-card{
+    width:min(100%, 460px);
+    margin:0 auto;
+    padding:28px 24px 24px;
+    border:10px solid rgba(255,255,255,0.5);
+    border-radius:14px;
+    background:#f7f3df;
+    box-shadow:0 10px 18px rgba(10,14,26,0.35);
+    text-align:center;
+  }
+  .tb-play-label{
+    margin:0;
+    color:var(--text-dim);
+    font-size:0.72rem;
+    font-weight:800;
+    letter-spacing:1.4px;
+    text-transform:uppercase;
+  }
+  .tb-play-card .tb-word{margin:10px 0 18px;}
   .tb-taboo-list{
     display:flex;
     flex-direction:column;
     gap:8px;
-    margin:0 0 22px;
+    margin:0;
   }
   /* each turn phase fills the remaining card height: its own content grows
      in a scr-body, its action button/row stays pinned in a scr-dock */
@@ -219,19 +238,25 @@
     overflow-x:hidden;
   }
   .tb-taboo-item{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 14px;
-    border-radius:10px;
-    background:rgba(156,63,71,0.12);
-    border:1px solid rgba(156,63,71,0.35);
-    color:var(--text);
-    font-size:1.05rem;
+    padding:8px 12px;
+    border-radius:8px;
+    background:rgba(156,63,71,0.1);
+    border:1px solid rgba(156,63,71,0.28);
+    color:#18202b;
+    font-size:1rem;
     line-height:1.2;
     font-weight:600;
   }
-  .tb-taboo-icon{flex-shrink:0; font-size:0.95rem;}
+  #turn-play .icon-action-row{
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+    max-width:460px;
+    margin:0 auto;
+  }
+  #turn-play .icon-action-btn{
+    min-height:58px;
+  }
 
 
   .team-score-row{
@@ -426,8 +451,11 @@
           <div class="tb-timer-wrap" id="tb-timer-wrap">
             <div class="tb-timer" id="tb-timer">1:00</div>
           </div>
-          <div class="tb-word" id="tb-word">Palabra</div>
-          <div class="tb-taboo-list" id="tb-taboo-list"></div>
+          <div class="tb-play-card">
+            <p class="tb-play-label">Adivina</p>
+            <div class="tb-word" id="tb-word">Palabra</div>
+            <div class="tb-taboo-list" id="tb-taboo-list"></div>
+          </div>
         </div>
         <div class="scr-dock">
           <div class="icon-action-row">
@@ -980,8 +1008,7 @@
   var turnPlayEl = document.getElementById('turn-play');
   var tbTimerWrapEl = document.getElementById('tb-timer-wrap');
   var tbTimerEl = document.getElementById('tb-timer');
-  var tbWordEl = document.getElementById('tb-word');
-  var tbTabooListEl = document.getElementById('tb-taboo-list');
+  var tbCardStack = createCardStack(document.querySelector('.tb-play-card'), { render: renderTabooCard });
   var tbCorrectBtn = document.getElementById('tb-correct-btn');
   var tbFoulBtn = document.getElementById('tb-foul-btn');
   var turnEndEl = document.getElementById('turn-end');
@@ -994,12 +1021,14 @@
     cardsRemainingValueEl.textContent = 'x' + state.deck.length;
   }
 
+  function renderTabooCard(content, card){
+    content.innerHTML = '<p class="tb-play-label">Adivina</p><div class="tb-word">' + escapeHtml(card.palabra) + '</div><div class="tb-taboo-list">' + card.prohibidas.map(function(w){
+      return '<div class="tb-taboo-item">' + escapeHtml(w) + '</div>';
+    }).join('') + '</div>';
+  }
+
   function renderCurrentCard(){
-    var card = state.deck[0];
-    tbWordEl.textContent = card.palabra;
-    tbTabooListEl.innerHTML = card.prohibidas.map(function(w){
-      return '<div class="tb-taboo-item"><span class="tb-taboo-icon">🚫</span>' + escapeHtml(w) + '</div>';
-    }).join('');
+    tbCardStack.reveal(state.deck[0], Math.min(3, state.deck.length));
   }
 
   function startTurn(){
@@ -1098,7 +1127,7 @@
   });
 
   tbCorrectBtn.addEventListener('click', function(){
-    if (state.deck.length === 0) return;
+    if (state.deck.length === 0 || tbCardStack.isBusy()) return;
     playCorrectSound();
     var teamIdx = state.turnTeamPointer;
     var card = state.deck.shift(); // guessed: gone from the deck for the rest of the match
@@ -1108,11 +1137,11 @@
     state.turnResults.push({ word: card.palabra, correct: true });
     renderCardsRemaining();
     if (state.deck.length === 0){ endTurn(true); return; }
-    renderCurrentCard();
+    tbCardStack.discard('right', state.deck[0], Math.min(3, state.deck.length));
   });
 
   tbFoulBtn.addEventListener('click', function(){
-    if (state.deck.length === 0) return;
+    if (state.deck.length === 0 || tbCardStack.isBusy()) return;
     playFoulSound();
     var card = state.deck.shift();
     state.deck.push(card); // foul: no point for anyone, but back of the deck, resurfaces later this match
@@ -1123,7 +1152,7 @@
     void tbTimerEl.offsetWidth;
     tbTimerEl.classList.add('skip-pulse');
     if (state.timeRemaining <= 0){ endTurn(false, false); return; }
-    renderCurrentCard();
+    tbCardStack.discard('left', state.deck[0], Math.min(3, state.deck.length));
   });
 
   function endTurn(deckExhausted, hasActiveWord){

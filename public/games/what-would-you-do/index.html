@@ -115,7 +115,9 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="qh-phrase" id="qh-phrase"></div>
+        <div class="prompt-card">
+          <div class="qh-phrase" id="qh-phrase"></div>
+        </div>
       </div>
 
       <div class="scr-dock">
@@ -240,22 +242,30 @@
   }
 
   // ---------- prompt screen (scenario shown immediately, no privacy) ----------
-  var phraseEl = document.getElementById('qh-phrase');
+  var phraseEl = document.querySelector('.prompt-card .flip-card-word-text') || document.getElementById('qh-phrase');
   var nextBtn = document.getElementById('next-btn');
+  var cardStack = createCardStack(document.querySelector('.prompt-card'), { render: renderPromptCard });
 
-  function fitPhraseText(){
+  function fitPhraseText(target){
+    target = target || phraseEl;
     var maxSize = 1.4, minSize = 0.85, step = 0.05;
     var size = maxSize;
-    phraseEl.style.fontSize = size + 'rem';
-    while (size > minSize && phraseEl.scrollHeight > phraseEl.clientHeight + 1){
+    target.style.fontSize = size + 'rem';
+    while (size > minSize && target.scrollHeight > target.clientHeight + 1){
       size -= step;
-      phraseEl.style.fontSize = size + 'rem';
+      target.style.fontSize = size + 'rem';
     }
   }
 
-  function showRound(i){
-    phraseEl.textContent = state.deck[i];
-    fitPhraseText();
+  function renderPromptCard(content, phrase){
+    content.className = 'flip-card-word-text qh-phrase';
+    content.textContent = phrase;
+    fitPhraseText(content);
+  }
+
+  function showRound(i, animate){
+    if (animate) cardStack.discard('right', state.deck[i], 3);
+    else cardStack.reveal(state.deck[i], 3);
   }
 
   var phraseResizeTimer = null;
@@ -265,12 +275,13 @@
   });
 
   nextBtn.addEventListener('click', function(){
+    if (cardStack.isBusy()) return;
     state.index++;
     if (state.index >= state.deck.length){
       state.deck = buildDeck(); // reshuffle and keep going — the deck never runs out
       state.index = 0;
     }
-    showRound(state.index);
+    showRound(state.index, true);
   });
 
   startBtn.addEventListener('click', function(){
@@ -279,7 +290,7 @@
     state.deck = buildDeck();
     state.index = 0;
 
-    showRound(0);
+    showRound(0, false);
     switchScreen(screenGame);
   });
 

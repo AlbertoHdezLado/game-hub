@@ -164,9 +164,9 @@
     <div class="card">
       <div class="setup-header">
         <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
-        <h1>DETECTIVE CLUB</h1>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
+      <h1>DETECTIVE CLUB</h1>
       <p class="subtitle">Necesitas una baraja de cartas Dixit físicas para jugar</p>
 
       <div class="scr-body">
@@ -184,7 +184,7 @@
         <details class="setup-optional">
           <summary>Ajustes adicionales</summary>
           <div class="setup-optional-content">
-            <label>Vueltas</label>
+            <label><span class="label-icon">🔁</span>Vueltas</label>
             <div class="stepper">
               <button type="button" id="laps-minus">−</button>
               <div class="value" id="laps-value">1</div>
@@ -208,11 +208,7 @@
       <h2>Cómo se juega</h2>
 
       <h3>Objetivo</h3>
-      <ol>
-        <li>El <strong>jugador activo</strong> elige una carta de Dixit y decide una palabra secreta relacionada.</li>
-        <li>Un <strong>conspirador</strong> aleatorio entre el resto no conoce esa palabra.</li>
-        <li>Los detectives deben descubrir quién es el conspirador.</li>
-      </ol>
+      <p>En cada ronda, el <strong>jugador activo</strong> (por turnos, en orden) elige una carta de Dixit y decide una palabra secreta relacionada. Un <strong>conspirador</strong> aleatorio entre el resto no conoce esa palabra. Los detectives deben descubrir quién es el conspirador.</p>
 
       <h3>Roles</h3>
       <ul>
@@ -235,19 +231,10 @@
       <p><strong>5 o más jugadores:</strong> si el conspirador recibe 2 o más votos, cada jugador que haya acertado gana 3 puntos. Si recibe 0 o 1 voto, el conspirador gana 5 puntos y el jugador activo 4.</p>
 
       <h3>Votación</h3>
-      <ul>
-        <li>Debatid y votad en voz alta o a mano alzada, sin pasar el dispositivo.</li>
-        <li>Cuando el grupo termine, alguien revela al conspirador; no hay vuelta atrás.</li>
-        <li>Marcad en la app quién votó a cada persona.</li>
-      </ul>
+      <p>La votación es manual: debatid y votad en voz alta o a mano alzada, sin pasar el dispositivo. Cuando el grupo termine, alguien revela al conspirador (sin vuelta atrás) y marca en la app quién le votó.</p>
 
       <h3>Duración</h3>
-      <ul>
-        <li>El primer jugador activo se elige al azar.</li>
-        <li>Después, el turno pasa en el orden de la lista, de forma cíclica.</li>
-        <li>La partida dura tantas vueltas como elijas en "Vueltas"; por defecto, 1.</li>
-        <li>La app reparte los turnos y suma los puntos automáticamente.</li>
-      </ul>
+      <p>El primer jugador activo se elige al azar; a partir de ahí el turno pasa en el orden de la lista, de forma cíclica, tantas vueltas como elijas en el ajuste "Vueltas" (por defecto 1). La app reparte los turnos y suma los puntos automáticamente.</p>
     </div>
   </div>
 
@@ -255,7 +242,7 @@
   <div class="guide-modal-backdrop hidden" id="vote-warning-backdrop">
     <div class="guide-modal">
       <button type="button" class="guide-modal-close" id="vote-warning-close">✕</button>
-      <h2>Antes de votar</h2>
+      <h2>⚠️ Antes de votar</h2>
       <p>En esta partida la votación es <strong>manual</strong>: debatid y votad en voz alta o a mano alzada, sin pasar el dispositivo.</p>
       <p>Cuando el grupo esté listo, alguien pulsará <strong>«Revelar conspirador»</strong>. Esa acción <strong>no tiene vuelta atrás</strong> — asegúrate de que la votación ya ha terminado antes de pulsarla.</p>
       <button type="button" class="btn-main" id="vote-warning-ok-btn">Entendido</button>
@@ -277,7 +264,7 @@
         <div class="player-name" id="word-name">1</div>
         <div class="pass-hint">Pasa el dispositivo a este jugador. Solo debe mirarlo él o ella.</div>
 
-        <label>Elige una carta de Dixit y escribe una palabra o pista que la describa</label>
+        <label><span class="label-icon">🎴</span>Elige una carta de Dixit y escribe una palabra o pista que la describa</label>
         <input type="text" id="word-input" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
       </div>
 
@@ -313,7 +300,7 @@
     <div class="reveal-stage reveal-wrap" id="reveal-wrap">
       <div class="reveal-content" id="reveal-content"></div>
       <button type="button" class="reveal-btn" id="reveal-btn">
-        <span class="reveal-icon"></span>
+        <span class="reveal-icon">👁️</span>
         <span class="reveal-text">Revelar</span>
       </button>
     </div>
@@ -335,15 +322,15 @@
           <p class="pass-hint">Cuando el grupo termine de votar, revela al conspirador.</p>
         </div>
         <div class="scr-dock">
-          <button class="btn-main" id="vote-reveal-conspirador-btn">Revelar conspirador</button>
+          <button class="btn-main" id="vote-reveal-conspirador-btn">🔎 Revelar conspirador</button>
         </div>
       </div>
 
       <div id="vote-result-stage" class="hidden">
         <div class="scr-body">
-          <div class="result-icon"></div>
+          <div class="result-icon">🎭</div>
           <div class="result-title" id="vote-conspirador-name"></div>
-          <label>¿Quién votó por el conspirador?</label>
+          <label><span class="label-icon">🗳️</span>¿Quién votó por el conspirador?</label>
           <div class="chip-list" id="voter-select-list"></div>
         </div>
         <div class="scr-dock">
@@ -364,13 +351,13 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="result-icon" id="result-icon"></div>
+        <div class="result-icon" id="result-icon">🕵️</div>
         <div class="result-title" id="result-title"></div>
         <p class="subtitle" id="result-detail" style="margin-bottom:14px;"></p>
 
         <div class="result-deltas" id="result-deltas"></div>
 
-        <label>Marcador</label>
+        <label><span class="label-icon">🏆</span>Marcador</label>
         <div id="result-scoreboard"></div>
       </div>
 
@@ -391,11 +378,11 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="end-icon"></div>
+        <div class="end-icon">🏆</div>
         <h1 style="font-size:1.6rem;">PARTIDA TERMINADA</h1>
         <p class="subtitle" id="final-detail"></p>
 
-        <label>Marcador final</label>
+        <label><span class="label-icon">🏆</span>Marcador final</label>
         <div id="final-scoreboard"></div>
       </div>
 
@@ -472,7 +459,7 @@
   var playersChipsList = document.getElementById('dc-players-chips');
   var playersDraftInput = document.getElementById('dc-players-draft');
   var playersAddBtn = document.getElementById('dc-players-add');
-  forceTitleCaseInput(playersDraftInput);
+  forceUppercaseInput(playersDraftInput);
   var playersErrorEl = document.getElementById('dc-players-error');
   var countInfoEl = document.getElementById('dc-count-info');
   var playersWarnEl = document.getElementById('dc-players-warn');
@@ -581,9 +568,15 @@
   var revealContent = document.getElementById('reveal-content');
   var revealBtn = document.getElementById('reveal-btn');
   var currentRevealPos = -1;
-  var revealScreen = createRevealScreen(revealModalBackdrop, revealWrap, revealContent, revealBtn, function(){
-    state.revealViewed[currentRevealPos] = true;
-    renderRevealRoster();
+  var revealScreen = new WordRevealComponent({
+    screen: revealModalBackdrop,
+    stage: revealWrap,
+    content: revealContent,
+    trigger: revealBtn,
+    onClose: function(){
+      state.revealViewed[currentRevealPos] = true;
+      renderRevealRoster();
+    }
   });
 
   function renderRevealRoster(){
@@ -604,16 +597,15 @@
     var idx = state.revealOrder[pos];
 
     var isConspirador = idx === state.conspiradorIdx;
-    var html, cls;
+    var cls;
     if (isConspirador){
-      html = '<div>CONSPIRADOR</div><div class="reveal-desc">No conoces la palabra. Escucha con atención y disimula para no delatarte.</div>';
       cls = 'impostor';
     } else {
-      html = '<div>' + escapeHtml(state.word) + '</div><div class="reveal-desc">Eres detective. Memoriza la palabra y luego intenta descubrir al conspirador.</div>';
       cls = 'word';
     }
-    revealContent.innerHTML = html;
-    revealContent.className = 'reveal-content ' + cls;
+    revealScreen.show(isConspirador ? 'CONSPIRADOR' : state.word, cls,
+      isConspirador ? 'No conoces la palabra. Escucha con atención y disimula para no delatarte.' :
+        'Eres detective. Memoriza la palabra y luego intenta descubrir al conspirador.');
 
     revealScreen.open(isConspirador);
   }

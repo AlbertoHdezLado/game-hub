@@ -110,7 +110,9 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="scr-body">
-        <div class="yn-phrase" id="yn-phrase">Nunca he...</div>
+        <div class="prompt-card">
+          <div class="yn-phrase" id="yn-phrase">Nunca he...</div>
+        </div>
       </div>
 
       <div class="scr-dock">
@@ -256,20 +258,28 @@
   }
 
   // ---------- prompt screen (infinite: reshuffles and keeps going, no round count) ----------
-  var phraseEl = document.getElementById('yn-phrase');
+  var phraseEl = document.querySelector('.prompt-card .flip-card-word-text') || document.getElementById('yn-phrase');
   var nextBtn = document.getElementById('next-btn');
+  var cardStack = createCardStack(document.querySelector('.prompt-card'), { render: renderPromptCard });
 
-  function showRound(i){
-    phraseEl.textContent = state.deck[i];
+  function renderPromptCard(content, phrase){
+    content.className = 'flip-card-word-text yn-phrase';
+    content.textContent = phrase;
+  }
+
+  function showRound(i, animate){
+    if (animate) cardStack.discard('right', state.deck[i], 3);
+    else cardStack.reveal(state.deck[i], 3);
   }
 
   nextBtn.addEventListener('click', function(){
+    if (cardStack.isBusy()) return;
     state.index++;
     if (state.index >= state.deck.length){
       state.deck = buildDeck(); // reshuffle and keep going — the deck never runs out
       state.index = 0;
     }
-    showRound(state.index);
+    showRound(state.index, true);
   });
 
   startBtn.addEventListener('click', function(){
@@ -278,7 +288,7 @@
     state.deck = buildDeck();
     state.index = 0;
 
-    showRound(0);
+    showRound(0, false);
     switchScreen(screenGame);
   });
 
