@@ -1004,10 +1004,9 @@
     </div>
   </div>
 
-  <!-- CHARACTERS OVERLAY: dims the background, closes with the top-right X -->
+  <!-- CHARACTERS OVERLAY: dims the background and closes on any tap -->
   <div class="card-modal-backdrop hidden" id="deaths-modal-backdrop">
     <div class="card-modal" style="text-align:left;">
-      <button type="button" class="card-modal-close" id="deaths-modal-close">✕</button>
       <h2 style="margin:0 0 14px; text-align:center;">Personajes</h2>
       <div id="reminders-list"></div>
 
@@ -1102,7 +1101,7 @@
 (function(){
   "use strict";
 
-  var MIN_PLAYERS = 3, MAX_PLAYERS = 30;
+  var MIN_PLAYERS = 5, MAX_PLAYERS = 30;
   var MAX_VOTE_SECONDS = 30 * 60;
   var VOTE_SECONDS_STEP = 30;
   function formatVoteTime(totalSeconds){
@@ -1821,7 +1820,6 @@
   var dayNightStatusEl = document.getElementById('day-night-status');
   var tabDeathsBtn = document.getElementById('tab-deaths-btn'); // "Personajes" icon button — opens the overlay below
   var deathsModalBackdrop = document.getElementById('deaths-modal-backdrop');
-  var deathsModalClose = document.getElementById('deaths-modal-close');
   var panelNight = document.getElementById('panel-night');
   var panelVote = document.getElementById('panel-vote');
   var voteAnnounceViewEl = document.getElementById('vote-announce-view');
@@ -1902,7 +1900,8 @@
     tabDeathsBtn.classList.toggle('hidden', tab !== 'night');
   }
 
-  var deathsModal = setupModal(tabDeathsBtn, deathsModalBackdrop, deathsModalClose);
+  var deathsModal = setupModal(tabDeathsBtn, deathsModalBackdrop, null);
+  deathsModalBackdrop.addEventListener('click', deathsModal.close);
   tabDeathsBtn.addEventListener('click', renderDeathLists);
 
   // ---------- narrator: day vote countdown (optional, set at setup) ----------

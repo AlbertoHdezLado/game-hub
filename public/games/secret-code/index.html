@@ -29,8 +29,19 @@
      height still follows its width (aspect-ratio 4/3 per cell) — fitBoardSize()
      in the script below measures the real available height and tightens this
      max-width with an inline style so all 25 words fit without scrolling. */
-  #screen-setup, #screen-game{
+  #screen-setup{
     max-width:min(720px, 94vw);
+  }
+  #screen-game{
+    max-width:100vw;
+  }
+  #screen-game>.card{
+    padding:8px env(safe-area-inset-right) max(8px, env(safe-area-inset-bottom)) env(safe-area-inset-left);
+  }
+  #screen-game .scr-body{
+    display:flex;
+    flex-direction:column;
+    padding:8px;
   }
 
   .packages-dropdown-btn{
@@ -82,22 +93,34 @@
 
   /* ---- 5x5 word board ---- */
   .cs-board{
+    flex:1 1 auto;
+    min-width:0;
+    min-height:0;
     display:grid;
     grid-template-columns:repeat(5, 1fr);
+    grid-template-rows:repeat(5, minmax(0, 1fr));
     gap:6px;
-    margin-bottom:16px;
+    margin:0;
+  }
+  .cs-board-row{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    margin-bottom:0;
   }
   @keyframes csCellDeal{
     0%{ opacity:0; transform:scale(0.8); }
     100%{ opacity:1; transform:scale(1); }
   }
   .cs-cell{
-    aspect-ratio:4 / 3;
+    min-height:0;
     display:flex;
     align-items:center;
     justify-content:center;
     text-align:center;
-    padding:3px 4px;
+    padding:2px 4px;
     border-radius:8px;
     border:1px solid var(--glass-border);
     background:var(--surface);
@@ -106,8 +129,9 @@
     font-size:0.68rem;
     font-weight:700;
     line-height:1.1;
-    word-break:break-word;
-    overflow-wrap:break-word;
+    word-break:normal;
+    overflow-wrap:normal;
+    hyphens:none;
     overflow:hidden;
     cursor:pointer;
     touch-action:manipulation;
@@ -125,7 +149,7 @@
      landscape tablets/desktop (plenty of vertical room) keep the aspect-ratio
      sizing untouched. */
   @media (orientation:landscape) and (max-height:500px){
-    .cs-cell{aspect-ratio:auto; height:46px;}
+    .cs-board-row{gap:0;}
   }
   /* plain opacity read as barely-faded (esp. in photos of the board) —
      brightness/saturate crush the color down so covered cells look clearly
@@ -145,38 +169,84 @@
   }
   .cs-key-hide-btn:active{transform:scale(0.97);}
 
-  .cs-start-line{
-    height:6px;
-    border-radius:999px;
-    margin:10px 0;
-    background:transparent;
-    transition:background .2s;
-  }
-  .cs-start-line.revealed.cs-start-line-color-0{background:#5b8fe0;}
-  .cs-start-line.revealed.cs-start-line-color-1{background:#c9525c;}
-  .cs-start-line.revealed.cs-start-line-color-2{background:#4fbf7a;}
-
   .cs-share-qr-wrap{
     display:flex;
     justify-content:center;
     background:#fff;
-    padding:14px;
+    padding:10px;
     border-radius:16px;
-    margin:16px 0 14px;
+    margin:10px 0 10px;
   }
-  .cs-share-qr-wrap img{display:block; width:100%; max-width:220px; height:auto;}
-  .cs-share-link-row{display:flex; gap:8px;}
-  .cs-share-link-row input{
+  .cs-share-qr-wrap img{display:block; width:100%; max-width:190px; height:auto;}
+  .cs-share-role-tabs{
+    display:flex;
+    gap:4px;
+    padding:4px;
+    margin:12px 0 14px;
+    border-radius:12px;
+    background:var(--surface-2);
+  }
+  .cs-share-role-tab{
     flex:1;
-    min-width:0;
-    padding:12px 14px;
-    border-radius:14px;
-    border:1px solid var(--glass-border);
-    background:var(--surface);
-    color:var(--text);
-    font-size:0.82rem;
+    padding:7px 6px;
+    border:0;
+    border-radius:9px;
+    background:transparent;
+    color:var(--text-dim);
+    font-size:0.78rem;
+    font-weight:700;
+    cursor:pointer;
   }
-  .cs-share-link-row .guide-btn{width:44px; height:44px; border-radius:14px; flex-shrink:0;}
+  .cs-share-role-tab.active{
+    background:var(--surface);
+    color:var(--accent);
+    box-shadow:0 1px 4px var(--shadow);
+  }
+  .cs-share-btn{width:100%; margin-top:10px;}
+  #share-modal-backdrop .guide-modal{
+    width:min(92vw, 400px);
+    max-width:none;
+    height:min(92vw, 400px);
+    max-height:92vh;
+    box-sizing:border-box;
+    scrollbar-width:none;
+  }
+  #share-modal-backdrop .guide-modal h2,
+  #share-modal-backdrop .guide-modal-close{display:none;}
+  #share-modal-backdrop .guide-modal::-webkit-scrollbar{display:none;}
+
+  .cs-game-header{
+    position:static;
+  }
+  .cs-game-actions{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .cs-game-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    min-height:38px;
+    margin:0 8px 6px;
+  }
+  .cs-starting-team{
+    min-width:0;
+    padding:6px 10px;
+    border-radius:8px;
+    color:#fff;
+    font-family:var(--font-display);
+    font-size:0.95rem;
+    font-weight:800;
+    line-height:1.2;
+  }
+  .cs-controls-host{
+    margin-left:auto;
+  }
+  #screen-game .cs-game-topbar .ingame-extra-controls{
+    margin:0;
+  }
 
   .share-icon{
     display:block;
@@ -270,22 +340,13 @@
       <p>Cada equipo tiene a alguien que conoce la clave (puede turnarse). Esa persona da una palabra y un número — por ejemplo "Océano, 2" — para que su equipo adivine dos palabras del tablero relacionadas con "Océano". No puede decir ninguna de las palabras del tablero ni derivados obvios.</p>
 
       <h3>La clave</h3>
-      <p>Pulsa "Ver clave" para colorear el tablero: azul y rojo son las palabras de cada equipo, gris son neutras, y la negra 💀 es el asesino — si un equipo la dice, pierde la partida en el acto. Una línea de color sobre el tablero indica qué equipo empieza. Solo quien da las pistas debe mirar esta pantalla; el resto del equipo mira el tablero sin colorear.</p>
+      <p>Pulsa "Ver clave" para colorear el tablero: azul y rojo son las palabras de cada equipo, gris son neutras, y la negra 💀 es el asesino — si un equipo la dice, pierde la partida en el acto. El indicador superior muestra qué equipo empieza. Solo quien da las pistas debe mirar esta pantalla; el resto del equipo mira el tablero sin colorear.</p>
 
       <h3>Compartir la clave</h3>
       <p>Si jugáis con alguien en remoto, podéis haceros una captura de pantalla con la clave revelada y enviarla por privado — la app no lo hace por vosotros.</p>
 
       <h3>Fin de la partida</h3>
       <p>Gana el equipo que adivine todas sus palabras primero. Si alguien dice el asesino, pierde su equipo al instante. Todo esto se decide de viva voz; la app no lleva la cuenta.</p>
-    </div>
-  </div>
-
-  <!-- KEY WARNING: shown once before first revealing the key -->
-  <div class="guide-modal-backdrop hidden" id="key-warning-backdrop">
-    <div class="guide-modal">
-      <h2>🔑 Cuidado</h2>
-      <p>No dejes que tu equipo vea esta pantalla — es la clave secreta. Solo debe mirarla quien da las pistas.</p>
-      <button class="btn-main" id="key-warning-ok-btn" style="margin-top:10px;">Entendido</button>
     </div>
   </div>
 
@@ -304,37 +365,39 @@
     <div class="guide-modal">
       <button type="button" class="guide-modal-close" id="share-modal-close">✕</button>
       <h2>🔗 Compartir tablero</h2>
+      <div class="cs-share-role-tabs" role="tablist" aria-label="Tipo de enlace">
+        <button type="button" class="cs-share-role-tab" id="share-role-leader" role="tab" aria-selected="false">Líder</button>
+        <button type="button" class="cs-share-role-tab active" id="share-role-participant" role="tab" aria-selected="true">Participante</button>
+      </div>
       <div class="cs-share-qr-wrap">
         <img id="share-qr-img" alt="Código QR del tablero" width="220" height="220">
       </div>
-      <div class="cs-share-link-row">
-        <input type="text" id="share-link-input" readonly aria-label="Enlace para compartir">
-        <button type="button" class="guide-btn" id="share-copy-btn" aria-label="Copiar enlace">📋</button>
-      </div>
-      <p class="count-info" id="share-copy-msg"></p>
-      <button type="button" class="btn-main hidden" id="share-native-btn" style="margin-top:10px;">📤 Compartir enlace</button>
+      <button type="button" class="btn-main cs-share-btn" id="share-native-btn">📤 Compartir enlace</button>
+      <p class="count-info" id="share-msg"></p>
     </div>
   </div>
 
   <!-- GAME SCREEN: starting team + board -->
   <div class="screen hidden" id="screen-game">
     <div class="card">
-      <div class="setup-header">
+      <div class="setup-header cs-game-header">
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div class="cs-game-actions">
           <button type="button" class="guide-btn ayuda-trigger" id="guide-btn-game" aria-label="Ayuda">?</button>
           <button type="button" class="guide-btn" id="key-toggle-btn" aria-label="Ver clave" aria-pressed="false"><span class="eye-icon"></span></button>
           <button type="button" class="guide-btn" id="share-board-btn" aria-label="Compartir tablero"><span class="share-icon"></span></button>
         </div>
       </div>
+      <div class="cs-game-topbar">
+        <div class="cs-starting-team" id="cs-starting-team" aria-live="polite"></div>
+        <div class="cs-controls-host"></div>
+      </div>
       <div class="scr-body">
-        <div class="cs-start-line" id="cs-start-line-top"></div>
-
-        <div class="cs-board" id="cs-board"></div>
-
-        <div class="cs-start-line" id="cs-start-line-bottom"></div>
+        <div class="cs-board-row">
+          <div class="cs-board" id="cs-board"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -508,15 +571,12 @@
   }
 
   // ---------- game screen ----------
-  var startLineEls = [document.getElementById('cs-start-line-top'), document.getElementById('cs-start-line-bottom')];
+  var startingTeamEl = document.getElementById('cs-starting-team');
   var boardEl = document.getElementById('cs-board');
   var keyToggleBtn = document.getElementById('key-toggle-btn');
-  var keyWarningBackdrop = document.getElementById('key-warning-backdrop');
-  var keyWarningOkBtn = document.getElementById('key-warning-ok-btn');
   var exitConfirmBackdrop = document.getElementById('exit-confirm-backdrop');
   var exitConfirmBtn = document.getElementById('exit-confirm-btn');
   var exitCancelBtn = document.getElementById('exit-cancel-btn');
-  var keyEverConfirmed = false;
   var viewOnly = false; // true when this page was opened from a shared board link (?w=...)
 
   // ---------- share board (QR + link, no team/key info) ----------
@@ -524,41 +584,64 @@
   var shareModalBackdrop = document.getElementById('share-modal-backdrop');
   var shareModalClose = document.getElementById('share-modal-close');
   var shareQrImg = document.getElementById('share-qr-img');
-  var shareLinkInput = document.getElementById('share-link-input');
-  var shareCopyBtn = document.getElementById('share-copy-btn');
-  var shareCopyMsg = document.getElementById('share-copy-msg');
+  var shareUrl = '';
+  var shareMsg = document.getElementById('share-msg');
   var shareNativeBtn = document.getElementById('share-native-btn');
+  var shareRoleLeaderBtn = document.getElementById('share-role-leader');
+  var shareRoleParticipantBtn = document.getElementById('share-role-participant');
+  var shareRole = 'participant';
 
-  function buildShareUrl(){
-    return window.location.origin + window.location.pathname + '?w=' + encodeURIComponent(state.board.join('|'));
+  function buildShareUrl(role){
+    var url = window.location.origin + window.location.pathname + '?w=' + encodeURIComponent(state.board.join('|'));
+    if (role === 'leader'){
+      url += '&r=l&k=' + encodeURIComponent(state.roles.join(',')) + '&s=' + state.startingTeam;
+    } else {
+      url += '&r=p';
+    }
+    return url;
+  }
+
+  function updateSharePreview(){
+    shareUrl = buildShareUrl(shareRole);
+    shareQrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(shareUrl);
   }
 
   setupModal(shareBoardBtn, shareModalBackdrop, shareModalClose);
   shareBoardBtn.addEventListener('click', function(){
-    var url = buildShareUrl();
-    shareLinkInput.value = url;
-    shareQrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(url);
-    shareCopyMsg.textContent = '';
-    shareNativeBtn.classList.toggle('hidden', !navigator.share);
+    shareRole = 'participant';
+    shareRoleLeaderBtn.classList.remove('active');
+    shareRoleParticipantBtn.classList.add('active');
+    shareRoleLeaderBtn.setAttribute('aria-selected', 'false');
+    shareRoleParticipantBtn.setAttribute('aria-selected', 'true');
+    updateSharePreview();
+    shareMsg.textContent = '';
   });
 
-  shareCopyBtn.addEventListener('click', function(){
-    function done(){ shareCopyMsg.textContent = 'Enlace copiado.'; }
-    function fail(){ shareCopyMsg.textContent = 'No se pudo copiar. Selecciona el texto y copia manualmente.'; }
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(shareLinkInput.value).then(done).catch(fail);
-      return;
-    }
-    shareLinkInput.select();
-    shareLinkInput.setSelectionRange(0, 99999);
-    try {
-      if (document.execCommand('copy')) done(); else fail();
-    } catch (e){ fail(); }
-  });
+  function selectShareRole(role){
+    shareRole = role;
+    var isLeader = role === 'leader';
+    shareRoleLeaderBtn.classList.toggle('active', isLeader);
+    shareRoleParticipantBtn.classList.toggle('active', !isLeader);
+    shareRoleLeaderBtn.setAttribute('aria-selected', String(isLeader));
+    shareRoleParticipantBtn.setAttribute('aria-selected', String(!isLeader));
+    updateSharePreview();
+    shareMsg.textContent = '';
+  }
+  shareRoleLeaderBtn.addEventListener('click', function(){ selectShareRole('leader'); });
+  shareRoleParticipantBtn.addEventListener('click', function(){ selectShareRole('participant'); });
 
   shareNativeBtn.addEventListener('click', function(){
-    if (!navigator.share) return;
-    navigator.share({ title: 'Código Secreto', text: 'Tablero de Código Secreto', url: shareLinkInput.value }).catch(function(){});
+    if (navigator.share){
+      navigator.share({ title: 'Código Secreto', text: 'Tablero de Código Secreto', url: shareUrl }).catch(function(){});
+      return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(shareUrl).then(function(){
+        shareMsg.textContent = 'Enlace copiado. Puedes pegarlo donde quieras compartirlo.';
+      }).catch(function(){
+        shareMsg.textContent = 'No se pudo compartir el enlace en este navegador.';
+      });
+    }
   });
 
   function buildBoard(){
@@ -567,20 +650,34 @@
     }).map(function(p){
       return shuffle(p.palabras.slice());
     });
-    var categoryOrder = selectedPools.map(function(_, index){ return index; });
     var board = [];
-    var addedWord = true;
+    var categoryUsage = selectedPools.map(function(){ return 0; });
 
-    // Deal in rounds so a large category cannot fill most of the board.
-    while (board.length < BOARD_SIZE && addedWord){
-      addedWord = false;
-      shuffle(categoryOrder).forEach(function(categoryIndex){
-        var categoryPool = selectedPools[categoryIndex];
-        if (board.length < BOARD_SIZE && categoryPool.length > 0){
-          board.push(categoryPool.pop());
-          addedWord = true;
+    // Prefer categories used less often, but keep each draw random so there is
+    // no fixed quota that every category must satisfy.
+    while (board.length < BOARD_SIZE){
+      var availableCategories = [];
+      var totalWeight = 0;
+      selectedPools.forEach(function(categoryPool, index){
+        if (categoryPool.length > 0){
+          var weight = 1 / (1 + categoryUsage[index]);
+          availableCategories.push({ index: index, weight: weight });
+          totalWeight += weight;
         }
       });
+      if (availableCategories.length === 0) break;
+
+      var pick = Math.random() * totalWeight;
+      var selectedCategory = availableCategories[availableCategories.length - 1].index;
+      for (var c = 0; c < availableCategories.length; c++){
+        pick -= availableCategories[c].weight;
+        if (pick <= 0){
+          selectedCategory = availableCategories[c].index;
+          break;
+        }
+      }
+      board.push(selectedPools[selectedCategory].pop());
+      categoryUsage[selectedCategory]++;
     }
     state.board = board;
 
@@ -601,10 +698,9 @@
   }
 
   function renderBoard(){
-    startLineEls.forEach(function(el){
-      el.classList.remove('cs-start-line-color-0', 'cs-start-line-color-1', 'cs-start-line-color-2');
-      el.classList.add('cs-start-line-color-' + state.startingTeam);
-    });
+    startingTeamEl.textContent = 'Empieza equipo ' + TEAM_NAMES[state.startingTeam].toLowerCase();
+    startingTeamEl.style.backgroundColor = TEAM_HEX[state.startingTeam];
+    startingTeamEl.classList.add('hidden');
 
     boardEl.innerHTML = state.board.map(function(word, i){
       var role = state.roles[i];
@@ -616,7 +712,7 @@
   }
 
   function fitCellText(cell){
-    var maxSize = 0.68, minSize = 0.38, step = 0.02;
+    var maxSize = 1.15, minSize = 0.28, step = 0.02;
     var size = maxSize;
     cell.style.fontSize = size + 'rem';
     while (size > minSize && (cell.scrollHeight > cell.clientHeight + 1 || cell.scrollWidth > cell.clientWidth + 1)){
@@ -638,7 +734,7 @@
 
   function setKeyVisible(visible){
     boardEl.classList.toggle('key-visible', visible);
-    startLineEls.forEach(function(el){ el.classList.toggle('revealed', visible); });
+    startingTeamEl.classList.toggle('hidden', !visible);
     keyToggleBtn.classList.toggle('key-visible', visible);
     keyToggleBtn.setAttribute('aria-pressed', String(visible));
     keyToggleBtn.setAttribute('aria-label', visible ? 'Ocultar clave' : 'Ver clave');
@@ -655,23 +751,12 @@
       setKeyVisible(false);
       return;
     }
-    if (keyEverConfirmed){
-      setKeyVisible(true);
-      return;
-    }
-    keyWarningBackdrop.classList.remove('hidden');
-  });
-
-  keyWarningOkBtn.addEventListener('click', function(){
-    keyEverConfirmed = true;
-    keyWarningBackdrop.classList.add('hidden');
     setKeyVisible(true);
   });
 
   function exitViewOnly(){
     viewOnly = false;
     keyToggleBtn.classList.remove('hidden');
-    startLineEls.forEach(function(el){ el.style.removeProperty('display'); });
     window.history.replaceState(null, '', window.location.pathname);
     enterSetup();
   }
@@ -685,16 +770,16 @@
     renderBoard();
   });
 
-  // ---------- shared board view (opened via ?w=palabra1|palabra2|... link/QR) ----------
-  function enterSharedBoard(words){
+  // ---------- shared board view (opened via ?w=... link/QR) ----------
+  function enterSharedBoard(words, sharedRoles, sharedStartingTeam, isLeader){
     viewOnly = true;
     state.board = words;
-    state.roles = words.map(function(){ return 'neutral'; });
-    state.startingTeam = 0;
-    keyToggleBtn.classList.add('hidden');
-    startLineEls.forEach(function(el){ el.style.display = 'none'; });
+    state.roles = isLeader ? sharedRoles : words.map(function(){ return 'neutral'; });
+    state.startingTeam = isLeader ? sharedStartingTeam : 0;
+    keyToggleBtn.classList.toggle('hidden', !isLeader);
     switchScreen(screenGame);
     renderBoard();
+    setKeyVisible(isLeader);
   }
 
   // ---------- how-to-play guide ----------
@@ -704,7 +789,6 @@
     document.getElementById('guide-modal-close')
   );
   document.getElementById('guide-btn-game').addEventListener('click', function(){
-    keyWarningBackdrop.classList.add('hidden');
     document.getElementById('guide-modal-backdrop').classList.remove('hidden');
   });
 
@@ -718,7 +802,18 @@
     if (!w) return;
     var words = w.split('|').map(function(s){ return s.trim(); }).filter(Boolean);
     if (!words.length) return;
-    enterSharedBoard(words);
+    var isLeader = params.get('r') === 'l';
+    var sharedRoles = (params.get('k') || '').split(',');
+    var sharedStartingTeam = Number(params.get('s'));
+    var validSharedRoles = isLeader && Number.isInteger(sharedStartingTeam) && sharedStartingTeam >= 0 && sharedStartingTeam < TEAM_NAMES.length && sharedRoles.length === words.length && sharedRoles.every(function(role){
+      return role === 'neutral' || role === 'assassin' || /^\d$/.test(role);
+    });
+    enterSharedBoard(
+      words,
+      validSharedRoles ? sharedRoles : words.map(function(){ return 'neutral'; }),
+      Number.isInteger(sharedStartingTeam) ? sharedStartingTeam : 0,
+      validSharedRoles
+    );
   })();
 })();
 </script>

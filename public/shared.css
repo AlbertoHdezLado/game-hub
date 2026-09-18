@@ -1791,19 +1791,29 @@ input:focus-visible{
    (Código Secreto's ver-clave/compartir, Hombres Lobo's día/noche status +
    "Personajes"), see shared.js initIngameHomeControls */
 .ingame-extra-controls{
-  position:absolute;
-  z-index:30;
-  top:max(14px, env(safe-area-inset-top));
-  left:max(16px, env(safe-area-inset-left));
+  position:static;
+  flex:0 0 auto;
+  align-self:flex-end;
   display:flex;
   align-items:center;
   gap:8px;
+  margin:0 0 14px;
 }
 .ingame-extra-controls .guide-btn{
   background:var(--surface-2);
   border-color:var(--surface-border);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
+}
+#screen-game .ingame-extra-controls{
+  gap:6px;
+  margin-bottom:6px;
+}
+#screen-game .ingame-extra-controls .guide-btn{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  font-size:1rem;
 }
 .ingame-extra-controls .back-btn{
   margin:0;

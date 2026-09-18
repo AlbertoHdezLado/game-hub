@@ -133,7 +133,7 @@ function setupModal(triggerEls, backdropEl, closeEl){
   function close(){ backdropEl.classList.add('hidden'); }
   var triggers = triggerEls && typeof triggerEls.length === 'number' ? triggerEls : [triggerEls];
   Array.prototype.forEach.call(triggers, function(t){ t.addEventListener('click', open); });
-  closeEl.addEventListener('click', close);
+  if (closeEl) closeEl.addEventListener('click', close);
   backdropEl.addEventListener('click', function(e){ if (e.target === backdropEl) close(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
   return { open: open, close: close };
@@ -287,10 +287,11 @@ function initIngameHomeControls(){
           extras.appendChild(el);
         });
         var balanceTrack = screen.id === 'screen-narrator' && card.querySelector('#narrator-balance-track');
-        if (balanceTrack){
-          card.insertBefore(extras, balanceTrack);
+        var controlsHost = card.querySelector('.cs-controls-host');
+        if (controlsHost){
+          controlsHost.appendChild(extras);
         } else {
-          card.appendChild(extras);
+          card.insertBefore(extras, card.firstChild);
         }
       }
     }
@@ -325,6 +326,7 @@ function initHomeExitConfirm(){
       backdrop.classList.add('hidden');
     });
     document.getElementById('home-confirm-exit-btn').addEventListener('click', function(){
+      allowPageExit();
       window.location.href = pendingHref;
     });
     backdrop.querySelector('.guide-modal-help').addEventListener('click', function(){
@@ -353,6 +355,26 @@ function initHomeExitConfirm(){
   });
 }
 initHomeExitConfirm();
+
+var pageExitAllowed = false;
+
+function allowPageExit(){
+  pageExitAllowed = true;
+}
+
+function isGameInProgress(){
+  var activeScreen = document.querySelector('.screen:not(.hidden)');
+  return !!activeScreen &&
+    activeScreen.id !== 'screen-setup' &&
+    activeScreen.id !== 'screen-end' &&
+    activeScreen.id !== 'screen-final';
+}
+
+window.addEventListener('beforeunload', function(event){
+  if (pageExitAllowed || !isGameInProgress()) return;
+  event.preventDefault();
+  event.returnValue = '';
+});
 
 /* "back to setup" (back icon next to the home icon) needs the same exit-progress
    confirmation as the home button, but returns to this game's own setup screen
