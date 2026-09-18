@@ -277,8 +277,21 @@ function initIngameHomeControls(){
       if (leftover.length){
         var extras = document.createElement('div');
         extras.className = 'ingame-extra-controls';
-        leftover.forEach(function(el){ extras.appendChild(el); });
-        card.appendChild(extras);
+        leftover.forEach(function(el, index){
+          if (screen.id === 'screen-narrator' && index === 1){
+            var spacer = document.createElement('span');
+            spacer.className = 'ingame-controls-spacer';
+            spacer.setAttribute('aria-hidden', 'true');
+            extras.appendChild(spacer);
+          }
+          extras.appendChild(el);
+        });
+        var balanceTrack = screen.id === 'screen-narrator' && card.querySelector('#narrator-balance-track');
+        if (balanceTrack){
+          card.insertBefore(extras, balanceTrack);
+        } else {
+          card.appendChild(extras);
+        }
       }
     }
     if (header) header.remove();

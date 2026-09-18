@@ -30,6 +30,17 @@
   .reveal-wrap{
     height:280px;
   }
+  #panel-night .reveal-wrap{
+    width:min(100%, 280px);
+    height:auto;
+    aspect-ratio:1;
+    align-self:center;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  #panel-night .reveal-content img.reveal-portrait{
+    object-position:center center;
+  }
   .reveal-icon{filter:grayscale(1);}
   .reveal-text{font-size:1.15rem;}
   .reveal-content{
@@ -112,11 +123,11 @@
     padding:24px;
     background:rgba(5,7,13,0.92);
     font-family:var(--font-body);
-    font-size:0.85rem;
-    font-weight:400;
+    font-size:1rem;
+    font-weight:500;
     text-transform:none;
     letter-spacing:normal;
-    color:var(--text-dim);
+    color:rgba(255,255,255,0.96);
     line-height:1.5;
     opacity:0;
     visibility:hidden;
@@ -488,6 +499,19 @@
     margin:10px 0 14px;
     flex:0 0 auto;
   }
+  #screen-narrator .narrator-balance-track{
+    margin-top:54px;
+  }
+  #screen-narrator .ingame-extra-controls{
+    right:max(16px, env(safe-area-inset-right));
+    width:calc(100% - max(32px, env(safe-area-inset-left) + env(safe-area-inset-right)));
+    justify-content:space-between;
+  }
+  #screen-narrator .ingame-controls-spacer{
+    width:8px;
+    height:1px;
+    flex:1 1 auto;
+  }
   #panel-night, #panel-vote{
     display:flex;
     flex-direction:column;
@@ -538,8 +562,13 @@
     border-radius:14px;
     background:var(--surface);
     border:1px solid var(--glass-border);
+    text-align:center;
   }
-  .role-widget label{margin:10px 0 6px;}
+  .role-widget label{
+    display:block;
+    margin:10px 0 6px;
+    text-align:center;
+  }
   .role-widget label:first-child{margin-top:0;}
   .role-widget-status{
     margin-top:10px;
@@ -561,6 +590,7 @@
   .role-widget-checklist{
     display:flex;
     flex-wrap:wrap;
+    justify-content:center;
     gap:8px;
   }
   .role-widget-checklist .chip{width:auto;}
