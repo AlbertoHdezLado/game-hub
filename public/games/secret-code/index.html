@@ -172,48 +172,102 @@
   .cs-share-qr-wrap{
     display:flex;
     justify-content:center;
+    grid-column:2;
+    grid-row:1;
+    width:max-content;
+    max-width:100%;
+    min-width:0;
     background:#fff;
     padding:10px;
     border-radius:16px;
-    margin:10px 0 10px;
+    margin:0;
+    box-sizing:border-box;
   }
-  .cs-share-qr-wrap img{display:block; width:100%; max-width:190px; height:auto;}
-  .cs-share-role-tabs{
+  .cs-share-qr-wrap img{
+    display:block;
+    width:clamp(120px, calc(100vh - 220px), 70vh);
+    max-width:100%;
+    max-height:clamp(120px, calc(100vh - 220px), 70vh);
+    height:auto;
+    aspect-ratio:1;
+    object-fit:contain;
+  }
+  .cs-share-layout{
+    display:grid;
+    grid-template-columns:max-content max-content;
+    align-items:start;
+    gap:24px;
+    margin-top:10px;
+  }
+  .cs-share-actions{
     display:flex;
-    gap:4px;
-    padding:4px;
-    margin:12px 0 14px;
+    flex-direction:column;
+    gap:14px;
+    grid-column:1;
+    grid-row:1;
+  }
+  .cs-share-leader-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 12px;
+    margin:0;
     border-radius:12px;
     background:var(--surface-2);
-  }
-  .cs-share-role-tab{
-    flex:1;
-    padding:7px 6px;
-    border:0;
-    border-radius:9px;
-    background:transparent;
-    color:var(--text-dim);
-    font-size:0.78rem;
+    color:var(--text);
+    font-size:0.82rem;
     font-weight:700;
     cursor:pointer;
   }
-  .cs-share-role-tab.active{
-    background:var(--surface);
-    color:var(--accent);
-    box-shadow:0 1px 4px var(--shadow);
+  .cs-share-leader-toggle input{
+    appearance:none;
+    width:42px;
+    height:24px;
+    flex:0 0 auto;
+    margin:0;
+    border-radius:999px;
+    background:var(--surface-border);
+    cursor:pointer;
+    transition:background .2s ease;
   }
-  .cs-share-btn{width:100%; margin-top:10px;}
+  .cs-share-leader-toggle input::before{
+    content:"";
+    display:block;
+    width:18px;
+    height:18px;
+    margin:3px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 1px 3px var(--shadow);
+    transition:transform .2s ease;
+  }
+  .cs-share-leader-toggle input:checked{
+    background:var(--accent);
+  }
+  .cs-share-leader-toggle input:checked::before{
+    transform:translateX(18px);
+  }
+  .cs-share-btn{width:100%; margin-top:0;}
   #share-modal-backdrop .guide-modal{
-    width:min(92vw, 400px);
-    max-width:none;
-    height:min(92vw, 400px);
-    max-height:92vh;
+    position:fixed;
+    margin:24px;
+    width:max-content;
+    max-width:calc(100vw - 48px);
+    height:auto;
+    max-height:calc(100vh - 48px);
+    overflow:hidden;
     box-sizing:border-box;
     scrollbar-width:none;
   }
   #share-modal-backdrop .guide-modal h2,
   #share-modal-backdrop .guide-modal-close{display:none;}
   #share-modal-backdrop .guide-modal::-webkit-scrollbar{display:none;}
+  @media (max-width:560px){
+    .cs-share-layout{grid-template-columns:1fr; gap:14px;}
+    .cs-share-actions,
+    .cs-share-qr-wrap{grid-column:1; grid-row:auto;}
+  }
 
   .cs-game-header{
     position:static;
@@ -365,14 +419,18 @@
     <div class="guide-modal">
       <button type="button" class="guide-modal-close" id="share-modal-close">✕</button>
       <h2>🔗 Compartir tablero</h2>
-      <div class="cs-share-role-tabs" role="tablist" aria-label="Tipo de enlace">
-        <button type="button" class="cs-share-role-tab" id="share-role-leader" role="tab" aria-selected="false">Líder</button>
-        <button type="button" class="cs-share-role-tab active" id="share-role-participant" role="tab" aria-selected="true">Participante</button>
+      <div class="cs-share-layout">
+        <div class="cs-share-qr-wrap">
+          <img id="share-qr-img" alt="Código QR del tablero" width="220" height="220">
+        </div>
+        <div class="cs-share-actions">
+          <label class="cs-share-leader-toggle">
+            <span>Vista líder de equipo</span>
+            <input type="checkbox" id="share-role-leader" aria-label="Vista líder de equipo">
+          </label>
+          <button type="button" class="btn-main cs-share-btn" id="share-native-btn">📤 Compartir enlace</button>
+        </div>
       </div>
-      <div class="cs-share-qr-wrap">
-        <img id="share-qr-img" alt="Código QR del tablero" width="220" height="220">
-      </div>
-      <button type="button" class="btn-main cs-share-btn" id="share-native-btn">📤 Compartir enlace</button>
       <p class="count-info" id="share-msg"></p>
     </div>
   </div>
@@ -588,7 +646,6 @@
   var shareMsg = document.getElementById('share-msg');
   var shareNativeBtn = document.getElementById('share-native-btn');
   var shareRoleLeaderBtn = document.getElementById('share-role-leader');
-  var shareRoleParticipantBtn = document.getElementById('share-role-participant');
   var shareRole = 'participant';
 
   function buildShareUrl(role){
@@ -609,26 +666,20 @@
   setupModal(shareBoardBtn, shareModalBackdrop, shareModalClose);
   shareBoardBtn.addEventListener('click', function(){
     shareRole = 'participant';
-    shareRoleLeaderBtn.classList.remove('active');
-    shareRoleParticipantBtn.classList.add('active');
-    shareRoleLeaderBtn.setAttribute('aria-selected', 'false');
-    shareRoleParticipantBtn.setAttribute('aria-selected', 'true');
+    shareRoleLeaderBtn.checked = false;
     updateSharePreview();
     shareMsg.textContent = '';
   });
 
   function selectShareRole(role){
     shareRole = role;
-    var isLeader = role === 'leader';
-    shareRoleLeaderBtn.classList.toggle('active', isLeader);
-    shareRoleParticipantBtn.classList.toggle('active', !isLeader);
-    shareRoleLeaderBtn.setAttribute('aria-selected', String(isLeader));
-    shareRoleParticipantBtn.setAttribute('aria-selected', String(!isLeader));
+    shareRoleLeaderBtn.checked = role === 'leader';
     updateSharePreview();
     shareMsg.textContent = '';
   }
-  shareRoleLeaderBtn.addEventListener('click', function(){ selectShareRole('leader'); });
-  shareRoleParticipantBtn.addEventListener('click', function(){ selectShareRole('participant'); });
+  shareRoleLeaderBtn.addEventListener('change', function(){
+    selectShareRole(shareRoleLeaderBtn.checked ? 'leader' : 'participant');
+  });
 
   shareNativeBtn.addEventListener('click', function(){
     if (navigator.share){
