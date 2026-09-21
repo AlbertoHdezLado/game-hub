@@ -1,0 +1,14 @@
+supabase/migrations/202609210003_secret_code_winner_team_count.sql
+  h_fed6a40af368f7 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "76434c123cfc4a6134a977dea0b0b7afd86306d0",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
