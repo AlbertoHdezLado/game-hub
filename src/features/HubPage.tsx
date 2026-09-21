@@ -58,7 +58,17 @@ export function HubPage() {
 
 function HubHeader() {
   return (
-    <div className="hub-logo" aria-label="Game Hub" />
+    <>
+      <div className="hub-logo" aria-label="Game Hub" />
+      <a
+        href="https://forms.gle/ne3tXqPzfKN98PuK6"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="suggestion-link"
+      >
+        💡 Enviar una sugerencia
+      </a>
+    </>
   );
 }
 
@@ -117,14 +127,6 @@ function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo
 function HubFooter({ version }: Readonly<{ version: string }>) {
   return (
     <div className="hub-footer">
-      <a
-        href="https://forms.gle/ne3tXqPzfKN98PuK6"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="suggestion-link"
-      >
-        💡 Enviar una sugerencia
-      </a>
       <span>Creado por Alberto Hernández</span>
       <span>v{version}</span>
     </div>
