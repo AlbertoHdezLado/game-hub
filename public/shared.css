@@ -1480,15 +1480,20 @@ input:focus-visible{
   border-radius:10px;
 }
 #screen-setup .night-nav{
-  margin-top:18px;
+  margin-top:10px;
+  gap:6px;
 }
 #screen-setup .night-nav-btn{
   min-height:46px;
   border-radius:11px;
 }
+#screen-setup .scr-dock{
+  padding-top:0;
+}
 #screen-setup .final-nav{
-  margin-top:20px;
-  padding-bottom:12px;
+  margin-top:10px;
+  padding-bottom:0;
+  gap:6px;
   overflow:visible;
 }
 #screen-setup .btn-main{

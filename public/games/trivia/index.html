@@ -28,30 +28,38 @@
   .team-color-2{background:#4fbf7a;}
   .team-color-3{background:#f2c94c;}
 
-  /* ---- team boxes (setup): tap-and-drag a player's chip to another team, identical to Time's Up / Mímica ---- */
-  .team-boxes-header{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    margin:10px 0 14px;
-  }
+  /* ---- team boxes (setup): tap a player's chip to cycle them to the next team ---- */
+  .team-section-header{display:grid; align-items:center; grid-template-columns:1fr auto 1fr; margin:0 0 8px;}
+  .team-section-actions{display:contents;}
+  .team-count-control{grid-column:2; display:flex; align-items:center; height:38px; gap:8px; padding:0;}
+  .team-count-label{color:var(--accent); font-size:0.85rem; font-weight:700; letter-spacing:0.04em;}
+  .team-count-control button{width:34px; min-width:34px; height:30px; border:0; border-radius:7px; background:var(--accent); color:#fff; font-size:1.1rem; line-height:1; font-weight:700; cursor:pointer;}
+  .team-count-control button:active{transform:scale(0.92);}
+  .team-count-control button:disabled{opacity:0.45; cursor:not-allowed;}
+  .team-section-header .randomize-teams-btn{grid-column:3; justify-self:end; margin:0; padding:6px 12px; gap:5px; font-size:0.75rem;}
+  .team-section-header .dice-icon{width:15px; height:15px;}
+  #team-boxes{display:grid; grid-template-columns:1fr; gap:8px;}
   .team-box{
     border-radius:14px;
     border:1px solid var(--glass-border);
     background:rgba(255,255,255,0.05);
     padding:10px 12px;
-    margin-bottom:8px;
+    margin-bottom:0;
+    box-shadow:0 3px 0 rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.08);
   }
+  @media (orientation:landscape){#team-boxes{grid-template-columns:repeat(var(--team-count, 2), minmax(0, 1fr));}}
   .team-box-header{
     display:flex;
     align-items:center;
-    gap:8px;
+    justify-content:center;
     font-weight:700;
     font-size:0.85rem;
     margin-bottom:8px;
   }
-  .team-box-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .team-box.team-color-0 .team-box-header{color:#5b8fe0;}
+  .team-box.team-color-1 .team-box-header{color:#c9525c;}
+  .team-box.team-color-2 .team-box-header{color:#4fbf7a;}
+  .team-box.team-color-3 .team-box-header{color:#b08a00;}
   .team-box-chips{display:flex; flex-wrap:wrap; gap:6px;}
   .team-box-chip{
     padding:6px 12px;
@@ -81,10 +89,11 @@
   .team-box-chip.team-color-2{background:#4fbf7a; border-color:#4fbf7a; color:#fff;}
   .team-box-chip.team-color-3{background:#f2c94c; border-color:#f2c94c; color:#333;}
   .mini-score-pill.team-color-3, .team-turn-badge.team-color-3{color:#3a2f00;}
-  .team-box.drag-over{
-    border-color:var(--accent);
-    background:rgba(255,255,255,0.1);
-  }
+  .team-box.drag-over{border-color:var(--accent); background:var(--surface-2);}
+  .team-box.team-color-0.drag-over{border-color:#5b8fe0; background:rgba(91,143,224,0.28);}
+  .team-box.team-color-1.drag-over{border-color:#c9525c; background:rgba(201,82,92,0.28);}
+  .team-box.team-color-2.drag-over{border-color:#4fbf7a; background:rgba(79,191,122,0.28);}
+  .team-box.team-color-3.drag-over{border-color:#f2c94c; background:rgba(242,201,76,0.3);}
   .team-box-empty{color:var(--text-dim); font-size:0.8rem; font-style:italic;}
 
   .packages-dropdown-btn{
@@ -377,17 +386,17 @@
         </div>
 
         <div id="setup-step-teams" class="hidden">
-          <label>Equipos</label>
-          <div class="stepper">
-            <button type="button" id="team-count-minus">−</button>
-            <div class="value" id="team-count-value">2</div>
-            <button type="button" id="team-count-plus">+</button>
-          </div>
-          <div class="team-boxes-header">
-            <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
+          <div class="team-section-header">
+            <div class="team-section-actions">
+              <div class="team-count-control" aria-label="Número de equipos">
+                <button type="button" id="team-count-minus" aria-label="Disminuir equipos">−</button>
+                <span class="team-count-label">EQUIPOS</span>
+                <button type="button" id="team-count-plus" aria-label="Aumentar equipos">+</button>
+              </div>
+              <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
+            </div>
           </div>
           <div id="team-boxes"></div>
-          <div class="error-msg" id="teams-error"></div>
 
           <div class="error-msg" id="setup-error"></div>
         </div>
@@ -615,7 +624,6 @@
   var playersDraftInput = document.getElementById('players-draft');
   var playersAddBtn = document.getElementById('players-add');
   var playersErrorEl = document.getElementById('players-error');
-  var teamsErrorEl = document.getElementById('teams-error');
   var setupError = document.getElementById('setup-error');
   var startBtn = document.getElementById('start-btn');
   var setupStepPlayersEl = document.getElementById('setup-step-players');
@@ -719,13 +727,16 @@
   });
 
   // ---------- setup: teams ----------
-  var teamCountValueEl = document.getElementById('team-count-value');
   var teamCountMinusBtn = document.getElementById('team-count-minus');
   var teamCountPlusBtn = document.getElementById('team-count-plus');
   var teamBoxesEl = document.getElementById('team-boxes');
   var randomizeTeamsBtn = document.getElementById('randomize-teams-btn');
 
-  function renderTeamCount(){ teamCountValueEl.textContent = config.numTeams; }
+  function renderTeamCount(){
+    teamCountMinusBtn.disabled = config.numTeams <= MIN_TEAMS;
+    teamCountPlusBtn.disabled = config.numTeams >= MAX_TEAMS;
+    teamBoxesEl.style.setProperty('--team-count', config.numTeams);
+  }
 
   function autoBalanceAllTeams(){
     var players = [];
@@ -754,7 +765,7 @@
       });
       html +=
         '<div class="team-box team-color-' + t + '" data-team="' + t + '">' +
-          '<div class="team-box-header"><span class="team-box-dot team-color-' + t + '"></span>' + escapeHtml(TEAM_NAMES[t]) + '</div>' +
+          '<div class="team-box-header">Equipo ' + escapeHtml(TEAM_NAMES[t]) + '</div>' +
           '<div class="team-box-chips">' +
             (members.length ?
               members.map(function(m){ return '<button type="button" class="team-box-chip team-color-' + t + '" data-index="' + m.idx + '">' + escapeHtml(m.name) + '</button>'; }).join('') :
@@ -768,6 +779,11 @@
   // ---------- team boxes: drag a player's chip into another team's box ----------
   var teamDragState = null;
 
+  function setDraggedChipTeamColor(chip, teamIdx){
+    for (var t = 0; t < MAX_TEAMS; t++) chip.classList.remove('team-color-' + t);
+    chip.classList.add('team-color-' + teamIdx);
+  }
+
   function onTeamDragMove(e){
     if (!teamDragState) return;
     e.preventDefault();
@@ -778,7 +794,12 @@
     var elUnder = document.elementFromPoint(e.clientX, e.clientY);
     var box = elUnder ? elUnder.closest('.team-box') : null;
     if (s.hoverBox && s.hoverBox !== box) s.hoverBox.classList.remove('drag-over');
-    if (box) box.classList.add('drag-over');
+    if (box){
+      box.classList.add('drag-over');
+      setDraggedChipTeamColor(s.chip, parseInt(box.getAttribute('data-team'), 10));
+    } else {
+      setDraggedChipTeamColor(s.chip, clamp(config.rows[s.idx].team || 0, 0, config.numTeams - 1));
+    }
     s.hoverBox = box;
   }
 
@@ -829,13 +850,11 @@
   teamCountMinusBtn.addEventListener('click', function(){
     config.numTeams = clamp(config.numTeams - 1, MIN_TEAMS, MAX_TEAMS);
     renderTeamCount();
-    popValue(teamCountValueEl);
     reassignTeamsAfterCountChange();
   });
   teamCountPlusBtn.addEventListener('click', function(){
     config.numTeams = clamp(config.numTeams + 1, MIN_TEAMS, MAX_TEAMS);
     renderTeamCount();
-    popValue(teamCountValueEl);
     reassignTeamsAfterCountChange();
   });
 
@@ -878,7 +897,6 @@
     var settingsValid = settingsMsgs.length === 0;
 
     playersErrorEl.textContent = playerMsgs[0] || "";
-    teamsErrorEl.textContent = teamMsgs[0] || "";
     setupError.textContent = settingsMsgs[0] || "";
     setupNextBtn.disabled = (setupStep === 0 && !playersValid);
     startBtn.disabled = !(playersValid && teamsValid && settingsValid);

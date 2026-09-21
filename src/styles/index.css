@@ -198,9 +198,7 @@ a { color: inherit; }
 }
 .mode-card {
   position: relative;
-  min-width: 0;
   aspect-ratio: 1 / 1;
-  padding: 16px 12px;
   border: 1px solid var(--glass-border);
   border-radius: 18px;
   background: rgb(255 255 255 / .05);
@@ -555,7 +553,7 @@ a { color: inherit; }
 .game-header { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; gap: 10px; margin-bottom: 20px; color: var(--accent2); font-family: var(--font-display); font-size: .82rem; font-weight: 800; letter-spacing: .02em; text-align: center; }
 .icon-button { width: 42px; height: 42px; border-radius: 12px; color: var(--accent); text-decoration: none; }
 .card { padding: 26px 22px; border: 1px solid var(--glass-border); border-radius: 24px; background: var(--glass); backdrop-filter: blur(18px); box-shadow: 0 8px 32px rgb(0 0 0 / .35); }
-.mode-card { box-shadow: none; }
+.mode-card { padding: clamp(8px, 3vw, 16px) clamp(6px, 2.5vw, 12px); box-shadow: none; }
 .card h1 { margin: 0 0 20px; font-family: var(--font-display); font-size: clamp(1.7rem, 8vw, 2rem); font-weight: 800; line-height: 1.1; text-align: center; text-wrap: balance; background: linear-gradient(90deg, var(--accent), var(--accent2)); background-clip: text; color: transparent; }
 .title,
 h1,
