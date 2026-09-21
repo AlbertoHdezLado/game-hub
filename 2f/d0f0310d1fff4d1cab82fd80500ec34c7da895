@@ -1,0 +1,14 @@
+supabase/migrations/202609210002_secret_code_create_room_pgcrypto.sql
+  h_fed6a40af368f7 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2fd0f0310d1fff4d1cab82fd80500ec34c7da895",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
