@@ -1,0 +1,16 @@
+public/games/secret-code/index.html
+  h_fed6a40af368f7 72,568-573,634-636,690-699,714-715,1162-1170
+supabase/migrations/202609210004_secret_code_return_to_lobby.sql
+  h_fed6a40af368f7 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f4f2d37eb7f6ada348bb91a82882680e60758035",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
