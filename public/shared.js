@@ -152,7 +152,13 @@ function initLandscapePrompt(){
      some modes (Time's Up, Charades...) also flow through phase-intro/end
      screens that deserve the same landscape nudge, only setup and the very
      final results screen don't need the device turned */
-  var nonGameScreenIds = { 'screen-setup': true, 'screen-end': true, 'screen-final': true };
+  var nonGameScreenIds = {
+    'screen-room': true,
+    'screen-lobby': true,
+    'screen-setup': true,
+    'screen-end': true,
+    'screen-final': true
+  };
   var screens = Array.prototype.filter.call(
     document.querySelectorAll('.screen'),
     function(el){ return !nonGameScreenIds[el.id]; }
