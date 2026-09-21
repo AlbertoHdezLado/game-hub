@@ -69,6 +69,7 @@
   .cs-cell.cs-cell-reveal-flash{animation:csRevealFlash .55s ease both;}
   #turn-timer{font-family:var(--font-display);font-weight:800;margin-right:8px;}
   #screen-final{max-width:min(520px,94vw);}
+  #final-result-backdrop .guide-modal{max-width:min(420px, calc(100vw - 32px));}
   #screen-game{
     max-width:100vw;
   }
@@ -564,11 +565,12 @@
   </div>
 
   <!-- RESULTS -->
-  <div class="screen hidden" id="screen-final">
-    <div class="card">
-      <div class="setup-header"><a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a></div>
-      <div class="scr-body"><h1 id="final-title">Partida terminada</h1><p class="count-info" id="final-message"></p></div>
-      <div class="scr-dock"><button class="btn-main" id="final-lobby-btn" type="button">Volver a la sala</button></div>
+  <div class="guide-modal-backdrop hidden" id="final-result-backdrop">
+    <div class="guide-modal">
+      <button type="button" class="guide-modal-close" id="final-result-close" aria-label="Cerrar">✕</button>
+      <h2 id="final-title">Partida terminada</h2>
+      <p class="count-info" id="final-message"></p>
+      <button class="btn-main" id="final-lobby-btn" type="button">Volver a la sala</button>
     </div>
   </div>
 
@@ -629,8 +631,9 @@
   var screenRoom = document.getElementById('screen-room');
   var screenLobby = document.getElementById('screen-lobby');
   var screenGame = document.getElementById('screen-game');
-  var screenFinal = document.getElementById('screen-final');
-  var ALL_SCREENS = [screenRoom, screenLobby, screenSetup, screenGame, screenFinal];
+  var ALL_SCREENS = [screenRoom, screenLobby, screenSetup, screenGame];
+  var finalResultBackdrop = document.getElementById('final-result-backdrop');
+  var finishedGameId = null;
 
   function switchScreen(target){
     ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
@@ -684,7 +687,16 @@
       previousRevealed = oldGame ? oldGame.revealed_indices.slice() : [];
       if (data.game && data.game.status === 'finished'){
         renderFinal(data.game);
-        switchScreen(screenFinal);
+        state.board = data.game.words;
+        state.startingTeam = data.game.starting_team;
+        state.roles = data.keys && data.keys.roles ? data.keys.roles : data.game.words.map(function(){ return 'neutral'; });
+        switchScreen(screenGame);
+        renderBoard();
+        setKeyVisible(true);
+        if (finishedGameId !== data.game.id){
+          finishedGameId = data.game.id;
+          finalResultBackdrop.classList.remove('hidden');
+        }
         return data;
       }
       if (data.game && data.game.status === 'playing'){
@@ -699,6 +711,8 @@
         return data;
       }
       renderLobby(data);
+      finishedGameId = null;
+      finalResultBackdrop.classList.add('hidden');
       switchScreen(screenLobby);
       return data;
     });
@@ -1145,7 +1159,15 @@
     }
   }, 1000);
   turnTimeLimitEl.addEventListener('change', function(){ config.timeLimitSeconds = turnTimeLimitEl.value ? Number(turnTimeLimitEl.value) : null; });
-  document.getElementById('final-lobby-btn').addEventListener('click', function(){ refreshRoom().catch(function(){}); });
+  document.getElementById('final-result-close').addEventListener('click', function(){ finalResultBackdrop.classList.add('hidden'); });
+  document.getElementById('final-lobby-btn').addEventListener('click', function(){
+    var button = document.getElementById('final-lobby-btn');
+    button.disabled = true;
+    GameHubSupabase.rpc('secret_code_return_to_lobby', { target_room: roomSession.room.id })
+      .then(refreshRoom)
+      .catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo volver a la sala.'; })
+      .finally(function(){ button.disabled = false; });
+  });
 
   keyToggleBtn.addEventListener('click', function(){
     if (boardEl.classList.contains('key-visible')){
