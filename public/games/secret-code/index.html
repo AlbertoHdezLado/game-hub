@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <script src="/analytics.js"></script>
+<script src="/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-client.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#edf7fb">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -32,6 +35,35 @@
   #screen-setup{
     max-width:min(720px, 94vw);
   }
+  #screen-room{max-width:min(520px, 94vw);}
+  .cs-room-actions{display:grid;gap:10px;margin-top:16px;}
+  .cs-room-actions input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid var(--glass-border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;}
+  .cs-room-code{text-transform:uppercase;letter-spacing:0.18em;text-align:center;font-weight:800;}
+  .cs-room-status{min-height:1.4em;margin:12px 0 0;color:var(--text-dim);font-size:.88rem;text-align:center;}
+  .cs-room-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--text-dim);font-size:.8rem;}
+  .cs-room-divider::before,.cs-room-divider::after{content:"";height:1px;flex:1;background:var(--glass-border);}
+  #screen-lobby{max-width:min(760px, 94vw);}
+  .cs-lobby-code{font-family:var(--font-display);font-size:1.5rem;letter-spacing:.18em;text-align:center;margin:0 0 4px;}
+  .cs-lobby-share{display:flex;gap:8px;justify-content:center;margin:10px 0 18px;}
+  .cs-lobby-share button{padding:8px 12px;border-radius:10px;border:1px solid var(--glass-border);background:var(--surface);color:var(--text);font-weight:700;cursor:pointer;}
+  .cs-teams{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+  .cs-team{padding:10px;border:1px solid var(--glass-border);border-radius:12px;background:var(--surface-2);min-height:130px;}
+  .cs-team h3{margin:0 0 8px;font-size:.9rem;}
+  .cs-team-leader{min-height:28px;margin-bottom:8px;font-size:.78rem;color:var(--text-dim);}
+  .cs-player{display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:.78rem;margin:5px 0;}
+  .cs-player button{padding:4px 6px;border:1px solid var(--glass-border);border-radius:7px;background:var(--surface);color:var(--text);font-size:.7rem;cursor:pointer;}
+  .cs-lobby-actions{display:flex;gap:10px;margin-top:16px;}
+  .cs-lobby-actions>*{flex:1;}
+  @media(max-width:560px){.cs-teams{grid-template-columns:1fr;}.cs-team{min-height:0;}.cs-lobby-actions{flex-direction:column;}}
+  .cs-cell.cs-cell-revealed.role-0{background:#5b8fe0;border-color:#5b8fe0;color:#fff;}
+  .cs-cell.cs-cell-revealed.role-1{background:#c9525c;border-color:#c9525c;color:#fff;}
+  .cs-cell.cs-cell-revealed.role-2{background:#4fbf7a;border-color:#4fbf7a;color:#fff;}
+  .cs-cell.cs-cell-revealed.role-neutral{background:var(--surface-2);border-color:var(--glass-border);}
+  .cs-cell.cs-cell-revealed.role-assassin{background:#161616;border-color:#000;color:#fff;}
+  @keyframes csRevealFlash{0%{transform:scale(.82);filter:brightness(1.8)}100%{transform:scale(1);filter:none}}
+  .cs-cell.cs-cell-reveal-flash{animation:csRevealFlash .55s ease both;}
+  #turn-timer{font-family:var(--font-display);font-weight:800;margin-right:8px;}
+  #screen-final{max-width:min(520px,94vw);}
   #screen-game{
     max-width:100vw;
   }
@@ -155,6 +187,13 @@
      brightness/saturate crush the color down so covered cells look clearly
      dark instead of just washed-out */
   .cs-cell.cs-cell-covered{opacity:0.55; filter:brightness(0.35) saturate(0.6);}
+  .cs-cell.cs-cell-revealed.role-0{background:#5b8fe0;border-color:#5b8fe0;color:#fff;}
+  .cs-cell.cs-cell-revealed.role-1{background:#c9525c;border-color:#c9525c;color:#fff;}
+  .cs-cell.cs-cell-revealed.role-2{background:#4fbf7a;border-color:#4fbf7a;color:#fff;}
+  .cs-cell.cs-cell-revealed.role-neutral{background:var(--surface-2);border-color:var(--glass-border);}
+  .cs-cell.cs-cell-revealed.role-assassin{background:#161616;border-color:#000;color:#fff;}
+  @keyframes csRevealFlash{0%{transform:scale(.82);filter:brightness(1.8)}100%{transform:scale(1);filter:none}}
+  .cs-cell.cs-cell-reveal-flash{animation:csRevealFlash .55s ease both;}
 
   .cs-key-hide-btn{
     flex:1;
@@ -340,8 +379,52 @@
 <body data-landscape-recommended>
 <div id="app">
 
+  <!-- ONLINE ROOM ENTRY -->
+  <div class="screen" id="screen-room">
+    <div class="card">
+      <div class="setup-header">
+        <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+      </div>
+      <div class="scr-body">
+        <h1>CÓDIGO SECRETO</h1>
+        <p class="count-info">Crea una sala o únete con un código para jugar en varios dispositivos.</p>
+        <div class="cs-room-actions">
+          <input id="room-nickname" type="text" maxlength="30" autocomplete="nickname" placeholder="Tu nombre" aria-label="Tu nombre">
+          <button class="btn-main" id="room-create-btn" type="button">Crear sala</button>
+          <div class="cs-room-divider">o únete a una sala</div>
+          <input class="cs-room-code" id="room-code" type="text" maxlength="6" inputmode="latin" autocomplete="one-time-code" placeholder="CÓDIGO" aria-label="Código de sala">
+          <button class="btn-main" id="room-join-btn" type="button">Unirme a la sala</button>
+        </div>
+        <p class="cs-room-status" id="room-status" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONLINE LOBBY -->
+  <div class="screen hidden" id="screen-lobby">
+    <div class="card">
+      <div class="setup-header">
+        <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+      </div>
+      <div class="scr-body">
+        <p class="cs-lobby-code" id="lobby-code"></p>
+        <p class="count-info" id="lobby-status">Esperando jugadores…</p>
+        <div class="cs-lobby-share">
+          <button type="button" id="lobby-copy-btn">Copiar enlace</button>
+          <button type="button" id="lobby-qr-btn">Mostrar QR</button>
+        </div>
+        <div class="cs-teams" id="lobby-teams"></div>
+        <p class="cs-room-status" id="lobby-error" role="status" aria-live="polite"></p>
+      </div>
+      <div class="scr-dock cs-lobby-actions">
+        <button class="cs-key-hide-btn" id="lobby-settings-btn" type="button">Ajustes</button>
+        <button class="btn-main" id="lobby-start-btn" type="button">Iniciar partida</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SETUP -->
-  <div class="screen" id="screen-setup">
+  <div class="screen hidden" id="screen-setup">
     <div class="card">
       <div class="setup-header">
         <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
@@ -369,6 +452,16 @@
               <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
               <div class="chip-list" id="package-list"></div>
             </div>
+            <label for="turn-time-limit"><span class="label-icon">⏱️</span>Tiempo por turno</label>
+            <select id="turn-time-limit" class="packages-dropdown-btn" aria-label="Tiempo por turno">
+              <option value="">Ilimitado</option>
+              <option value="30">30 segundos</option>
+              <option value="60">1 minuto</option>
+              <option value="90">1 minuto y medio</option>
+              <option value="120">2 minutos</option>
+              <option value="180">3 minutos</option>
+              <option value="300">5 minutos</option>
+            </select>
           </div>
         </details>
 
@@ -450,13 +543,22 @@
       </div>
       <div class="cs-game-topbar">
         <div class="cs-starting-team" id="cs-starting-team" aria-live="polite"></div>
-        <div class="cs-controls-host"></div>
+        <div class="cs-controls-host"><span id="turn-timer" aria-live="polite"></span><button type="button" class="cs-key-hide-btn hidden" id="finish-turn-btn">Finalizar turno</button></div>
       </div>
       <div class="scr-body">
         <div class="cs-board-row">
           <div class="cs-board" id="cs-board"></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen hidden" id="screen-final">
+    <div class="card">
+      <div class="setup-header"><a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a></div>
+      <div class="scr-body"><h1 id="final-title">Partida terminada</h1><p class="count-info" id="final-message"></p></div>
+      <div class="scr-dock"><button class="btn-main" id="final-lobby-btn" type="button">Volver a la sala</button></div>
     </div>
   </div>
 
@@ -474,7 +576,8 @@
 
   var config = {
     numTeams: 2,
-    selectedPackages: []
+    selectedPackages: [],
+    timeLimitSeconds: null
   };
 
   var PACKAGES = null;
@@ -509,14 +612,180 @@
     roles: []   // parallel to board: 0/1/2 (team index), 'neutral', 'assassin'
   };
 
+  var roomSession = { room: null, playerId: null, unsubscribe: null };
+  var previousRevealed = [];
+
   var screenSetup = document.getElementById('screen-setup');
+  var screenRoom = document.getElementById('screen-room');
+  var screenLobby = document.getElementById('screen-lobby');
   var screenGame = document.getElementById('screen-game');
-  var ALL_SCREENS = [screenSetup, screenGame];
+  var screenFinal = document.getElementById('screen-final');
+  var ALL_SCREENS = [screenRoom, screenLobby, screenSetup, screenGame, screenFinal];
 
   function switchScreen(target){
     ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
     target.classList.remove('hidden');
   }
+
+  // ---------- online room entry ----------
+  var roomNicknameEl = document.getElementById('room-nickname');
+  var roomCodeEl = document.getElementById('room-code');
+  var roomStatusEl = document.getElementById('room-status');
+  var roomCreateBtn = document.getElementById('room-create-btn');
+  var roomJoinBtn = document.getElementById('room-join-btn');
+  var ROOM_STORAGE_KEY = 'gamehub.secretCodeRoom';
+
+  function setRoomStatus(message, isError){
+    roomStatusEl.textContent = message;
+    roomStatusEl.style.color = isError ? '#c9525c' : '';
+  }
+
+  function setRoomBusy(busy){
+    roomCreateBtn.disabled = busy;
+    roomJoinBtn.disabled = busy;
+  }
+
+  function roomNickname(){
+    var nickname = roomNicknameEl.value.trim();
+    if (!nickname){ setRoomStatus('Escribe tu nombre para continuar.', true); roomNicknameEl.focus(); return null; }
+    localStorage.setItem('gamehub.secretCodeNickname', nickname);
+    return nickname;
+  }
+
+  function refreshRoom(){
+    return GameHubSupabase.loadRoomState(roomSession.room.id).then(function(data){
+      var oldGame = roomSession.state && roomSession.state.game;
+      roomSession.state = data;
+      if (data.room.config && data.room.config.timeLimitSeconds != null){
+        config.timeLimitSeconds = Number(data.room.config.timeLimitSeconds);
+      }
+      previousRevealed = oldGame ? oldGame.revealed_indices.slice() : [];
+      if (data.game && data.game.status === 'finished'){
+        renderFinal(data.game);
+        switchScreen(screenFinal);
+        return data;
+      }
+      if (data.game && data.game.status === 'playing'){
+        state.board = data.game.words;
+        state.startingTeam = data.game.starting_team;
+        state.roles = data.keys && data.keys.roles ? data.keys.roles : data.game.words.map(function(){ return 'neutral'; });
+        switchScreen(screenGame);
+        renderBoard();
+        keyToggleBtn.classList.toggle('hidden', !data.keys);
+        setKeyVisible(false);
+        updateTurnControls();
+        return data;
+      }
+      renderLobby(data);
+      switchScreen(screenLobby);
+      return data;
+    });
+  }
+
+  function enterRoom(room){
+    roomSession.room = room;
+    localStorage.setItem(ROOM_STORAGE_KEY, JSON.stringify({ roomId: room.id, code: room.code }));
+    setRoomStatus('Sala ' + room.code + ' lista.');
+    roomSession.userId = null;
+    if (roomSession.unsubscribe) roomSession.unsubscribe();
+    roomSession.unsubscribe = GameHubSupabase.subscribeToRoom(room.id, function(){ refreshRoom().catch(function(){}); });
+    return GameHubSupabase.currentUserId().then(function(userId){ roomSession.userId = userId; return refreshRoom(); });
+  }
+
+  function renderLobby(data){
+    document.getElementById('lobby-code').textContent = data.room.code;
+    document.getElementById('lobby-status').textContent = data.players.length + ' jugador' + (data.players.length === 1 ? '' : 'es') + ' en la sala';
+    var teamsEl = document.getElementById('lobby-teams');
+    var teams = [];
+    for (var t = 0; t < data.room.team_count; t++) teams.push({ index: t, players: [] });
+    data.players.forEach(function(player){ if (player.team_index !== null && teams[player.team_index]) teams[player.team_index].players.push(player); });
+    teamsEl.innerHTML = teams.map(function(team){
+      var leader = team.players.filter(function(player){ return player.is_leader; })[0];
+      var players = team.players.filter(function(player){ return !player.is_leader; });
+      return '<section class="cs-team"><h3 style="color:' + TEAM_HEX[team.index] + '">Equipo ' + TEAM_NAMES[team.index] + '</h3>' +
+        '<div class="cs-team-leader">Líder: ' + (leader ? escapeHtml(leader.nickname) : 'Sin líder') + '</div>' +
+        players.map(function(player){ return playerRow(player, team.index); }).join('') +
+        '<button type="button" data-team="' + team.index + '" data-action="join-team">Unirme a este equipo</button></section>';
+    }).join('');
+  }
+
+  function currentPlayer(){
+    if (!roomSession.state) return null;
+    return roomSession.state.players.filter(function(player){ return player.user_id === roomSession.userId; })[0] || null;
+  }
+
+  function updateTurnControls(){
+    var player = currentPlayer();
+    var game = roomSession.state && roomSession.state.game;
+    var canAct = Boolean(player && game && game.status === 'playing' && !player.is_leader && player.team_index === game.active_team);
+    document.getElementById('finish-turn-btn').classList.toggle('hidden', !canAct);
+  }
+
+  function renderFinal(game){
+    document.getElementById('final-title').textContent = game.end_reason === 'assassin' ? 'El asesino ha sido descubierto' : '¡Gana el equipo ' + TEAM_NAMES[game.winner_team] + '!';
+    document.getElementById('final-message').textContent = game.end_reason === 'assassin' ? 'La partida termina al descubrir el asesino.' : 'Todas sus palabras han sido reveladas.';
+  }
+
+  function playerRow(player, teamIndex){
+    var actions = '';
+    if (player.user_id === roomSession.userId){
+      actions = '<button type="button" data-team="' + teamIndex + '" data-action="claim-leader">Ser líder</button>';
+    }
+    return '<div class="cs-player"><span>' + escapeHtml(player.nickname) + '</span>' + actions + '</div>';
+  }
+
+  document.getElementById('lobby-teams').addEventListener('click', function(event){
+    var button = event.target.closest('button[data-action]');
+    if (!button) return;
+    var action = button.dataset.action;
+    var teamIndex = Number(button.dataset.team);
+    var functionName = action === 'claim-leader' ? 'secret_code_claim_leader' : 'secret_code_set_team';
+    button.disabled = true;
+    GameHubSupabase.rpc(functionName, action === 'claim-leader' ? { target_room: roomSession.room.id, requested_team: teamIndex } : { target_room: roomSession.room.id, requested_team: teamIndex })
+      .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo actualizar el equipo.'; }).finally(function(){ button.disabled = false; });
+  });
+
+  document.getElementById('lobby-start-btn').addEventListener('click', function(){
+    if (!validateSetup()) return;
+    buildBoard();
+    var button = document.getElementById('lobby-start-btn');
+    button.disabled = true;
+    GameHubSupabase.rpc('secret_code_start_game', { target_room: roomSession.room.id, board_words: state.board, board_roles: state.roles.map(String), first_team: state.startingTeam, turn_seconds: config.timeLimitSeconds })
+      .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo iniciar la partida.'; }).finally(function(){ button.disabled = false; });
+  });
+
+  document.getElementById('lobby-settings-btn').addEventListener('click', function(){ switchScreen(screenSetup); });
+  document.getElementById('lobby-copy-btn').addEventListener('click', function(){
+    var url = window.location.origin + window.location.pathname + '?room=' + roomSession.room.code;
+    if (navigator.clipboard) navigator.clipboard.writeText(url);
+  });
+  document.getElementById('lobby-qr-btn').addEventListener('click', function(){
+    var url = window.location.origin + window.location.pathname + '?room=' + roomSession.room.code;
+    window.open('https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=' + encodeURIComponent(url), '_blank', 'noopener');
+  });
+
+  function createRoom(){
+    var nickname = roomNickname();
+    if (!nickname) return;
+    setRoomBusy(true); setRoomStatus('Creando sala…');
+    GameHubSupabase.rpc('secret_code_create_room', {
+      player_nickname: nickname, requested_team_count: config.numTeams, room_config: { selectedPackages: config.selectedPackages, timeLimitSeconds: config.timeLimitSeconds }
+    }).then(enterRoom).catch(function(error){ setRoomStatus(error.message || 'No se pudo crear la sala.', true); }).finally(function(){ setRoomBusy(false); });
+  }
+
+  function joinRoom(){
+    var nickname = roomNickname();
+    var code = roomCodeEl.value.trim().toUpperCase();
+    if (!nickname) return;
+    if (!/^[A-Z0-9]{6}$/.test(code)){ setRoomStatus('El código debe tener 6 caracteres.', true); roomCodeEl.focus(); return; }
+    setRoomBusy(true); setRoomStatus('Buscando sala…');
+    GameHubSupabase.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
+      .then(enterRoom).catch(function(error){ setRoomStatus(error.message || 'No se pudo unir a la sala.', true); }).finally(function(){ setRoomBusy(false); });
+  }
+
+  roomCreateBtn.addEventListener('click', createRoom);
+  roomJoinBtn.addEventListener('click', joinRoom);
+  roomCodeEl.addEventListener('input', function(){ roomCodeEl.value = roomCodeEl.value.replace(/[^a-z0-9]/gi, '').toUpperCase(); });
 
   // ---------- setup: number of teams ----------
   var setupError = document.getElementById('setup-error');
@@ -649,6 +918,9 @@
   var shareRole = 'participant';
 
   function buildShareUrl(role){
+    if (roomSession.room){
+      return window.location.origin + window.location.pathname + '?room=' + roomSession.room.code;
+    }
     var url = window.location.origin + window.location.pathname + '?w=' + encodeURIComponent(state.board.join('|'));
     if (role === 'leader'){
       url += '&r=l&k=' + encodeURIComponent(state.roles.join(',')) + '&s=' + state.startingTeam;
@@ -754,10 +1026,13 @@
     startingTeamEl.classList.add('hidden');
 
     boardEl.innerHTML = state.board.map(function(word, i){
-      var role = state.roles[i];
+      var revealedIndex = roomSession.state && roomSession.state.game ? roomSession.state.game.revealed_indices.indexOf(i) : -1;
+      var revealedRole = roomSession.state && roomSession.state.game && roomSession.state.game.revealed_roles ? roomSession.state.game.revealed_roles[revealedIndex] : null;
+      var role = revealedRole || state.roles[i];
       var roleClass = role === 'neutral' ? 'role-neutral' : role === 'assassin' ? 'role-assassin' : 'role-' + role;
       var delay = (i * 12) + 'ms';
-      return '<div class="cs-cell ' + roleClass + '" style="animation-delay:' + delay + '">' + escapeHtml(word) + '</div>';
+      var revealedClass = revealedIndex === -1 ? '' : ' cs-cell-revealed' + (previousRevealed.indexOf(i) === -1 ? ' cs-cell-reveal-flash' : '');
+      return '<div class="cs-cell ' + roleClass + revealedClass + '" data-index="' + i + '" style="animation-delay:' + delay + '">' + escapeHtml(word) + '</div>';
     }).join('');
     fitBoardText();
   }
@@ -794,8 +1069,38 @@
   boardEl.addEventListener('click', function(e){
     var cell = e.target.closest('.cs-cell');
     if (!cell) return;
-    cell.classList.toggle('cs-cell-covered');
+    var player = currentPlayer();
+    var game = roomSession.state && roomSession.state.game;
+    var index = Number(cell.dataset.index);
+    if (!player || !game || game.status !== 'playing' || player.is_leader || player.team_index !== game.active_team || game.revealed_indices.indexOf(index) !== -1) return;
+    if (!window.confirm('¿Revelar la palabra «' + cell.textContent + '»?')) return;
+    cell.disabled = true;
+    GameHubSupabase.rpc('secret_code_select_word', { target_game: game.id, word_index: index + 1 })
+      .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo seleccionar la palabra.'; });
   });
+
+  document.getElementById('finish-turn-btn').addEventListener('click', function(){
+    var game = roomSession.state && roomSession.state.game;
+    if (!game || !window.confirm('¿Finalizar el turno?')) return;
+    GameHubSupabase.rpc('secret_code_finish_turn', { target_game: game.id }).then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo finalizar el turno.'; });
+  });
+
+  var turnTimeLimitEl = document.getElementById('turn-time-limit');
+  var timerInterval = window.setInterval(function(){
+    var timerEl = document.getElementById('turn-timer');
+    var game = roomSession.state && roomSession.state.game;
+    if (!game || !game.time_limit_seconds || game.status !== 'playing'){
+      timerEl.textContent = '';
+      return;
+    }
+    var remaining = Math.max(0, game.time_limit_seconds - Math.floor((Date.now() - Date.parse(game.turn_started_at)) / 1000));
+    timerEl.textContent = Math.floor(remaining / 60) + ':' + String(remaining % 60).padStart(2, '0');
+    if (remaining === 0){
+      GameHubSupabase.rpc('secret_code_advance_timeout', { target_game: game.id }).then(refreshRoom).catch(function(){});
+    }
+  }, 1000);
+  turnTimeLimitEl.addEventListener('change', function(){ config.timeLimitSeconds = turnTimeLimitEl.value ? Number(turnTimeLimitEl.value) : null; });
+  document.getElementById('final-lobby-btn').addEventListener('click', function(){ refreshRoom().catch(function(){}); });
 
   keyToggleBtn.addEventListener('click', function(){
     if (boardEl.classList.contains('key-visible')){
@@ -815,6 +1120,11 @@
   // no back-to-setup shortcut: the game only exposes the home exit flow.
   startBtn.addEventListener('click', function(){
     if (!validateSetup()) return;
+    if (roomSession.room){
+      switchScreen(screenLobby);
+      refreshRoom().catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo cargar la sala.'; });
+      return;
+    }
     buildBoard();
     setKeyVisible(false);
     switchScreen(screenGame);
@@ -847,8 +1157,20 @@
   renderTeamCount();
   loadPackages();
 
+  if (!GameHubSupabase.isConfigured()){
+    setRoomStatus('Supabase no está configurado. Copia .env.example como .env.local para activar las salas.', true);
+    roomCreateBtn.disabled = true;
+    roomJoinBtn.disabled = true;
+  }
+
   (function bootFromSharedLink(){
     var params = new URLSearchParams(window.location.search);
+    var roomCode = params.get('room');
+    if (roomCode){
+      roomCodeEl.value = roomCode.toUpperCase();
+      var savedNickname = localStorage.getItem('gamehub.secretCodeNickname') || '';
+      if (savedNickname) roomNicknameEl.value = savedNickname;
+    }
     var w = params.get('w');
     if (!w) return;
     var words = w.split('|').map(function(s){ return s.trim(); }).filter(Boolean);

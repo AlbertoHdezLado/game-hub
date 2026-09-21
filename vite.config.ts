@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
+import { defineConfig, loadEnv, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -35,9 +35,37 @@ function rewriteGameUrl(request: { url?: string }) {
   request.url = `/games/${match[1]}/index.html`;
 }
 
+function supabaseConfig(): Plugin {
+  let generatedSource = 'window.GAME_HUB_SUPABASE_CONFIG = {};';
+  const configSource = (env: Record<string, string>) =>
+    `window.GAME_HUB_SUPABASE_CONFIG = ${JSON.stringify({
+      url: env.NEXT_PUBLIC_SUPABASE_URL || '',
+      anonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+    })};`;
+
+  return {
+    name: 'game-hub-supabase-config',
+    config(_, { mode }) {
+      const env = loadEnv(mode, rootDir, '');
+      generatedSource = configSource(env);
+      return {};
+    },
+    configureServer(server) {
+      server.middlewares.use('/supabase-config.js', (_request, response) => {
+        response.setHeader('Content-Type', 'application/javascript');
+        response.end(generatedSource);
+      });
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'supabase-config.js', source: generatedSource });
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     cleanGameRoutes(),
+    supabaseConfig(),
     react(),
     tailwindcss(),
     VitePWA({
