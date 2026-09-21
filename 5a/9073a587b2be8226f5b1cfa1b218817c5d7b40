@@ -1,0 +1,16 @@
+src/features/HubPage.tsx
+  h_fed6a40af368f7 61-71
+src/styles/index.css
+  h_fed6a40af368f7 117-123,180,183-184,186-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5a9073a587b2be8226f5b1cfa1b218817c5d7b40",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
