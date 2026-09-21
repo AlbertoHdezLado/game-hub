@@ -1,0 +1,21 @@
+.env
+  s_732c65c355173d::t_933ac50f8edec5 1-3
+.gitignore
+  s_732c65c355173d::t_d68a70b276fa58 5-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "27960180cc33ea65610b7a2ad3ebbf54c8921477",
+  "prompts": {},
+  "sessions": {
+    "s_732c65c355173d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "9faa3f48-b4d1-475b-bd19-86beb7331cf6",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
