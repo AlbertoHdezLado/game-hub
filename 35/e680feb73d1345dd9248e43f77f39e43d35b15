@@ -1,0 +1,24 @@
+.env.example
+  h_fed6a40af368f7 1-3
+docs/SECRET_CODE_SUPABASE.md
+  h_fed6a40af368f7 1-22
+public/games/secret-code/index.html
+  h_fed6a40af368f7 6-8,38-66,190-196,382-425,427,455-464,546,556-564,579-580,615-617,619-620,622-623,630-789,921-923,1029-1031,1034-1035,1072-1085,1088-1104,1123-1127,1160-1165,1168-1173
+public/supabase-client.js
+  h_fed6a40af368f7 1-84
+supabase/migrations/202609210001_secret_code_rooms.sql
+  h_fed6a40af368f7 1-262
+vite.config.ts
+  h_fed6a40af368f7 1,38-64,68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "35e680feb73d1345dd9248e43f77f39e43d35b15",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
