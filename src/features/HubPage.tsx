@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GameCard } from '@/components/GameCard';
 import { InfoDialog } from '@/components/InfoDialog';
 import { games } from '@/data/games';
@@ -58,8 +58,65 @@ export function HubPage() {
 
 function HubHeader() {
   return (
-    <>
-      <div className="hub-logo" aria-label="Game Hub" />
+    <div className="hub-logo" aria-label="Game Hub" />
+  );
+}
+
+function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo: (game: GameDefinition) => void }>) {
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  const updateScrollState = () => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    setCanScrollLeft(grid.scrollLeft > 2);
+    setCanScrollRight(grid.scrollLeft + grid.clientWidth < grid.scrollWidth - 2);
+  };
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    updateScrollState();
+    grid.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+
+    return () => {
+      grid.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [iconsReady]);
+
+  const scrollByPage = (direction: number) => {
+    gridRef.current?.scrollBy({ left: direction * gridRef.current.clientWidth * .75, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="mode-grid-shell">
+      {canScrollLeft && (
+        <button type="button" className="carousel-arrow carousel-arrow-left" aria-label="Juegos anteriores" onClick={() => scrollByPage(-1)}>
+          <span aria-hidden="true" />
+        </button>
+      )}
+      <div ref={gridRef} className={`mode-grid${iconsReady ? ' ready' : ''}`}>
+        {games.map((game) => (
+          <GameCard key={game.slug} game={game} onInfo={onInfo} />
+        ))}
+      </div>
+      {canScrollRight && (
+        <button type="button" className="carousel-arrow carousel-arrow-right" aria-label="Más juegos" onClick={() => scrollByPage(1)}>
+          <span aria-hidden="true" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function HubFooter({ version }: Readonly<{ version: string }>) {
+  return (
+    <div className="hub-footer">
       <a
         href="https://forms.gle/ne3tXqPzfKN98PuK6"
         target="_blank"
@@ -68,23 +125,6 @@ function HubHeader() {
       >
         💡 Enviar una sugerencia
       </a>
-    </>
-  );
-}
-
-function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo: (game: GameDefinition) => void }>) {
-  return (
-    <div className={`mode-grid${iconsReady ? ' ready' : ''}`}>
-      {games.map((game) => (
-        <GameCard key={game.slug} game={game} onInfo={onInfo} />
-      ))}
-    </div>
-  );
-}
-
-function HubFooter({ version }: Readonly<{ version: string }>) {
-  return (
-    <div className="hub-footer">
       <span>Creado por Alberto Hernández</span>
       <span>v{version}</span>
     </div>

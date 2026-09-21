@@ -79,7 +79,10 @@ input[type="text"]{
   -ms-user-select:text;
   user-select:text;
 }
-button{ touch-action:manipulation; }
+button{
+  touch-action:manipulation;
+  box-shadow:0 4px 0 var(--shadow);
+}
 /* kept in sync by shared.js (visualViewport-aware) so the shell always
    matches the real visible height instead of the address-bar-inflated one */
 :root{ --app-vh:100dvh; }
@@ -319,7 +322,6 @@ input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
 .btn-main:disabled{
   opacity:0.4;
   cursor:not-allowed;
-  box-shadow:none;
 }
 .back-btn{
   background:none;
@@ -885,6 +887,7 @@ input:focus-visible{
   line-height:1;
   cursor:pointer;
   padding:0;
+  box-shadow:none;
   transition:background .15s ease, transform .12s ease;
 }
 .player-chip-remove:hover:not(:disabled){background:var(--accent2); color:#fff;}
@@ -1444,7 +1447,6 @@ input:focus-visible{
   height:40px;
   border-radius:9px;
   background:var(--accent);
-  box-shadow:none;
 }
 #screen-setup .stepper button:hover,
 #screen-setup .night-nav-btn:hover,

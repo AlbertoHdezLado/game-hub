@@ -48,22 +48,36 @@
     gap:10px;
     margin:10px 0 14px;
   }
+  #team-boxes{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:12px;
+  }
   .team-box{
     border-radius:14px;
     border:1px solid var(--glass-border);
     background:var(--surface);
     padding:10px 12px;
-    margin-bottom:8px;
+    box-shadow:0 3px 0 rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.08);
+  }
+  @media (orientation:landscape){
+    #team-boxes{
+      grid-template-columns:repeat(var(--team-count, 2), minmax(0, 1fr));
+    }
   }
   .team-box-header{
     display:flex;
     align-items:center;
-    gap:8px;
+    justify-content:center;
     font-weight:700;
     font-size:0.85rem;
     margin-bottom:8px;
   }
-  .team-box-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+  .team-box.team-color-0 .team-box-header{color:#5b8fe0;}
+  .team-box.team-color-1 .team-box-header{color:#c9525c;}
+  .team-box.team-color-2 .team-box-header{color:#4fbf7a;}
+  .team-box.team-color-3 .team-box-header{color:#b08a00;}
   .team-box-chips{display:flex; flex-wrap:wrap; gap:6px;}
   .team-box-chip{
     padding:6px 12px;
@@ -97,6 +111,10 @@
     border-color:var(--accent);
     background:var(--surface-2);
   }
+  .team-box.team-color-0.drag-over{border-color:#5b8fe0; background:rgba(91,143,224,0.28);}
+  .team-box.team-color-1.drag-over{border-color:#c9525c; background:rgba(201,82,92,0.28);}
+  .team-box.team-color-2.drag-over{border-color:#4fbf7a; background:rgba(79,191,122,0.28);}
+  .team-box.team-color-3.drag-over{border-color:#f2c94c; background:rgba(242,201,76,0.3);}
   .team-box-empty{color:var(--text-dim); font-size:0.8rem; font-style:italic;}
 
   .packages-dropdown-btn{
@@ -447,10 +465,10 @@
             <div class="value" id="team-count-value">2</div>
             <button type="button" id="team-count-plus">+</button>
           </div>
+          <div id="team-boxes"></div>
           <div class="team-boxes-header">
             <button type="button" class="randomize-teams-btn" id="randomize-teams-btn"><span class="dice-icon"></span>Aleatorio</button>
           </div>
-          <div id="team-boxes"></div>
           <div class="error-msg" id="teams-error"></div>
         </div>
 
@@ -930,6 +948,7 @@
   function renderTeamBoxes(){
     var rows = config.rows;
     var html = '';
+    teamBoxesEl.style.setProperty('--team-count', config.numTeams);
     for (var t = 0; t < config.numTeams; t++){
       var members = [];
       rows.forEach(function(r, idx){
@@ -937,7 +956,7 @@
       });
       html +=
         '<div class="team-box team-color-' + t + '" data-team="' + t + '">' +
-          '<div class="team-box-header"><span class="team-box-dot team-color-' + t + '"></span>' + escapeHtml(TEAM_NAMES[t]) + '</div>' +
+          '<div class="team-box-header">Equipo ' + escapeHtml(TEAM_NAMES[t]) + '</div>' +
           '<div class="team-box-chips">' +
             (members.length ?
               members.map(function(m){ return '<button type="button" class="team-box-chip team-color-' + t + '" data-index="' + m.idx + '">' + escapeHtml(m.name) + '</button>'; }).join('') :
@@ -951,6 +970,11 @@
   // ---------- team boxes: drag a player's chip into another team's box ----------
   var teamDragState = null;
 
+  function setDraggedChipTeamColor(chip, teamIdx){
+    for (var t = 0; t < MAX_TEAMS; t++) chip.classList.remove('team-color-' + t);
+    chip.classList.add('team-color-' + teamIdx);
+  }
+
   function onTeamDragMove(e){
     if (!teamDragState) return;
     e.preventDefault();
@@ -961,7 +985,12 @@
     var elUnder = document.elementFromPoint(e.clientX, e.clientY);
     var box = elUnder ? elUnder.closest('.team-box') : null;
     if (s.hoverBox && s.hoverBox !== box) s.hoverBox.classList.remove('drag-over');
-    if (box) box.classList.add('drag-over');
+    if (box){
+      box.classList.add('drag-over');
+      setDraggedChipTeamColor(s.chip, parseInt(box.getAttribute('data-team'), 10));
+    } else {
+      setDraggedChipTeamColor(s.chip, clamp(config.rows[s.idx].team || 0, 0, config.numTeams - 1));
+    }
     s.hoverBox = box;
   }
 
