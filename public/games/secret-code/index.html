@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script src="/analytics.js"></script>
-<script src="/supabase-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/supabase-client.js"></script>
+<script src="/secret-code-client.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#edf7fb">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -684,7 +682,7 @@
   }
 
   function refreshRoom(){
-    return GameHubSupabase.loadRoomState(roomSession.room.id).then(function(data){
+    return GameHubSecretCode.loadRoomState(roomSession.room.id).then(function(data){
       var oldGame = roomSession.state && roomSession.state.game;
       roomSession.state = data;
       if (data.room.config && data.room.config.timeLimitSeconds != null){
@@ -730,8 +728,8 @@
     setRoomStatus('Sala ' + room.code + ' lista.');
     roomSession.userId = null;
     if (roomSession.unsubscribe) roomSession.unsubscribe();
-    roomSession.unsubscribe = GameHubSupabase.subscribeToRoom(room.id, function(){ refreshRoom().catch(function(){}); });
-    return GameHubSupabase.currentUserId().then(function(userId){ roomSession.userId = userId; return refreshRoom(); });
+    roomSession.unsubscribe = GameHubSecretCode.subscribeToRoom(room.id, function(){ refreshRoom().catch(function(){}); });
+    return GameHubSecretCode.currentUserId().then(function(userId){ roomSession.userId = userId; return refreshRoom(); });
   }
 
   function renderLobby(data){
@@ -783,7 +781,7 @@
     var teamIndex = Number(button.dataset.team);
     var functionName = action === 'claim-leader' ? 'secret_code_claim_leader' : 'secret_code_set_team';
     button.disabled = true;
-    GameHubSupabase.rpc(functionName, action === 'claim-leader' ? { target_room: roomSession.room.id, requested_team: teamIndex } : { target_room: roomSession.room.id, requested_team: teamIndex })
+    GameHubSecretCode.rpc(functionName, action === 'claim-leader' ? { target_room: roomSession.room.id, requested_team: teamIndex } : { target_room: roomSession.room.id, requested_team: teamIndex })
       .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo actualizar el equipo.'; }).finally(function(){ button.disabled = false; });
   });
 
@@ -792,7 +790,7 @@
     buildBoard();
     var button = document.getElementById('lobby-start-btn');
     button.disabled = true;
-    GameHubSupabase.rpc('secret_code_start_game', { target_room: roomSession.room.id, board_words: state.board, board_roles: state.roles.map(String), first_team: state.startingTeam, turn_seconds: config.timeLimitSeconds })
+    GameHubSecretCode.rpc('secret_code_start_game', { target_room: roomSession.room.id, board_words: state.board, board_roles: state.roles.map(String), first_team: state.startingTeam, turn_seconds: config.timeLimitSeconds })
       .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo iniciar la partida.'; }).finally(function(){ button.disabled = false; });
   });
 
@@ -810,7 +808,7 @@
     var nickname = roomNickname();
     if (!nickname) return;
     setRoomBusy(true); setRoomStatus('Creando sala…');
-    GameHubSupabase.rpc('secret_code_create_room', {
+    GameHubSecretCode.rpc('secret_code_create_room', {
       player_nickname: nickname, requested_team_count: config.numTeams, room_config: { selectedPackages: config.selectedPackages, timeLimitSeconds: config.timeLimitSeconds }
     }).then(enterRoom).catch(function(error){ setRoomStatus(error.message || 'No se pudo crear la sala.', true); }).finally(function(){ setRoomBusy(false); });
   }
@@ -821,7 +819,7 @@
     if (!nickname) return;
     if (!/^[A-Z0-9]{6}$/.test(code)){ setRoomStatus('El código debe tener 6 caracteres.', true); roomCodeInputs[0].focus(); return; }
     setRoomBusy(true); setRoomStatus('Buscando sala…');
-    GameHubSupabase.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
+    GameHubSecretCode.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
       .then(enterRoom).catch(function(error){ setRoomStatus(error.message || 'No se pudo unir a la sala.', true); }).finally(function(){ setRoomBusy(false); });
   }
 
@@ -1138,14 +1136,14 @@
     if (!player || !game || game.status !== 'playing' || player.is_leader || player.team_index !== game.active_team || game.revealed_indices.indexOf(index) !== -1) return;
     if (!window.confirm('¿Revelar la palabra «' + cell.textContent + '»?')) return;
     cell.disabled = true;
-    GameHubSupabase.rpc('secret_code_select_word', { target_game: game.id, word_index: index + 1 })
+    GameHubSecretCode.rpc('secret_code_select_word', { target_game: game.id, word_index: index + 1 })
       .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo seleccionar la palabra.'; });
   });
 
   document.getElementById('finish-turn-btn').addEventListener('click', function(){
     var game = roomSession.state && roomSession.state.game;
     if (!game || !window.confirm('¿Finalizar el turno?')) return;
-    GameHubSupabase.rpc('secret_code_finish_turn', { target_game: game.id }).then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo finalizar el turno.'; });
+    GameHubSecretCode.rpc('secret_code_finish_turn', { target_game: game.id }).then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo finalizar el turno.'; });
   });
 
   var turnTimeLimitEl = document.getElementById('turn-time-limit');
@@ -1159,7 +1157,7 @@
     var remaining = Math.max(0, game.time_limit_seconds - Math.floor((Date.now() - Date.parse(game.turn_started_at)) / 1000));
     timerEl.textContent = Math.floor(remaining / 60) + ':' + String(remaining % 60).padStart(2, '0');
     if (remaining === 0){
-      GameHubSupabase.rpc('secret_code_advance_timeout', { target_game: game.id }).then(refreshRoom).catch(function(){});
+      GameHubSecretCode.rpc('secret_code_advance_timeout', { target_game: game.id }).then(refreshRoom).catch(function(){});
     }
   }, 1000);
   turnTimeLimitEl.addEventListener('change', function(){ config.timeLimitSeconds = turnTimeLimitEl.value ? Number(turnTimeLimitEl.value) : null; });
@@ -1167,7 +1165,7 @@
   document.getElementById('final-lobby-btn').addEventListener('click', function(){
     var button = document.getElementById('final-lobby-btn');
     button.disabled = true;
-    GameHubSupabase.rpc('secret_code_return_to_lobby', { target_room: roomSession.room.id })
+    GameHubSecretCode.rpc('secret_code_return_to_lobby', { target_room: roomSession.room.id })
       .then(refreshRoom)
       .catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo volver a la sala.'; })
       .finally(function(){ button.disabled = false; });
@@ -1228,8 +1226,8 @@
   renderTeamCount();
   loadPackages();
 
-  if (!GameHubSupabase.isConfigured()){
-    setRoomStatus('Supabase no está configurado. Copia .env.example como .env.local para activar las salas.', true);
+  if (!GameHubSecretCode.isConfigured()){
+    setRoomStatus('Las salas no están configuradas.', true);
     roomCreateBtn.disabled = true;
     roomCodeInputs.forEach(function(input){ input.disabled = true; });
   }
