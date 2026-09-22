@@ -1,6 +1,6 @@
 const rooms = globalThis.__secretCodeRooms || (globalThis.__secretCodeRooms = new Map());
 const ROOM_TTL_MS = 24 * 60 * 60 * 1000;
-const PLAYER_ACTIVE_TTL_MS = 10 * 1000;
+const PLAYER_ACTIVE_TTL_MS = 30 * 1000;
 
 function errorResponse(message, status = 400) {
   return new Response(JSON.stringify({ error: { message } }), {
@@ -65,7 +65,19 @@ async function loadRoom(code) {
   return room;
 }
 
-async function saveRoom(room) {
+async function saveRoom(room, mergePlayers = false) {
+  if (mergePlayers) {
+    const latestRoom = await loadRoom(room.code);
+    if (latestRoom) {
+      const playersById = new Map(latestRoom.players.map((player) => [player.id, player]));
+      room.players.forEach((player) => playersById.set(player.id, player));
+      room.players = Array.from(playersById.values());
+      room.createdBy = latestRoom.createdBy;
+      room.teamCount = latestRoom.teamCount;
+      room.config = latestRoom.config;
+      room.game = latestRoom.game;
+    }
+  }
   room.updatedAt = Date.now();
   if (cacheConfigured()) {
     await cacheCommand(['SET', `secret-code:room:${room.code}`, JSON.stringify(room), 'EX', Math.ceil(ROOM_TTL_MS / 1000)]);
@@ -182,7 +194,7 @@ async function joinRoom(body) {
   }
   player.lastSeenAt = Date.now();
   if (!room.players[room.players.length - 1].nickname) throw new Error('invalid_nickname');
-  await saveRoom(room);
+  await saveRoom(room, true);
   return { ...room, team_count: room.teamCount };
 }
 
@@ -277,11 +289,6 @@ async function handle(request) {
   if (action === 'state') {
     const room = await loadRoom(body.room);
     if (!room) throw new Error('room_not_available');
-    const player = getPlayer(room, body.player_id);
-    if (player) {
-      player.lastSeenAt = Date.now();
-      await saveRoom(room);
-    }
     return jsonResponse(publicState(room, body.player_id));
   }
   if (action === 'set_team') return jsonResponse(await updateRoom(body, 'set_team'));
