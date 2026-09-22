@@ -27,13 +27,21 @@ function newId() {
 }
 
 function cacheConfigured() {
-  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  return Boolean(getCacheUrl() && getCacheToken());
+}
+
+function getCacheUrl() {
+  return process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+}
+
+function getCacheToken() {
+  return process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 }
 
 async function cacheCommand(command) {
-  const response = await fetch(process.env.KV_REST_API_URL, {
+  const response = await fetch(getCacheUrl(), {
     method: 'POST',
-    headers: { authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`, 'content-type': 'application/json' },
+    headers: { authorization: `Bearer ${getCacheToken()}`, 'content-type': 'application/json' },
     body: JSON.stringify(command)
   });
   if (!response.ok) throw new Error('cache_unavailable');
