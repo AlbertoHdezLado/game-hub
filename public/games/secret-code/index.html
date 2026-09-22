@@ -251,7 +251,7 @@
     justify-content:center;
     grid-column:2;
     grid-row:1;
-    width:max-content;
+    width:100%;
     max-width:100%;
     min-width:0;
     background:#fff;
@@ -262,16 +262,16 @@
   }
   .cs-share-qr-wrap img{
     display:block;
-    width:clamp(120px, calc(100vh - 220px), 70vh);
+    width:min(100%, 38vh);
     max-width:100%;
-    max-height:clamp(120px, calc(100vh - 220px), 70vh);
+    max-height:38vh;
     height:auto;
     aspect-ratio:1;
     object-fit:contain;
   }
   .cs-share-layout{
     display:grid;
-    grid-template-columns:minmax(150px,1fr) max-content;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
     align-items:center;
     gap:26px;
     margin-top:10px;
@@ -327,16 +327,19 @@
   .cs-share-leader-toggle input:checked::before{
     transform:translateX(18px);
   }
-  .cs-share-btn{width:100%; margin-top:0;}
+  .cs-share-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:52px;margin-top:0;padding:12px 18px;border:1px solid color-mix(in srgb, var(--accent) 70%, #fff);border-radius:14px;background:var(--accent);color:#fff;font-size:.92rem;font-weight:800;letter-spacing:.01em;box-shadow:0 5px 0 color-mix(in srgb, var(--accent) 72%, #172333),0 10px 20px color-mix(in srgb, var(--accent) 25%, transparent);transition:transform .15s,filter .15s,box-shadow .15s;}
+  .cs-share-btn:hover{filter:brightness(1.06);box-shadow:0 5px 0 color-mix(in srgb, var(--accent) 72%, #172333),0 13px 24px color-mix(in srgb, var(--accent) 32%, transparent);}
+  .cs-share-btn:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb, var(--accent) 72%, #172333),0 6px 12px color-mix(in srgb, var(--accent) 22%, transparent);}
+  .cs-share-btn .link-icon{width:16px;height:16px;flex:0 0 16px;}
   .cs-share-room-code{margin:0;text-align:center;color:var(--accent);font-family:var(--font-body);font-size:clamp(1.8rem,5vw,2.7rem);font-weight:800;letter-spacing:.16em;font-variant-numeric:tabular-nums;}
   .cs-share-room-label{display:block;margin:0;text-align:center;color:var(--text-dim);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
   #share-modal-backdrop .guide-modal{
-    position:fixed;
-    margin:24px;
-    width:min(420px, calc(100vw - 24px));
-    max-width:calc(100vw - 24px);
+    position:relative;
+    margin:0;
+    width:min(620px, 100%);
+    max-width:100%;
     height:auto;
-    max-height:calc(100dvh - 24px);
+    max-height:calc(100dvh - 48px);
     padding:18px;
     overflow:hidden;
     box-sizing:border-box;
@@ -349,9 +352,9 @@
     .cs-share-layout{grid-template-columns:1fr;gap:18px;}
     .cs-share-info{grid-column:1;grid-row:1;}
     .cs-share-actions,.cs-share-qr-wrap{grid-column:1;grid-row:auto;}
-    #share-modal-backdrop .guide-modal{margin:12px;}
+    #share-modal-backdrop .guide-modal{max-height:calc(100dvh - 24px);}
     .cs-share-qr-wrap{width:100%;padding:8px;}
-    .cs-share-qr-wrap img{width:min(240px, calc(100vw - 64px), calc(100dvh - 250px));max-width:100%;max-height:calc(100dvh - 250px);}
+    .cs-share-qr-wrap img{width:min(240px, 100%, calc(100dvh - 250px));max-width:100%;max-height:calc(100dvh - 250px);}
   }
 
   @media (max-width:560px) and (orientation:portrait){
@@ -404,6 +407,20 @@
     margin:0;
   }
 
+  .link-icon{
+    display:block;
+    width:16px;
+    height:16px;
+    background-color:currentColor;
+    mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>');
+    -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>');
+    mask-repeat:no-repeat;
+    mask-position:center;
+    mask-size:contain;
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    -webkit-mask-size:contain;
+  }
   .share-icon{
     display:block;
     width:16px;
@@ -574,7 +591,7 @@
           <span class="cs-share-room-label">Código de sala</span>
           <p class="cs-share-room-code" id="share-room-code"></p>
           <div class="cs-share-actions">
-            <button type="button" class="btn-main cs-share-btn" id="share-native-btn">📤 Compartir enlace</button>
+            <button type="button" class="btn-main cs-share-btn" id="share-native-btn"><span class="link-icon"></span>Compartir enlace</button>
           </div>
         </div>
         <div class="cs-share-qr-wrap">
