@@ -1,5 +1,6 @@
 const rooms = globalThis.__secretCodeRooms || (globalThis.__secretCodeRooms = new Map());
 const ROOM_TTL_MS = 24 * 60 * 60 * 1000;
+const PLAYER_ACTIVE_TTL_MS = 10 * 1000;
 
 function errorResponse(message, status = 400) {
   return new Response(JSON.stringify({ error: { message } }), {
@@ -82,6 +83,14 @@ function requirePlayer(room, playerId) {
   return player;
 }
 
+function isPlayerActive(player) {
+  return Boolean(player.lastSeenAt && Date.now() - player.lastSeenAt <= PLAYER_ACTIVE_TTL_MS);
+}
+
+function hasActiveLeader(room, teamIndex) {
+  return room.players.some((player) => player.teamIndex === teamIndex && player.isLeader && isPlayerActive(player));
+}
+
 function publicState(room, viewerId) {
   const viewer = viewerId ? getPlayer(room, viewerId) : null;
   return {
@@ -99,6 +108,7 @@ function publicState(room, viewerId) {
       nickname: player.nickname,
       team_index: player.teamIndex,
       is_leader: player.isLeader,
+      is_active: isPlayerActive(player),
       joined_at: player.joinedAt
     })),
     game: room.game ? {
@@ -136,7 +146,7 @@ async function createRoom(body) {
     createdBy: playerId,
     teamCount: Number(body.requested_team_count || 2),
     config: body.room_config || {},
-    players: [{ id: playerId, nickname: String(body.player_nickname || '').trim(), teamIndex: null, isLeader: false, joinedAt: Date.now() }],
+    players: [{ id: playerId, nickname: String(body.player_nickname || '').trim(), teamIndex: null, isLeader: false, joinedAt: Date.now(), lastSeenAt: Date.now() }],
     game: null,
     expiresAt: Date.now() + ROOM_TTL_MS,
     updatedAt: Date.now()
@@ -148,11 +158,19 @@ async function createRoom(body) {
 
 async function joinRoom(body) {
   const room = await loadRoom(body.room_code);
-  if (!room || room.game) throw new Error('room_not_available');
+  if (!room) throw new Error('room_not_available');
   const playerId = String(body.player_id || newId());
   let player = getPlayer(room, playerId);
-  if (player) player.nickname = String(body.player_nickname || player.nickname).trim();
-  else room.players.push({ id: playerId, nickname: String(body.player_nickname || '').trim(), teamIndex: null, isLeader: false, joinedAt: Date.now() });
+  if (player) {
+    player.nickname = String(body.player_nickname || player.nickname).trim();
+  } else {
+    const leaderlessTeam = room.game
+      ? Array.from({ length: room.teamCount }, (_, teamIndex) => teamIndex).find((teamIndex) => !hasActiveLeader(room, teamIndex))
+      : undefined;
+    player = { id: playerId, nickname: String(body.player_nickname || '').trim(), teamIndex: leaderlessTeam === undefined ? null : leaderlessTeam, isLeader: leaderlessTeam !== undefined, joinedAt: Date.now(), lastSeenAt: Date.now() };
+    room.players.push(player);
+  }
+  player.lastSeenAt = Date.now();
   if (!room.players[room.players.length - 1].nickname) throw new Error('invalid_nickname');
   await saveRoom(room);
   return { ...room, team_count: room.teamCount };
@@ -162,6 +180,7 @@ async function updateRoom(body, action) {
   const room = await loadRoom(body.target_room);
   if (!room) throw new Error('room_not_available');
   const player = requirePlayer(room, body.player_id);
+  player.lastSeenAt = Date.now();
   if (action === 'set_team') {
     const team = Number(body.requested_team);
     if (team < 0 || team >= room.teamCount) throw new Error('invalid_team');
@@ -170,6 +189,7 @@ async function updateRoom(body, action) {
   } else if (action === 'claim_leader') {
     const team = Number(body.requested_team);
     if (player.teamIndex !== team) throw new Error('must_join_team');
+    if (room.game && hasActiveLeader(room, team) && !player.isLeader) throw new Error('active_leader_present');
     room.players.forEach((member) => { if (member.teamIndex === team) member.isLeader = false; });
     player.isLeader = true;
   } else if (action === 'set_team_count') {
@@ -246,6 +266,11 @@ async function handle(request) {
   if (action === 'state') {
     const room = await loadRoom(body.room);
     if (!room) throw new Error('room_not_available');
+    const player = getPlayer(room, body.player_id);
+    if (player) {
+      player.lastSeenAt = Date.now();
+      await saveRoom(room);
+    }
     return jsonResponse(publicState(room, body.player_id));
   }
   if (action === 'set_team') return jsonResponse(await updateRoom(body, 'set_team'));

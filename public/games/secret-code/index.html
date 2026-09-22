@@ -30,9 +30,35 @@
      height still follows its width (aspect-ratio 4/3 per cell) — fitBoardSize()
      in the script below measures the real available height and tightens this
      max-width with an inline style so all 25 words fit without scrolling. */
-  #screen-setup{
-    max-width:min(720px, 94vw);
+  #lobby-settings-backdrop .guide-modal{
+    display:flex;
+    flex-direction:column;
+    width:min(620px, calc(100vw - 28px));
+    max-height:min(700px, calc(100vh - 28px));
+    padding:24px;
+    overflow:hidden;
+    border-radius:22px;
+    box-shadow:0 18px 55px rgba(32,39,53,.28);
   }
+  #lobby-settings-backdrop .guide-modal h2{margin-bottom:18px;font-size:1.4rem;}
+  .cs-settings-body{min-height:0;overflow-y:auto;padding:0 4px 4px 0;scrollbar-width:none;-ms-overflow-style:none;}
+  .cs-settings-body::-webkit-scrollbar{display:none;width:0;height:0;}
+  .cs-settings-section{padding:16px 0 18px;border-top:1px solid var(--glass-border);}
+  .cs-settings-section:first-child{padding-top:0;border-top:0;}
+  .cs-settings-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;color:var(--text);font-size:.86rem;font-weight:800;}
+  .cs-settings-heading .label-icon{margin-right:6px;}
+  .cs-settings-section .chip-list{grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px;}
+  .cs-settings-section .chip{gap:5px;padding:7px 8px;border-radius:10px;font-size:.74rem;}
+  .cs-settings-section .chip-icon{font-size:.9rem;}
+  .cs-settings-section .chip-toggle-all{margin:0;padding:7px 10px;border:1px solid var(--glass-border);border-radius:999px;background:var(--surface);text-decoration:none;color:var(--text);}
+  .cs-settings-section .chip-toggle-all:hover{background:var(--surface-2);}
+  .cs-time-value{display:block;margin:-4px 0 12px;color:var(--accent);font-size:1.15rem;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;}
+  .cs-time-slider{width:100%;height:8px;accent-color:var(--accent);cursor:pointer;}
+  .cs-time-scale{display:flex;justify-content:space-between;margin-top:7px;color:var(--text-dim);font-size:.7rem;font-weight:700;}
+  #lobby-settings-backdrop .scr-dock{padding-top:14px;}
+  #lobby-settings-backdrop .btn-main{margin-top:0;min-height:48px;border-radius:13px;box-shadow:0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent);}
+  #lobby-settings-backdrop .guide-modal{scrollbar-width:none;-ms-overflow-style:none;}
+  #lobby-settings-backdrop .guide-modal::-webkit-scrollbar{display:none;width:0;height:0;}
   #screen-room{max-width:min(520px, 94vw);}
   #screen-room .scr-body,#screen-lobby .scr-body{flex:0 1 auto;margin-top:auto;margin-bottom:auto;width:100%;}
   .cs-room-actions{display:grid;gap:10px;margin-top:16px;}
@@ -130,24 +156,6 @@
     text-align:left;
   }
   .packages-dropdown-btn:active{transform:scale(0.98);}
-  .packages-dropdown-summary{
-    color:var(--text-dim);
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .packages-dropdown-chevron{
-    flex-shrink:0;
-    color:var(--text-dim);
-    transition:transform .2s;
-  }
-  .packages-dropdown-btn[aria-expanded="true"] .packages-dropdown-chevron{
-    transform:rotate(180deg);
-  }
-  .packages-dropdown-panel{
-    margin-top:10px;
-  }
-
   .team-turn-badge{
     display:inline-block;
     margin:0 0 14px;
@@ -376,7 +384,10 @@
     line-height:1.2;
   }
   .cs-controls-host{
-    margin-left:0;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    margin-left:auto;
   }
   #screen-game .cs-game-topbar .ingame-extra-controls{
     margin:0;
@@ -476,53 +487,26 @@
     </div>
   </div>
 
-  <!-- SETUP -->
-  <div class="screen hidden" id="screen-setup">
-    <div class="card">
-      <div class="setup-header">
-        <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
-        <button type="button" class="guide-btn ayuda-trigger" id="guide-btn" aria-label="Ayuda">?</button>
-      </div>
-      <h1>CÓDIGO SECRETO</h1>
-
-      <div class="scr-body">
-        <label><span class="label-icon">🎯</span>Equipos</label>
-        <div class="stepper">
-          <button type="button" id="team-count-minus">−</button>
-          <div class="value" id="team-count-value">2</div>
-          <button type="button" id="team-count-plus">+</button>
-        </div>
-
-        <details class="setup-optional">
-          <summary>Ajustes adicionales</summary>
-          <div class="setup-optional-content">
-            <label><span class="label-icon">🏷️</span>Categorías</label>
-            <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
-              <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
-              <span class="packages-dropdown-chevron">▾</span>
-            </button>
-            <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
-              <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
-              <div class="chip-list" id="package-list"></div>
-            </div>
-            <label for="turn-time-limit"><span class="label-icon">⏱️</span>Tiempo por turno</label>
-            <select id="turn-time-limit" class="packages-dropdown-btn" aria-label="Tiempo por turno">
-              <option value="">Ilimitado</option>
-              <option value="30">30 segundos</option>
-              <option value="60">1 minuto</option>
-              <option value="90">1 minuto y medio</option>
-              <option value="120">2 minutos</option>
-              <option value="180">3 minutos</option>
-              <option value="300">5 minutos</option>
-            </select>
-          </div>
-        </details>
-
+  <!-- LOBBY SETTINGS -->
+  <div class="guide-modal-backdrop hidden" id="lobby-settings-backdrop">
+    <div class="guide-modal">
+      <button type="button" class="guide-modal-close" id="lobby-settings-close" aria-label="Cerrar">✕</button>
+      <h2>Ajustes de la sala</h2>
+      <div class="cs-settings-body">
+        <section class="cs-settings-section">
+          <label class="cs-settings-heading" for="turn-time-limit"><span><span class="label-icon">⏱️</span>Tiempo por turno</span></label>
+          <output class="cs-time-value" id="turn-time-value" for="turn-time-limit">Ilimitado</output>
+          <input class="cs-time-slider" id="turn-time-limit" type="range" min="0" max="300" step="5" value="0" aria-label="Tiempo por turno en segundos">
+          <div class="cs-time-scale" aria-hidden="true"><span>0 s</span><span>300 s</span></div>
+        </section>
+        <section class="cs-settings-section">
+          <div class="cs-settings-heading"><span><span class="label-icon">📦</span>Categorías</span><button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button></div>
+          <div class="chip-list" id="package-list"></div>
+        </section>
         <div class="error-msg" id="setup-error"></div>
       </div>
-
       <div class="scr-dock">
-        <button class="btn-main" id="start-btn">Iniciar partida</button>
+        <button class="btn-main" id="start-btn" type="button">Guardar ajustes</button>
       </div>
     </div>
   </div>
@@ -668,11 +652,12 @@
   var roomSession = { room: null, playerId: null, unsubscribe: null };
   var previousRevealed = [];
 
-  var screenSetup = document.getElementById('screen-setup');
   var screenRoom = document.getElementById('screen-room');
   var screenLobby = document.getElementById('screen-lobby');
   var screenGame = document.getElementById('screen-game');
-  var ALL_SCREENS = [screenRoom, screenLobby, screenSetup, screenGame];
+  var lobbySettingsBackdrop = document.getElementById('lobby-settings-backdrop');
+  var lobbySettingsClose = document.getElementById('lobby-settings-close');
+  var ALL_SCREENS = [screenRoom, screenLobby, screenGame];
   var finalResultBackdrop = document.getElementById('final-result-backdrop');
   var finishedGameId = null;
 
@@ -734,6 +719,10 @@
       if (data.room.config && data.room.config.timeLimitSeconds != null){
         config.timeLimitSeconds = Number(data.room.config.timeLimitSeconds);
       }
+      setTurnTime(config.timeLimitSeconds);
+      if (data.room.config && Array.isArray(data.room.config.selectedPackages) && data.room.config.selectedPackages.length){
+        config.selectedPackages = data.room.config.selectedPackages.slice();
+      }
       previousRevealed = oldGame ? oldGame.revealed_indices.slice() : [];
       if (data.game && data.game.status === 'finished'){
         renderFinal(data.game);
@@ -786,8 +775,8 @@
     data.players.forEach(function(player){ if (player.team_index !== null && teams[player.team_index]) teams[player.team_index].players.push(player); });
     var current = data.players.filter(function(player){ return player.user_id === roomSession.userId; })[0];
     config.numTeams = data.room.team_count;
-    renderTeamCount();
     renderLobbyTeamCount(data.room.team_count, Boolean(current && current.is_leader));
+    document.getElementById('lobby-settings-btn').classList.toggle('hidden', data.room.created_by !== roomSession.userId);
     renderLobbyStartState(teams);
     teamsEl.innerHTML = teams.map(function(team){
       var leader = team.players.filter(function(player){ return player.is_leader; })[0];
@@ -883,7 +872,10 @@
       .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message === 'teams_not_ready' ? 'Todos los equipos necesitan un líder y al menos un jugador.' : (error.message || 'No se pudo iniciar la partida.'); });
   });
 
-  document.getElementById('lobby-settings-btn').addEventListener('click', function(){ switchScreen(screenSetup); });
+  document.getElementById('lobby-settings-btn').addEventListener('click', function(){
+    if (!roomSession.state || roomSession.state.room.created_by !== roomSession.userId) return;
+    enterSetup();
+  });
 
   function createRoom(){
     var nickname = roomNickname();
@@ -931,48 +923,20 @@
     });
   });
 
-  // ---------- setup: number of teams ----------
+  // ---------- setup ----------
   var setupError = document.getElementById('setup-error');
   var startBtn = document.getElementById('start-btn');
-  var teamCountValueEl = document.getElementById('team-count-value');
-  var teamCountMinusBtn = document.getElementById('team-count-minus');
-  var teamCountPlusBtn = document.getElementById('team-count-plus');
-
-  function renderTeamCount(){ teamCountValueEl.textContent = config.numTeams; }
-  teamCountMinusBtn.addEventListener('click', function(){
-    config.numTeams = clamp(config.numTeams - 1, MIN_TEAMS, MAX_TEAMS);
-    renderTeamCount();
-    popValue(teamCountValueEl);
-  });
-  teamCountPlusBtn.addEventListener('click', function(){
-    config.numTeams = clamp(config.numTeams + 1, MIN_TEAMS, MAX_TEAMS);
-    renderTeamCount();
-    popValue(teamCountValueEl);
-  });
 
   // ---------- categories ----------
   var packageListEl = document.getElementById('package-list');
   var packageToggleAllBtn = document.getElementById('package-toggle-all-btn');
-  var packagesDropdownBtn = document.getElementById('packages-dropdown-btn');
-  var packagesDropdownPanel = document.getElementById('packages-dropdown-panel');
-  var packagesDropdownSummary = document.getElementById('packages-dropdown-summary');
 
   function renderToggleAllLabel(){
     if (!PACKAGES){ packageToggleAllBtn.textContent = 'Seleccionar todas'; return; }
     packageToggleAllBtn.textContent = config.selectedPackages.length === PACKAGES.length ? 'Quitar todas' : 'Seleccionar todas';
   }
 
-  function renderPackagesSummary(){
-    if (!PACKAGES){ packagesDropdownSummary.textContent = 'Cargando categorías…'; return; }
-    var total = PACKAGES.length;
-    var selected = config.selectedPackages.length;
-    if (selected === 0) packagesDropdownSummary.textContent = 'Ninguna categoría seleccionada';
-    else if (selected === total) packagesDropdownSummary.textContent = 'Todas las categorías (' + total + ')';
-    else packagesDropdownSummary.textContent = selected + ' de ' + total + ' categorías';
-  }
-
   function renderPackageList(){
-    renderPackagesSummary();
     if (!PACKAGES || PACKAGES.length === 0){
       packageListEl.innerHTML = '<p class="chip-loading">Cargando categorías…</p>';
       renderToggleAllLabel();
@@ -981,7 +945,7 @@
     packageListEl.innerHTML = PACKAGES.map(function(p){
       var selected = config.selectedPackages.indexOf(p.id) !== -1;
       return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-package-id="' + p.id + '">' +
-        '<span class="chip-icon">' + escapeHtml(p.icono || '📦') + '</span>' +
+        '<span class="chip-icon" aria-hidden="true">📦</span>' +
         '<span class="chip-name">' + escapeHtml(p.nombre) + '</span>' +
       '</button>';
     }).join('');
@@ -1010,12 +974,6 @@
     validateSetup();
   });
 
-  packagesDropdownBtn.addEventListener('click', function(){
-    var isOpen = !packagesDropdownPanel.classList.contains('hidden');
-    packagesDropdownPanel.classList.toggle('hidden', isOpen);
-    packagesDropdownBtn.setAttribute('aria-expanded', String(!isOpen));
-  });
-
   function buildWordPool(){
     return buildShuffledCategoryPool(PACKAGES.filter(function(p){
       return config.selectedPackages.indexOf(p.id) !== -1;
@@ -1036,9 +994,8 @@
 
   function enterSetup(){
     renderPackageList();
-    renderTeamCount();
     validateSetup();
-    switchScreen(screenSetup);
+    lobbySettingsBackdrop.classList.remove('hidden');
   }
 
   // ---------- game screen ----------
@@ -1226,6 +1183,15 @@
   });
 
   var turnTimeLimitEl = document.getElementById('turn-time-limit');
+  var turnTimeValueEl = document.getElementById('turn-time-value');
+  function renderTurnTime(){
+    var seconds = Number(turnTimeLimitEl.value) || 0;
+    turnTimeValueEl.textContent = seconds === 0 ? 'Ilimitado' : seconds + ' segundos';
+  }
+  function setTurnTime(seconds){
+    turnTimeLimitEl.value = String(Math.max(0, Math.min(300, Number(seconds) || 0)));
+    renderTurnTime();
+  }
   var timerInterval = window.setInterval(function(){
     var timerEl = document.getElementById('turn-timer');
     var game = roomSession.state && roomSession.state.game;
@@ -1239,7 +1205,12 @@
       GameHubSecretCode.rpc('secret_code_advance_timeout', { target_game: game.id }).then(refreshRoom).catch(function(){});
     }
   }, 1000);
-  turnTimeLimitEl.addEventListener('change', function(){ config.timeLimitSeconds = turnTimeLimitEl.value ? Number(turnTimeLimitEl.value) : null; });
+  turnTimeLimitEl.addEventListener('input', function(){
+    var seconds = Number(turnTimeLimitEl.value) || 0;
+    config.timeLimitSeconds = seconds === 0 ? null : seconds;
+    renderTurnTime();
+  });
+  renderTurnTime();
   document.getElementById('final-result-close').addEventListener('click', function(){ finalResultBackdrop.classList.add('hidden'); });
   document.getElementById('final-lobby-btn').addEventListener('click', function(){
     var button = document.getElementById('final-lobby-btn');
@@ -1269,8 +1240,7 @@
   startBtn.addEventListener('click', function(){
     if (!validateSetup()) return;
     if (roomSession.room){
-      switchScreen(screenLobby);
-      refreshRoom().catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo cargar la sala.'; });
+      lobbySettingsBackdrop.classList.add('hidden');
       return;
     }
     buildBoard();
@@ -1292,17 +1262,12 @@
   }
 
   // ---------- how-to-play guide ----------
-  setupModal(
-    document.getElementById('guide-btn'),
-    document.getElementById('guide-modal-backdrop'),
-    document.getElementById('guide-modal-close')
-  );
+  setupModal(document.getElementById('lobby-settings-btn'), lobbySettingsBackdrop, lobbySettingsClose);
   document.getElementById('guide-btn-game').addEventListener('click', function(){
     document.getElementById('guide-modal-backdrop').classList.remove('hidden');
   });
 
   // ---------- init ----------
-  renderTeamCount();
   loadPackages();
 
   if (!GameHubSecretCode.isConfigured()){
