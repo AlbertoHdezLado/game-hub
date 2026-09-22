@@ -1,0 +1,16 @@
+src/features/HubPage.tsx
+  h_fed6a40af368f7 47-48,50-51,54,57,63,73,147
+src/styles/index.css
+  h_fed6a40af368f7 76-77,80-83,97,99-100,116-118,132-139,143,146,149-154,157,167-170,176-177,179,181-182,188,196-197,199,201-203,235-242,247,253,284-289,298,318,367-368,372,410-413,991-992,996,1154-1390
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8f6a4cbf9c24f9ff21270669a518fc9b3383f02c",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
