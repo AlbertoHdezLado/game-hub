@@ -1,5 +1,5 @@
 {
-  "rewrites": [{ "source": "/((?!data|resources).*)", "destination": "/index.html" }],
+  "rewrites": [{ "source": "/((?!api|data|resources).*)", "destination": "/index.html" }],
   "headers": [
     { "source": "/version.json", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
     { "source": "/data/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }] }

@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
+import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -9,6 +9,46 @@ import { fileURLToPath } from 'node:url';
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 type ConnectNext = (error?: unknown) => void;
+
+function localSecretCodeApi(): Plugin {
+  return {
+    name: 'game-hub-local-secret-code-api',
+    configureServer(server) {
+      server.middlewares.use('/api/secret-code', async (request, response, next) => {
+        if (request.method !== 'POST' && request.method !== 'GET') {
+          next();
+          return;
+        }
+
+        const chunks: Buffer[] = [];
+        for await (const chunk of request) chunks.push(Buffer.from(chunk));
+        const body = Buffer.concat(chunks).toString('utf8');
+        const apiModule = await import('./api/secret-code.js');
+        const handlerResponse = {
+          statusCode: 200,
+          status(code: number) {
+            this.statusCode = code;
+            return this;
+          },
+          setHeader(name: string, value: string) {
+            response.setHeader(name, value);
+          },
+          end(value: string) {
+            response.statusCode = this.statusCode;
+            response.end(value);
+          },
+        };
+
+        await apiModule.default({
+          method: request.method,
+          url: request.url || '/api/secret-code',
+          headers: request.headers,
+          body,
+        }, handlerResponse);
+      });
+    },
+  };
+}
 
 function cleanGameRoutes(): Plugin {
   return {
@@ -35,37 +75,10 @@ function rewriteGameUrl(request: { url?: string }) {
   request.url = `/games/${match[1]}/index.html`;
 }
 
-function supabaseConfig(): Plugin {
-  let generatedSource = 'window.GAME_HUB_SUPABASE_CONFIG = {};';
-  const configSource = (env: Record<string, string>) =>
-    `window.GAME_HUB_SUPABASE_CONFIG = ${JSON.stringify({
-      url: env.NEXT_PUBLIC_SUPABASE_URL || '',
-      anonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-    })};`;
-
-  return {
-    name: 'game-hub-supabase-config',
-    config(_, { mode }) {
-      const env = loadEnv(mode, rootDir, '');
-      generatedSource = configSource(env);
-      return {};
-    },
-    configureServer(server) {
-      server.middlewares.use('/supabase-config.js', (_request, response) => {
-        response.setHeader('Content-Type', 'application/javascript');
-        response.end(generatedSource);
-      });
-    },
-    generateBundle() {
-      this.emitFile({ type: 'asset', fileName: 'supabase-config.js', source: generatedSource });
-    },
-  };
-}
-
 export default defineConfig({
   plugins: [
+    localSecretCodeApi(),
     cleanGameRoutes(),
-    supabaseConfig(),
     react(),
     tailwindcss(),
     VitePWA({

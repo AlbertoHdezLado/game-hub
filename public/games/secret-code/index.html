@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script src="/analytics.js"></script>
-<script src="/supabase-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/supabase-client.js"></script>
+<script src="/secret-code-client.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#edf7fb">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -47,18 +45,51 @@
   .cs-room-status{min-height:1.4em;margin:12px 0 0;color:var(--text-dim);font-size:.88rem;text-align:center;}
   .cs-room-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--text-dim);font-size:.8rem;}
   .cs-room-divider::before,.cs-room-divider::after{content:"";height:1px;flex:1;background:var(--glass-border);}
-  #screen-lobby{max-width:min(760px, 94vw);}
-  .cs-lobby-code{font-family:var(--font-display);font-size:1.5rem;letter-spacing:.18em;text-align:center;margin:0 0 4px;}
+  #screen-lobby{max-width:none;}
+  #screen-lobby .setup-header{margin-bottom:4px;}
+  #screen-lobby .scr-body{max-width:none;margin-top:0;margin-left:0;margin-right:0;}
+  .cs-lobby-code-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:58px;}
+  .cs-lobby-code-stack{grid-column:2;grid-row:1;text-align:center;}
+  .cs-lobby-code-label{display:block;margin-bottom:2px;color:var(--text-dim);font-family:var(--font-body);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+  .cs-lobby-code-row .guide-btn{grid-column:3;grid-row:1;justify-self:end;width:42px;height:42px;border-radius:13px;}
+  .cs-lobby-code{font-family:var(--font-body);font-size:1.65rem;letter-spacing:.16em;text-align:center;margin:0;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums;}
+  .cs-team-count{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 14px;color:var(--text-dim);font-size:.8rem;font-weight:700;}
+  .cs-team-count button{width:30px;height:30px;padding:0;border:1px solid var(--glass-border);border-radius:9px;background:var(--surface);color:var(--text);font-size:1.1rem;font-weight:700;line-height:1;cursor:pointer;}
+  .cs-team-count button:disabled{opacity:.35;cursor:not-allowed;}
+  .cs-team-count-value{min-width:18px;text-align:center;color:var(--accent);font-size:.95rem;}
   .cs-lobby-share{display:flex;gap:8px;justify-content:center;margin:10px 0 18px;}
-  .cs-lobby-share button{padding:8px 12px;border-radius:10px;border:1px solid var(--glass-border);background:var(--surface);color:var(--text);font-weight:700;cursor:pointer;}
-  .cs-teams{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
-  .cs-team{padding:10px;border:1px solid var(--glass-border);border-radius:12px;background:var(--surface-2);min-height:130px;}
-  .cs-team h3{margin:0 0 8px;font-size:.9rem;}
-  .cs-team-leader{min-height:28px;margin-bottom:8px;font-size:.78rem;color:var(--text-dim);}
+  .cs-lobby-share button{min-height:38px;padding:8px 14px;border-radius:12px;border:1px solid var(--glass-border);background:var(--surface);color:var(--text);font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 3px 0 var(--shadow);transition:transform .15s,background .15s;}
+  .cs-lobby-share button:active,.cs-team button:active{transform:translateY(1px) scale(.98);}
+  .cs-teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+  .cs-team{display:flex;flex-direction:column;padding:14px;border:1px solid var(--glass-border);border-radius:14px;background:var(--surface);min-height:138px;box-shadow:0 3px 0 var(--shadow),0 8px 18px rgba(65,48,27,.08);}
+  .cs-team h3{margin:0 0 8px;font-size:.95rem;}
+  .cs-team-leader{display:flex;align-items:center;justify-content:center;gap:6px;min-height:30px;margin-bottom:12px;font-size:1rem;font-weight:800;text-align:center;}
+  .cs-team-leader.empty{color:var(--text-dim);font-size:.8rem;font-weight:600;}
+  .cs-leader-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;color:#fff;line-height:1.1;}
+  .cs-team-leader .cs-crown{color:#fff;font-size:1.2rem;line-height:1;}
+  .cs-team-players{display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:6px;}
+  .cs-player-pill{padding:6px 11px;border-radius:999px;color:#fff;font-size:.78rem;font-weight:700;line-height:1.1;}
+  .cs-team:nth-child(1) .cs-team-leader{color:#5b8fe0;}
+  .cs-team:nth-child(2) .cs-team-leader{color:#c9525c;}
+  .cs-team:nth-child(3) .cs-team-leader{color:#4fbf7a;}
+  .cs-team:nth-child(1) .cs-leader-pill{background:#5b8fe0;}
+  .cs-team:nth-child(2) .cs-leader-pill{background:#c9525c;}
+  .cs-team:nth-child(3) .cs-leader-pill{background:#4fbf7a;}
+  .cs-team:nth-child(1) .cs-player-pill{background:#5b8fe0;}
+  .cs-team:nth-child(2) .cs-player-pill{background:#c9525c;}
+  .cs-team:nth-child(3) .cs-player-pill{background:#4fbf7a;}
+  .cs-team button{margin-top:12px;width:100%;min-height:36px;padding:8px 10px;border:1px solid transparent;border-radius:10px;color:#fff;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;box-shadow:0 2px 0 var(--shadow);transition:transform .15s,filter .15s;}
+  .cs-team button:hover{filter:brightness(1.06);}
+  .cs-team:nth-child(1) button{background:#5b8fe0;}
+  .cs-team:nth-child(2) button{background:#c9525c;}
+  .cs-team:nth-child(3) button{background:#4fbf7a;}
+  .cs-team:nth-child(1){border-color:rgba(91,143,224,.42);background:rgba(91,143,224,.10);}
+  .cs-team:nth-child(2){border-color:rgba(201,82,92,.42);background:rgba(201,82,92,.10);}
   .cs-player{display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:.78rem;margin:5px 0;}
   .cs-player button{padding:4px 6px;border:1px solid var(--glass-border);border-radius:7px;background:var(--surface);color:var(--text);font-size:.7rem;cursor:pointer;}
-  .cs-lobby-actions{display:flex;gap:10px;margin-top:16px;}
+  .cs-lobby-actions{display:flex;align-items:stretch;gap:10px;margin:10px 0 0;padding-top:0;width:100%;}
   .cs-lobby-actions>*{flex:1;}
+  .cs-lobby-actions .cs-key-hide-btn,.cs-lobby-actions .btn-main{height:52px;min-height:52px;margin:0;padding:14px 16px;display:flex;align-items:center;justify-content:center;}
   @media(max-width:560px){.cs-teams{grid-template-columns:1fr;}.cs-team{min-height:0;}.cs-lobby-actions{flex-direction:column;}}
   .cs-cell.cs-cell-revealed.role-0{background:#5b8fe0;border-color:#5b8fe0;color:#fff;}
   .cs-cell.cs-cell-revealed.role-1{background:#c9525c;border-color:#c9525c;color:#fff;}
@@ -239,17 +270,19 @@
   }
   .cs-share-layout{
     display:grid;
-    grid-template-columns:max-content max-content;
-    align-items:start;
-    gap:24px;
+    grid-template-columns:minmax(150px,1fr) max-content;
+    align-items:center;
+    gap:26px;
     margin-top:10px;
   }
+  .cs-share-info{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0;}
   .cs-share-actions{
     display:flex;
     flex-direction:column;
     gap:14px;
     grid-column:1;
-    grid-row:1;
+    grid-row:2;
+    width:100%;
   }
   .cs-share-leader-toggle{
     display:flex;
@@ -294,6 +327,8 @@
     transform:translateX(18px);
   }
   .cs-share-btn{width:100%; margin-top:0;}
+  .cs-share-room-code{margin:0;text-align:center;color:var(--accent);font-family:var(--font-body);font-size:clamp(1.8rem,5vw,2.7rem);font-weight:800;letter-spacing:.16em;font-variant-numeric:tabular-nums;}
+  .cs-share-room-label{display:block;margin:0;text-align:center;color:var(--text-dim);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
   #share-modal-backdrop .guide-modal{
     position:fixed;
     margin:24px;
@@ -309,9 +344,9 @@
   #share-modal-backdrop .guide-modal-close{display:none;}
   #share-modal-backdrop .guide-modal::-webkit-scrollbar{display:none;}
   @media (max-width:560px){
-    .cs-share-layout{grid-template-columns:1fr; gap:14px;}
-    .cs-share-actions,
-    .cs-share-qr-wrap{grid-column:1; grid-row:auto;}
+    .cs-share-layout{grid-template-columns:1fr;gap:18px;}
+    .cs-share-info{grid-column:1;grid-row:1;}
+    .cs-share-actions,.cs-share-qr-wrap{grid-column:1;grid-row:auto;}
   }
 
   .cs-game-header{
@@ -418,18 +453,25 @@
         <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
       </div>
       <div class="scr-body">
-        <p class="cs-lobby-code" id="lobby-code"></p>
-        <p class="count-info" id="lobby-status">Esperando jugadores…</p>
-        <div class="cs-lobby-share">
-          <button type="button" id="lobby-copy-btn">Copiar enlace</button>
-          <button type="button" id="lobby-qr-btn">Mostrar QR</button>
+        <div class="cs-lobby-code-row">
+          <div class="cs-lobby-code-stack">
+            <span class="cs-lobby-code-label">Sala</span>
+            <p class="cs-lobby-code" id="lobby-code"></p>
+          </div>
+          <button type="button" class="guide-btn" id="lobby-share-btn" aria-label="Compartir sala"><span class="share-icon"></span></button>
+        </div>
+        <div class="cs-team-count hidden" id="lobby-team-count" aria-label="Número de equipos">
+          <span>Equipos</span>
+          <button type="button" id="lobby-team-minus" aria-label="Quitar equipo">−</button>
+          <strong class="cs-team-count-value" id="lobby-team-count-value">2</strong>
+          <button type="button" id="lobby-team-plus" aria-label="Añadir equipo">+</button>
         </div>
         <div class="cs-teams" id="lobby-teams"></div>
         <p class="cs-room-status" id="lobby-error" role="status" aria-live="polite"></p>
       </div>
       <div class="scr-dock cs-lobby-actions">
         <button class="cs-key-hide-btn" id="lobby-settings-btn" type="button">Ajustes</button>
-        <button class="btn-main" id="lobby-start-btn" type="button">Iniciar partida</button>
+        <button class="btn-main" id="lobby-start-btn" type="button" disabled>Iniciar partida</button>
       </div>
     </div>
   </div>
@@ -522,20 +564,19 @@
   <div class="guide-modal-backdrop hidden" id="share-modal-backdrop">
     <div class="guide-modal">
       <button type="button" class="guide-modal-close" id="share-modal-close">✕</button>
-      <h2>🔗 Compartir tablero</h2>
+      <h2 id="share-modal-title">Compartir sala</h2>
       <div class="cs-share-layout">
+        <div class="cs-share-info">
+          <span class="cs-share-room-label">Código de sala</span>
+          <p class="cs-share-room-code" id="share-room-code"></p>
+          <div class="cs-share-actions">
+            <button type="button" class="btn-main cs-share-btn" id="share-native-btn">📤 Compartir enlace</button>
+          </div>
+        </div>
         <div class="cs-share-qr-wrap">
           <img id="share-qr-img" alt="Código QR del tablero" width="220" height="220">
         </div>
-        <div class="cs-share-actions">
-          <label class="cs-share-leader-toggle">
-            <span>Vista líder de equipo</span>
-            <input type="checkbox" id="share-role-leader" aria-label="Vista líder de equipo">
-          </label>
-          <button type="button" class="btn-main cs-share-btn" id="share-native-btn">📤 Compartir enlace</button>
-        </div>
       </div>
-      <p class="count-info" id="share-msg"></p>
     </div>
   </div>
 
@@ -646,6 +687,7 @@
   var roomStatusEl = document.getElementById('room-status');
   var roomCreateBtn = document.getElementById('room-create-btn');
   var ROOM_STORAGE_KEY = 'gamehub.secretCodeRoom';
+  var roomLeaveSent = false;
 
   function setRoomStatus(message, isError){
     roomStatusEl.textContent = message;
@@ -677,8 +719,16 @@
     return nickname;
   }
 
+  function leaveCurrentRoom(){
+    if (roomLeaveSent || !roomSession.room) return;
+    roomLeaveSent = true;
+    GameHubSecretCode.leaveRoom(roomSession.room.id);
+  }
+
+  window.addEventListener('pagehide', leaveCurrentRoom);
+
   function refreshRoom(){
-    return GameHubSupabase.loadRoomState(roomSession.room.id).then(function(data){
+    return GameHubSecretCode.loadRoomState(roomSession.room.id).then(function(data){
       var oldGame = roomSession.state && roomSession.state.game;
       roomSession.state = data;
       if (data.room.config && data.room.config.timeLimitSeconds != null){
@@ -724,24 +774,33 @@
     setRoomStatus('Sala ' + room.code + ' lista.');
     roomSession.userId = null;
     if (roomSession.unsubscribe) roomSession.unsubscribe();
-    roomSession.unsubscribe = GameHubSupabase.subscribeToRoom(room.id, function(){ refreshRoom().catch(function(){}); });
-    return GameHubSupabase.currentUserId().then(function(userId){ roomSession.userId = userId; return refreshRoom(); });
+    roomSession.unsubscribe = GameHubSecretCode.subscribeToRoom(room.id, function(){ refreshRoom().catch(function(){}); });
+    return GameHubSecretCode.currentUserId().then(function(userId){ roomSession.userId = userId; return refreshRoom(); });
   }
 
   function renderLobby(data){
     document.getElementById('lobby-code').textContent = data.room.code;
-    document.getElementById('lobby-status').textContent = data.players.length + ' jugador' + (data.players.length === 1 ? '' : 'es') + ' en la sala';
     var teamsEl = document.getElementById('lobby-teams');
     var teams = [];
     for (var t = 0; t < data.room.team_count; t++) teams.push({ index: t, players: [] });
     data.players.forEach(function(player){ if (player.team_index !== null && teams[player.team_index]) teams[player.team_index].players.push(player); });
+    var current = data.players.filter(function(player){ return player.user_id === roomSession.userId; })[0];
+    config.numTeams = data.room.team_count;
+    renderTeamCount();
+    renderLobbyTeamCount(data.room.team_count, Boolean(current && current.is_leader));
+    renderLobbyStartState(teams);
     teamsEl.innerHTML = teams.map(function(team){
       var leader = team.players.filter(function(player){ return player.is_leader; })[0];
-      var players = team.players.filter(function(player){ return !player.is_leader; });
+      var teamAction = 'join-team';
+      var teamActionLabel = 'Unirme';
+      if (current && current.team_index === team.index){
+        teamAction = current.is_leader ? 'leave-leader' : 'claim-leader';
+        teamActionLabel = current.is_leader ? 'Dejar líder' : 'Ser líder';
+      }
       return '<section class="cs-team"><h3 style="color:' + TEAM_HEX[team.index] + '">Equipo ' + TEAM_NAMES[team.index] + '</h3>' +
-        '<div class="cs-team-leader">Líder: ' + (leader ? escapeHtml(leader.nickname) : 'Sin líder') + '</div>' +
-        players.map(function(player){ return playerRow(player, team.index); }).join('') +
-        '<button type="button" data-team="' + team.index + '" data-action="join-team">Unirme a este equipo</button></section>';
+        '<div class="cs-team-leader' + (leader ? '' : ' empty') + '">' + (leader ? '<span class="cs-leader-pill"><span class="cs-crown" aria-hidden="true">♛</span>' + escapeHtml(leader.nickname) + '</span>' : 'Sin líder') + '</div>' +
+        '<div class="cs-team-players">' + team.players.filter(function(player){ return !player.is_leader; }).map(function(player){ return playerRow(player); }).join('') + '</div>' +
+        '<button type="button" data-team="' + team.index + '" data-action="' + teamAction + '">' + teamActionLabel + '</button></section>';
     }).join('');
   }
 
@@ -762,12 +821,29 @@
     document.getElementById('final-message').textContent = game.end_reason === 'assassin' ? 'La partida termina al descubrir el asesino.' : 'Todas sus palabras han sido reveladas.';
   }
 
-  function playerRow(player, teamIndex){
-    var actions = '';
-    if (player.user_id === roomSession.userId){
-      actions = '<button type="button" data-team="' + teamIndex + '" data-action="claim-leader">Ser líder</button>';
-    }
-    return '<div class="cs-player"><span>' + escapeHtml(player.nickname) + '</span>' + actions + '</div>';
+  function playerRow(player){
+    return '<span class="cs-player-pill">' + escapeHtml(player.nickname) + '</span>';
+  }
+
+  function renderLobbyTeamCount(teamCount, isLeader){
+    var countEl = document.getElementById('lobby-team-count');
+    var valueEl = document.getElementById('lobby-team-count-value');
+    var minusBtn = document.getElementById('lobby-team-minus');
+    var plusBtn = document.getElementById('lobby-team-plus');
+    countEl.classList.toggle('hidden', !isLeader);
+    valueEl.textContent = teamCount;
+    minusBtn.disabled = !isLeader || teamCount <= MIN_TEAMS;
+    plusBtn.disabled = !isLeader || teamCount >= MAX_TEAMS;
+  }
+
+  function canStartLobby(teams){
+    return teams.every(function(team){
+      return team.players.some(function(player){ return player.is_leader; }) && team.players.length >= 2;
+    });
+  }
+
+  function renderLobbyStartState(teams){
+    document.getElementById('lobby-start-btn').disabled = !canStartLobby(teams);
   }
 
   document.getElementById('lobby-teams').addEventListener('click', function(event){
@@ -777,34 +853,43 @@
     var teamIndex = Number(button.dataset.team);
     var functionName = action === 'claim-leader' ? 'secret_code_claim_leader' : 'secret_code_set_team';
     button.disabled = true;
-    GameHubSupabase.rpc(functionName, action === 'claim-leader' ? { target_room: roomSession.room.id, requested_team: teamIndex } : { target_room: roomSession.room.id, requested_team: teamIndex })
+    GameHubSecretCode.rpc(functionName, action === 'claim-leader' ? { target_room: roomSession.room.id, requested_team: teamIndex } : { target_room: roomSession.room.id, requested_team: teamIndex })
       .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo actualizar el equipo.'; }).finally(function(){ button.disabled = false; });
   });
+
+  function changeLobbyTeamCount(delta){
+    var requestedTeamCount = clamp(config.numTeams + delta, MIN_TEAMS, MAX_TEAMS);
+    if (requestedTeamCount === config.numTeams) return;
+    document.getElementById('lobby-team-minus').disabled = true;
+    document.getElementById('lobby-team-plus').disabled = true;
+    GameHubSecretCode.rpc('secret_code_set_team_count', { target_room: roomSession.room.id, requested_team_count: requestedTeamCount })
+      .then(refreshRoom)
+      .catch(function(error){ document.getElementById('lobby-error').textContent = error.message === 'team_not_empty' ? 'El tercer equipo debe estar vacío para quitarlo.' : (error.message || 'No se pudo cambiar el número de equipos.'); })
+      .finally(function(){
+        document.getElementById('lobby-team-minus').disabled = config.numTeams <= MIN_TEAMS;
+        document.getElementById('lobby-team-plus').disabled = config.numTeams >= MAX_TEAMS;
+      });
+  }
+
+  document.getElementById('lobby-team-minus').addEventListener('click', function(){ changeLobbyTeamCount(-1); });
+  document.getElementById('lobby-team-plus').addEventListener('click', function(){ changeLobbyTeamCount(1); });
 
   document.getElementById('lobby-start-btn').addEventListener('click', function(){
     if (!validateSetup()) return;
     buildBoard();
     var button = document.getElementById('lobby-start-btn');
     button.disabled = true;
-    GameHubSupabase.rpc('secret_code_start_game', { target_room: roomSession.room.id, board_words: state.board, board_roles: state.roles.map(String), first_team: state.startingTeam, turn_seconds: config.timeLimitSeconds })
-      .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo iniciar la partida.'; }).finally(function(){ button.disabled = false; });
+    GameHubSecretCode.rpc('secret_code_start_game', { target_room: roomSession.room.id, board_words: state.board, board_roles: state.roles.map(String), first_team: state.startingTeam, turn_seconds: config.timeLimitSeconds })
+      .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message === 'teams_not_ready' ? 'Todos los equipos necesitan un líder y al menos un jugador.' : (error.message || 'No se pudo iniciar la partida.'); });
   });
 
   document.getElementById('lobby-settings-btn').addEventListener('click', function(){ switchScreen(screenSetup); });
-  document.getElementById('lobby-copy-btn').addEventListener('click', function(){
-    var url = window.location.origin + window.location.pathname + '?room=' + roomSession.room.code;
-    if (navigator.clipboard) navigator.clipboard.writeText(url);
-  });
-  document.getElementById('lobby-qr-btn').addEventListener('click', function(){
-    var url = window.location.origin + window.location.pathname + '?room=' + roomSession.room.code;
-    window.open('https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=' + encodeURIComponent(url), '_blank', 'noopener');
-  });
 
   function createRoom(){
     var nickname = roomNickname();
     if (!nickname) return;
     setRoomBusy(true); setRoomStatus('Creando sala…');
-    GameHubSupabase.rpc('secret_code_create_room', {
+    GameHubSecretCode.rpc('secret_code_create_room', {
       player_nickname: nickname, requested_team_count: config.numTeams, room_config: { selectedPackages: config.selectedPackages, timeLimitSeconds: config.timeLimitSeconds }
     }).then(enterRoom).catch(function(error){ setRoomStatus(error.message || 'No se pudo crear la sala.', true); }).finally(function(){ setRoomBusy(false); });
   }
@@ -815,7 +900,7 @@
     if (!nickname) return;
     if (!/^[A-Z0-9]{6}$/.test(code)){ setRoomStatus('El código debe tener 6 caracteres.', true); roomCodeInputs[0].focus(); return; }
     setRoomBusy(true); setRoomStatus('Buscando sala…');
-    GameHubSupabase.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
+    GameHubSecretCode.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
       .then(enterRoom).catch(function(error){ setRoomStatus(error.message || 'No se pudo unir a la sala.', true); }).finally(function(){ setRoomBusy(false); });
   }
 
@@ -967,13 +1052,15 @@
 
   // ---------- share board (QR + link, no team/key info) ----------
   var shareBoardBtn = document.getElementById('share-board-btn');
+  var lobbyShareBtn = document.getElementById('lobby-share-btn');
   var shareModalBackdrop = document.getElementById('share-modal-backdrop');
   var shareModalClose = document.getElementById('share-modal-close');
   var shareQrImg = document.getElementById('share-qr-img');
   var shareUrl = '';
-  var shareMsg = document.getElementById('share-msg');
   var shareNativeBtn = document.getElementById('share-native-btn');
-  var shareRoleLeaderBtn = document.getElementById('share-role-leader');
+  var shareRoomLabel = document.querySelector('.cs-share-room-label');
+  var shareRoomCode = document.getElementById('share-room-code');
+  var shareModalTitle = document.querySelector('#share-modal-backdrop h2');
   var shareRole = 'participant';
 
   function buildShareUrl(role){
@@ -992,24 +1079,22 @@
   function updateSharePreview(){
     shareUrl = buildShareUrl(shareRole);
     shareQrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(shareUrl);
+    var roomCode = roomSession.room ? roomSession.room.code : '';
+    shareRoomCode.textContent = roomCode;
+    shareRoomLabel.classList.toggle('hidden', !roomCode);
+    shareRoomCode.classList.toggle('hidden', !roomCode);
   }
 
-  setupModal(shareBoardBtn, shareModalBackdrop, shareModalClose);
+  setupModal([shareBoardBtn, lobbyShareBtn], shareModalBackdrop, shareModalClose);
   shareBoardBtn.addEventListener('click', function(){
     shareRole = 'participant';
-    shareRoleLeaderBtn.checked = false;
+    shareModalTitle.textContent = 'Compartir tablero';
     updateSharePreview();
-    shareMsg.textContent = '';
   });
-
-  function selectShareRole(role){
-    shareRole = role;
-    shareRoleLeaderBtn.checked = role === 'leader';
+  lobbyShareBtn.addEventListener('click', function(){
+    shareRole = 'participant';
+    shareModalTitle.textContent = 'Compartir sala';
     updateSharePreview();
-    shareMsg.textContent = '';
-  }
-  shareRoleLeaderBtn.addEventListener('change', function(){
-    selectShareRole(shareRoleLeaderBtn.checked ? 'leader' : 'participant');
   });
 
   shareNativeBtn.addEventListener('click', function(){
@@ -1018,11 +1103,7 @@
       return;
     }
     if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(shareUrl).then(function(){
-        shareMsg.textContent = 'Enlace copiado. Puedes pegarlo donde quieras compartirlo.';
-      }).catch(function(){
-        shareMsg.textContent = 'No se pudo compartir el enlace en este navegador.';
-      });
+      navigator.clipboard.writeText(shareUrl).catch(function(){});
     }
   });
 
@@ -1134,14 +1215,14 @@
     if (!player || !game || game.status !== 'playing' || player.is_leader || player.team_index !== game.active_team || game.revealed_indices.indexOf(index) !== -1) return;
     if (!window.confirm('¿Revelar la palabra «' + cell.textContent + '»?')) return;
     cell.disabled = true;
-    GameHubSupabase.rpc('secret_code_select_word', { target_game: game.id, word_index: index + 1 })
+    GameHubSecretCode.rpc('secret_code_select_word', { target_game: game.id, word_index: index + 1 })
       .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo seleccionar la palabra.'; });
   });
 
   document.getElementById('finish-turn-btn').addEventListener('click', function(){
     var game = roomSession.state && roomSession.state.game;
     if (!game || !window.confirm('¿Finalizar el turno?')) return;
-    GameHubSupabase.rpc('secret_code_finish_turn', { target_game: game.id }).then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo finalizar el turno.'; });
+    GameHubSecretCode.rpc('secret_code_finish_turn', { target_game: game.id }).then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo finalizar el turno.'; });
   });
 
   var turnTimeLimitEl = document.getElementById('turn-time-limit');
@@ -1155,7 +1236,7 @@
     var remaining = Math.max(0, game.time_limit_seconds - Math.floor((Date.now() - Date.parse(game.turn_started_at)) / 1000));
     timerEl.textContent = Math.floor(remaining / 60) + ':' + String(remaining % 60).padStart(2, '0');
     if (remaining === 0){
-      GameHubSupabase.rpc('secret_code_advance_timeout', { target_game: game.id }).then(refreshRoom).catch(function(){});
+      GameHubSecretCode.rpc('secret_code_advance_timeout', { target_game: game.id }).then(refreshRoom).catch(function(){});
     }
   }, 1000);
   turnTimeLimitEl.addEventListener('change', function(){ config.timeLimitSeconds = turnTimeLimitEl.value ? Number(turnTimeLimitEl.value) : null; });
@@ -1163,7 +1244,7 @@
   document.getElementById('final-lobby-btn').addEventListener('click', function(){
     var button = document.getElementById('final-lobby-btn');
     button.disabled = true;
-    GameHubSupabase.rpc('secret_code_return_to_lobby', { target_room: roomSession.room.id })
+    GameHubSecretCode.rpc('secret_code_return_to_lobby', { target_room: roomSession.room.id })
       .then(refreshRoom)
       .catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo volver a la sala.'; })
       .finally(function(){ button.disabled = false; });
@@ -1224,8 +1305,8 @@
   renderTeamCount();
   loadPackages();
 
-  if (!GameHubSupabase.isConfigured()){
-    setRoomStatus('Supabase no está configurado. Copia .env.example como .env.local para activar las salas.', true);
+  if (!GameHubSecretCode.isConfigured()){
+    setRoomStatus('El backend de salas no está disponible.', true);
     roomCreateBtn.disabled = true;
     roomCodeInputs.forEach(function(input){ input.disabled = true; });
   }
