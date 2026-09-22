@@ -58,7 +58,7 @@ export function HubPage() {
 
 function HubHeader() {
   return (
-    <>
+    <header className="hub-header">
       <div className="hub-logo" aria-label="Game Hub" />
       <a
         href="https://forms.gle/ne3tXqPzfKN98PuK6"
@@ -68,7 +68,7 @@ function HubHeader() {
       >
         💡 Enviar una sugerencia
       </a>
-    </>
+    </header>
   );
 }
 
@@ -76,12 +76,13 @@ function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
+  const hasUserScrolledRef = useRef(false);
 
   const updateScrollState = () => {
     const grid = gridRef.current;
     if (!grid) return;
 
-    setCanScrollLeft(grid.scrollLeft > 2);
+    setCanScrollLeft(hasUserScrolledRef.current && grid.scrollLeft > 8);
     setCanScrollRight(grid.scrollLeft + grid.clientWidth < grid.scrollWidth - 2);
   };
 
@@ -89,18 +90,28 @@ function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo
     const grid = gridRef.current;
     if (!grid) return;
 
-    updateScrollState();
+    const frameId = window.requestAnimationFrame(() => {
+      hasUserScrolledRef.current = false;
+      grid.scrollLeft = 0;
+      updateScrollState();
+    });
     grid.addEventListener('scroll', updateScrollState, { passive: true });
     window.addEventListener('resize', updateScrollState);
 
     return () => {
+      window.cancelAnimationFrame(frameId);
       grid.removeEventListener('scroll', updateScrollState);
       window.removeEventListener('resize', updateScrollState);
     };
   }, [iconsReady]);
 
   const scrollByPage = (direction: number) => {
+    if (direction > 0) hasUserScrolledRef.current = true;
     gridRef.current?.scrollBy({ left: direction * gridRef.current.clientWidth * .75, behavior: 'smooth' });
+  };
+
+  const markGridInteraction = () => {
+    hasUserScrolledRef.current = true;
   };
 
   return (
@@ -110,7 +121,12 @@ function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo
           <span aria-hidden="true" />
         </button>
       )}
-      <div ref={gridRef} className={`mode-grid${iconsReady ? ' ready' : ''}`}>
+      <div
+        ref={gridRef}
+        className={`mode-grid${iconsReady ? ' ready' : ''}`}
+        onPointerDown={markGridInteraction}
+        onWheel={markGridInteraction}
+      >
         {games.map((game) => (
           <GameCard key={game.slug} game={game} onInfo={onInfo} />
         ))}
