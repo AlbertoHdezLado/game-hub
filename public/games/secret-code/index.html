@@ -665,6 +665,12 @@
     roomCodeInputs.forEach(function(input){ input.disabled = !enabled; });
   }
 
+  function syncRoomEntryState(){
+    var hasNickname = Boolean(roomNicknameEl.value.trim());
+    roomCreateBtn.disabled = !hasNickname;
+    setRoomCodeEnabled(hasNickname);
+  }
+
   function setRoomCode(code){
     code = (code || '').replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, roomCodeInputs.length);
     roomCodeInputs.forEach(function(input, index){ input.value = code[index] || ''; });
@@ -821,9 +827,7 @@
 
   roomCreateBtn.addEventListener('click', createRoom);
   roomNicknameEl.addEventListener('input', function(){
-    var hasNickname = Boolean(roomNicknameEl.value.trim());
-    roomCreateBtn.disabled = !hasNickname;
-    setRoomCodeEnabled(hasNickname);
+    syncRoomEntryState();
   });
   roomCodeInputs.forEach(function(input, index){
     input.addEventListener('input', function(){
@@ -1238,8 +1242,7 @@
       var savedNickname = localStorage.getItem('gamehub.secretCodeNickname') || '';
       if (savedNickname){
         roomNicknameEl.value = savedNickname;
-        roomCreateBtn.disabled = false;
-        setRoomCodeEnabled(true);
+        syncRoomEntryState();
         setRoomCode(roomCode);
       }
     }
