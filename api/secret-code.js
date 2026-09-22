@@ -159,7 +159,7 @@ async function createRoom(body) {
 }
 
 async function joinRoom(body) {
-  const room = await loadRoom(body.room_code);
+  const room = await loadRoom(String(body.room_code || '').trim().toUpperCase());
   if (!room) throw new Error('room_not_available');
   const playerId = String(body.player_id || newId());
   let player = getPlayer(room, playerId);

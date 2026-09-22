@@ -908,6 +908,7 @@
     var hasNickname = Boolean(roomNicknameEl.value.trim());
     roomCreateBtn.disabled = !hasNickname;
     setRoomCodeEnabled(hasNickname);
+    if (hasNickname && roomCodeValue().length === roomCodeInputs.length) joinRoom();
   });
   roomCodeInputs.forEach(function(input, index){
     input.addEventListener('input', function(){
