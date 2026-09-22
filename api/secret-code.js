@@ -93,11 +93,13 @@ function hasActiveLeader(room, teamIndex) {
 
 function publicState(room, viewerId) {
   const viewer = viewerId ? getPlayer(room, viewerId) : null;
+  const creator = getPlayer(room, room.createdBy);
   return {
     room: {
       id: room.id,
       code: room.code,
       created_by: room.createdBy,
+      created_by_nickname: creator ? creator.nickname : '',
       team_count: room.teamCount,
       config: room.config,
       status: room.game ? (room.game.status === 'finished' ? 'finished' : 'playing') : 'lobby'
@@ -193,7 +195,7 @@ async function updateRoom(body, action) {
     room.players.forEach((member) => { if (member.teamIndex === team) member.isLeader = false; });
     player.isLeader = true;
   } else if (action === 'set_team_count') {
-    if (!player.isLeader) throw new Error('leader_required');
+    if (!player.isLeader && room.createdBy !== player.id) throw new Error('leader_required');
     const count = Number(body.requested_team_count);
     if (count < 2 || count > 3) throw new Error('invalid_team_count');
     if (count < room.teamCount && room.players.some((member) => member.teamIndex >= count)) throw new Error('team_not_empty');
@@ -250,6 +252,7 @@ async function leaveRoom(body) {
   if (!room) return null;
   room.players = room.players.filter((player) => player.id !== body.player_id);
   if (room.players.length === 0) { await deleteRoom(room); return null; }
+  if (room.createdBy === body.player_id) room.createdBy = room.players[0].id;
   if (!room.players.some((player) => player.isLeader)) {
     const replacement = room.players.find((player) => player.teamIndex != null);
     if (replacement) replacement.isLeader = true;
