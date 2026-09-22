@@ -77,6 +77,7 @@
   .cs-room-actions input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid var(--glass-border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;}
   #room-create-btn:disabled{background:var(--surface-2);border-color:var(--glass-border);color:var(--text-dim);opacity:.55;cursor:not-allowed;box-shadow:none;}
   .cs-room-code-group{display:flex;justify-content:center;gap:8px;margin-top:2px;}
+  #room-join-btn{width:100%;}
   .cs-room-code{width:42px!important;height:48px;padding:0!important;text-transform:uppercase;text-align:center;font-size:1.15rem;font-weight:800;}
   .cs-room-code:disabled{background:var(--surface-2);border-color:var(--glass-border);color:var(--text-dim);opacity:.55;cursor:not-allowed;}
   .cs-room-code:focus{border-color:var(--accent2);outline:2px solid color-mix(in srgb, var(--accent2) 24%, transparent);outline-offset:1px;}
@@ -434,8 +435,9 @@
         <div class="cs-room-actions">
           <input id="room-nickname" type="text" maxlength="30" autocomplete="nickname" placeholder="Tu nombre" aria-label="Tu nombre">
           <button class="btn-main" id="room-create-btn" type="button" disabled>Crear sala</button>
-          <div class="cs-room-divider">o únete a una sala</div>
-          <div class="cs-room-code-group" role="group" aria-label="Código de sala">
+          <button class="btn-main hidden" id="room-join-btn" type="button" disabled>Entrar</button>
+          <div class="cs-room-divider" id="room-join-divider">o únete a una sala</div>
+          <div class="cs-room-code-group" id="room-code-group" role="group" aria-label="Código de sala">
             <input class="cs-room-code" id="room-code-1" type="text" maxlength="1" inputmode="latin" autocomplete="one-time-code" aria-label="Carácter 1 de 6" disabled>
             <input class="cs-room-code" id="room-code-2" type="text" maxlength="1" inputmode="latin" aria-label="Carácter 2 de 6" disabled>
             <input class="cs-room-code" id="room-code-3" type="text" maxlength="1" inputmode="latin" aria-label="Carácter 3 de 6" disabled>
@@ -671,7 +673,11 @@
   var roomCodeInputs = Array.prototype.slice.call(document.querySelectorAll('.cs-room-code'));
   var roomStatusEl = document.getElementById('room-status');
   var roomCreateBtn = document.getElementById('room-create-btn');
+  var roomJoinBtn = document.getElementById('room-join-btn');
+  var roomJoinDivider = document.getElementById('room-join-divider');
+  var roomCodeGroup = document.getElementById('room-code-group');
   var ROOM_STORAGE_KEY = 'gamehub.secretCodeRoom';
+  var inviteRoomCode = '';
 
   function setRoomStatus(message, isError){
     roomStatusEl.textContent = message;
@@ -680,6 +686,7 @@
 
   function setRoomBusy(busy){
     roomCreateBtn.disabled = busy;
+    roomJoinBtn.disabled = busy || !roomNicknameEl.value.trim();
     roomCodeInputs.forEach(function(input){ input.disabled = busy; });
   }
 
@@ -895,7 +902,7 @@
 
   function joinRoom(){
     var nickname = roomNickname();
-    var code = roomCodeValue().trim().toUpperCase();
+    var code = (inviteRoomCode || roomCodeValue()).trim().toUpperCase();
     if (!nickname) return;
     if (!/^[A-Z0-9]{6}$/.test(code)){ setRoomStatus('El código debe tener 6 caracteres.', true); roomCodeInputs[0].focus(); return; }
     setRoomBusy(true); setRoomStatus('Buscando sala…');
@@ -904,11 +911,13 @@
   }
 
   roomCreateBtn.addEventListener('click', createRoom);
+  roomJoinBtn.addEventListener('click', joinRoom);
   roomNicknameEl.addEventListener('input', function(){
     var hasNickname = Boolean(roomNicknameEl.value.trim());
     roomCreateBtn.disabled = !hasNickname;
+    roomJoinBtn.disabled = !hasNickname;
     setRoomCodeEnabled(hasNickname);
-    if (hasNickname && roomCodeValue().length === roomCodeInputs.length) joinRoom();
+    if (!inviteRoomCode && hasNickname && roomCodeValue().length === roomCodeInputs.length) joinRoom();
   });
   roomCodeInputs.forEach(function(input, index){
     input.addEventListener('input', function(){
@@ -1296,12 +1305,21 @@
     var params = new URLSearchParams(window.location.search);
     var roomPathMatch = window.location.pathname.match(/^\/games\/secret-code\/rooms\/([^/]+)\/join\/?$/);
     var roomCode = params.get('room') || (roomPathMatch ? decodeURIComponent(roomPathMatch[1]) : '');
+    if (roomPathMatch){
+      inviteRoomCode = roomCode.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, roomCodeInputs.length);
+      roomCreateBtn.classList.add('hidden');
+      roomJoinBtn.classList.remove('hidden');
+      roomJoinDivider.classList.add('hidden');
+      roomCodeGroup.classList.add('hidden');
+      document.querySelector('#screen-room h1').textContent = 'UNIRSE A LA SALA';
+    }
     if (roomCode){
       setRoomCode(roomCode);
       var savedNickname = localStorage.getItem('gamehub.secretCodeNickname') || '';
       if (savedNickname){
         roomNicknameEl.value = savedNickname;
-        roomCreateBtn.disabled = false;
+        roomCreateBtn.disabled = Boolean(inviteRoomCode);
+        roomJoinBtn.disabled = false;
         setRoomCodeEnabled(true);
         setRoomCode(roomCode);
       }
