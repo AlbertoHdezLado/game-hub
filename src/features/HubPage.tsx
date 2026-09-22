@@ -44,21 +44,23 @@ export function HubPage() {
   }, []);
 
   return (
-    <div id="app">
-      <div className="screen" id="screen-mode">
+    <>
+      <div className="hub-header">
         <HubHeader />
-        <GameGrid iconsReady={iconsReady} onInfo={setSelectedGame} />
-        <HubFooter version={version} />
       </div>
+      <div className="hub-body">
+        <GameGrid iconsReady={iconsReady} onInfo={setSelectedGame} />
+      </div>
+      <div className="hub-footer"><HubFooter version={version} /></div>
 
       {selectedGame && <InfoDialog game={selectedGame} onClose={() => setSelectedGame(null)} />}
-    </div>
+    </>
   );
 }
 
 function HubHeader() {
   return (
-    <header className="hub-header">
+    <div className="hub-header-content">
       <div className="hub-logo" aria-label="Game Hub" />
       <a
         href="https://forms.gle/ne3tXqPzfKN98PuK6"
@@ -68,7 +70,7 @@ function HubHeader() {
       >
         💡 Enviar una sugerencia
       </a>
-    </header>
+    </div>
   );
 }
 
@@ -142,7 +144,7 @@ function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo
 
 function HubFooter({ version }: Readonly<{ version: string }>) {
   return (
-    <div className="hub-footer">
+    <div className="hub-footer-content">
       <span>Creado por Alberto Hernández</span>
       <span>v{version}</span>
     </div>
