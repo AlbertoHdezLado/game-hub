@@ -1,6 +1,9 @@
+import { createClient } from 'redis';
+
 const rooms = globalThis.__secretCodeRooms || (globalThis.__secretCodeRooms = new Map());
-const ROOM_TTL_MS = 24 * 60 * 60 * 1000;
+const ROOM_TTL_MS = 60 * 60 * 1000;
 const PLAYER_ACTIVE_TTL_MS = 10 * 1000;
+let redisClientPromise;
 
 function errorResponse(message, status = 400) {
   return new Response(JSON.stringify({ error: { message } }), {
@@ -27,10 +30,24 @@ function newId() {
 }
 
 function cacheConfigured() {
-  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  return Boolean(
+    (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) ||
+    process.env.REDIS_URL
+  );
 }
 
 async function cacheCommand(command) {
+  if (process.env.REDIS_URL && !(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)) {
+    if (!redisClientPromise) {
+      const client = createClient({ url: process.env.REDIS_URL });
+      client.on('error', function() {});
+      redisClientPromise = client.connect().then(function(){ return client; });
+    }
+    const client = await redisClientPromise;
+    if (command[0] === 'GET') return client.get(command[1]);
+    if (command[0] === 'DEL') return client.del(command[1]);
+    if (command[0] === 'SET') return client.set(command[1], command[2], { EX: Number(command[4]) });
+  }
   const response = await fetch(process.env.KV_REST_API_URL, {
     method: 'POST',
     headers: { authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`, 'content-type': 'application/json' },
@@ -50,7 +67,9 @@ async function loadRoom(code) {
   } else {
     room = rooms.get(normalizedCode) || null;
   }
-  if (room && room.expiresAt <= Date.now()) {
+  const now = Date.now();
+  const lastActivityAt = room && (room.updatedAt || room.expiresAt - ROOM_TTL_MS);
+  if (room && (!lastActivityAt || now - lastActivityAt >= ROOM_TTL_MS)) {
     await deleteRoom(room);
     return null;
   }
@@ -59,6 +78,7 @@ async function loadRoom(code) {
 
 async function saveRoom(room) {
   room.updatedAt = Date.now();
+  room.expiresAt = room.updatedAt + ROOM_TTL_MS;
   if (cacheConfigured()) {
     await cacheCommand(['SET', `secret-code:room:${room.code}`, JSON.stringify(room), 'EX', Math.ceil(ROOM_TTL_MS / 1000)]);
   } else {
@@ -181,6 +201,7 @@ async function joinRoom(body) {
     player = { id: playerId, nickname: String(body.player_nickname || '').trim(), teamIndex: leaderlessTeam === undefined ? null : leaderlessTeam, isLeader: leaderlessTeam !== undefined, joinedAt: Date.now(), lastSeenAt: Date.now() };
     room.players.push(player);
   }
+  if (!room.createdBy) room.createdBy = player.id;
   player.lastSeenAt = Date.now();
   await saveRoom(room);
   return { ...room, team_count: room.teamCount };
@@ -259,8 +280,11 @@ async function leaveRoom(body) {
   const room = await loadRoom(body.target_room);
   if (!room) return null;
   room.players = room.players.filter((player) => player.id !== body.player_id);
-  if (room.players.length === 0) { await deleteRoom(room); return null; }
-  if (room.createdBy === body.player_id) room.createdBy = room.players[0].id;
+  if (room.createdBy === body.player_id) {
+    room.createdBy = room.players.length
+      ? room.players[Math.floor(Math.random() * room.players.length)].id
+      : null;
+  }
   if (!room.players.some((player) => player.isLeader)) {
     const replacement = room.players.find((player) => player.teamIndex != null);
     if (replacement) replacement.isLeader = true;
