@@ -1,0 +1,14 @@
+public/games/would-you-rather/index.html
+  h_fed6a40af368f7 30,33,41,43,46-62,122-123,125,177-178,199-200,205-211,215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7f1861096b5bc92bef32835f1dfa4630d9112c2d",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
