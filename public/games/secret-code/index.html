@@ -142,6 +142,12 @@
   #turn-timer{font-family:var(--font-display);font-weight:800;margin-right:8px;}
   #screen-final{max-width:min(520px,94vw);}
   #final-result-backdrop .guide-modal{max-width:min(420px, calc(100vw - 32px));}
+  #reveal-confirm-backdrop .guide-modal{max-width:min(420px, calc(100vw - 32px));}
+  #reveal-confirm-backdrop h2{margin-bottom:10px;}
+  #reveal-confirm-backdrop p{margin:0 0 18px;text-align:center;}
+  .cs-reveal-word{display:block;margin-top:6px;color:var(--text);font-family:var(--font-display);font-size:1.2rem;font-weight:800;}
+  .cs-reveal-actions{display:grid;gap:10px;}
+  .cs-reveal-actions button{width:100%;margin:0;}
   #screen-game{
     max-width:100vw;
   }
@@ -578,6 +584,18 @@
     </div>
   </div>
 
+  <!-- REVEAL CONFIRM: shown before selecting a word from the board -->
+  <div class="guide-modal-backdrop hidden" id="reveal-confirm-backdrop">
+    <div class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="reveal-confirm-title">
+      <h2 id="reveal-confirm-title">¿Revelar esta palabra?</h2>
+      <p>Se descubrirá el color de la carta y contará para el turno.<span class="cs-reveal-word" id="reveal-confirm-word"></span></p>
+      <div class="cs-reveal-actions">
+        <button class="btn-main" id="reveal-confirm-btn" type="button">Revelar palabra</button>
+        <button type="button" class="cs-key-hide-btn" id="reveal-cancel-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SHARE BOARD: QR + link for the rest of the players (no team/key info) -->
   <div class="guide-modal-backdrop hidden" id="share-modal-backdrop">
     <div class="guide-modal">
@@ -696,6 +714,11 @@
   var ALL_SCREENS = [screenRoom, screenLobby, screenGame];
   var finalResultBackdrop = document.getElementById('final-result-backdrop');
   var finishedGameId = null;
+  var revealConfirmBackdrop = document.getElementById('reveal-confirm-backdrop');
+  var revealConfirmWord = document.getElementById('reveal-confirm-word');
+  var revealConfirmBtn = document.getElementById('reveal-confirm-btn');
+  var revealCancelBtn = document.getElementById('reveal-cancel-btn');
+  var pendingReveal = null;
 
   function switchScreen(target){
     ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
@@ -712,6 +735,20 @@
   var roomJoinNicknameEl = document.getElementById('room-join-nickname');
   var roomJoinBtn = document.getElementById('room-join-btn');
   var roomJoinStatusEl = document.getElementById('room-join-status');
+  var ROOM_NICKNAME_STORAGE_KEY = 'gamehub.secretCodeNickname';
+
+  function savedRoomNickname(){
+    return localStorage.getItem(ROOM_NICKNAME_STORAGE_KEY) || '';
+  }
+
+  function restoreRoomNickname(){
+    var nickname = savedRoomNickname();
+    roomNicknameEl.value = nickname;
+    roomJoinNicknameEl.value = nickname;
+    roomCreateBtn.disabled = !nickname;
+    setRoomCodeEnabled(Boolean(nickname));
+    return nickname;
+  }
 
   function setRoomStatus(message, isError){
     if (!roomStatusEl) return;
@@ -747,7 +784,7 @@
   function roomNickname(){
     var nickname = roomNicknameEl.value.trim();
     if (!nickname){ setRoomStatus('Escribe tu nombre para continuar.', true); roomNicknameEl.focus(); return null; }
-    localStorage.setItem('gamehub.secretCodeNickname', nickname);
+    localStorage.setItem(ROOM_NICKNAME_STORAGE_KEY, nickname);
     return nickname;
   }
 
@@ -943,7 +980,7 @@
   function joinLinkedRoom(code){
     var nickname = roomJoinNicknameEl.value.trim();
     if (!nickname){ setRoomJoinStatus('Escribe tu nombre para continuar.', true); roomJoinNicknameEl.focus(); return; }
-    localStorage.setItem('gamehub.secretCodeNickname', nickname);
+    localStorage.setItem(ROOM_NICKNAME_STORAGE_KEY, nickname);
     roomJoinBtn.disabled = true;
     setRoomJoinStatus('Buscando sala…');
     GameHubSecretCode.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
@@ -981,6 +1018,7 @@
     event.preventDefault();
     joinLinkedRoom(roomJoinForm.dataset.roomCode);
   });
+  restoreRoomNickname();
   roomNicknameEl.addEventListener('input', function(){
     var hasNickname = Boolean(roomNicknameEl.value.trim());
     roomCreateBtn.disabled = !hasNickname;
@@ -1267,10 +1305,34 @@
     var game = roomSession.state && roomSession.state.game;
     var index = Number(cell.dataset.index);
     if (!player || !game || game.status !== 'playing' || player.is_leader || player.team_index !== game.active_team || game.revealed_indices.indexOf(index) !== -1) return;
-    if (!window.confirm('¿Revelar la palabra «' + cell.textContent + '»?')) return;
-    cell.disabled = true;
-    GameHubSecretCode.rpc('secret_code_select_word', { target_game: game.id, word_index: index + 1 })
-      .then(refreshRoom).catch(function(error){ document.getElementById('lobby-error').textContent = error.message || 'No se pudo seleccionar la palabra.'; });
+    pendingReveal = { cell: cell, gameId: game.id, wordIndex: index + 1 };
+    revealConfirmWord.textContent = '«' + cell.textContent + '»';
+    revealConfirmBackdrop.classList.remove('hidden');
+  });
+
+  function closeRevealConfirm(){
+    revealConfirmBackdrop.classList.add('hidden');
+    pendingReveal = null;
+  }
+
+  revealCancelBtn.addEventListener('click', closeRevealConfirm);
+  revealConfirmBackdrop.addEventListener('click', function(e){
+    if (e.target === revealConfirmBackdrop) closeRevealConfirm();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && !revealConfirmBackdrop.classList.contains('hidden')) closeRevealConfirm();
+  });
+  revealConfirmBtn.addEventListener('click', function(){
+    if (!pendingReveal) return;
+    var selection = pendingReveal;
+    closeRevealConfirm();
+    selection.cell.disabled = true;
+    revealConfirmBtn.disabled = false;
+    GameHubSecretCode.rpc('secret_code_select_word', { target_game: selection.gameId, word_index: selection.wordIndex })
+      .then(refreshRoom).catch(function(error){
+        selection.cell.disabled = false;
+        document.getElementById('lobby-error').textContent = error.message || 'No se pudo seleccionar la palabra.';
+      });
   });
 
   document.getElementById('finish-turn-btn').addEventListener('click', function(){
@@ -1371,7 +1433,7 @@
     if (roomCode){
       roomCode = roomCode.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, roomCodeInputs.length);
       roomJoinForm.dataset.roomCode = roomCode;
-      var savedNickname = localStorage.getItem('gamehub.secretCodeNickname') || '';
+      var savedNickname = savedRoomNickname();
       screenRoom.classList.add('hidden');
       if (savedNickname){
         resumeLinkedRoom(roomCode, savedNickname);
