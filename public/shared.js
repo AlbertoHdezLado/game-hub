@@ -255,6 +255,9 @@ function initIngameHomeControls(){
     if (!card) return;
     var header = card.querySelector(':scope > .setup-header');
     var home = header && header.querySelector('a[aria-label="Inicio"]');
+    var topbarHome = card.querySelector(':scope > .cs-game-topbar a[aria-label="Inicio"]');
+    var homeInTopbar = !home && topbarHome;
+    if (homeInTopbar) home = topbarHome;
     var help = header && header.querySelector('.ayuda-trigger');
     if (!home){
       home = document.createElement('a');
@@ -262,12 +265,14 @@ function initIngameHomeControls(){
       home.setAttribute('aria-label', 'Inicio');
       home.innerHTML = '<span class="home-icon"></span>';
     }
-    home.classList.add('ingame-home-btn');
     var partyHud = screen.classList.contains('party-stage') && card.querySelector(':scope > .party-game-hud');
-    if (partyHud){
-      partyHud.insertBefore(home, partyHud.firstChild);
-    } else {
-      card.insertBefore(home, card.firstChild);
+    if (!homeInTopbar){
+      home.classList.add('ingame-home-btn');
+      if (partyHud){
+        partyHud.insertBefore(home, partyHud.firstChild);
+      } else {
+        card.insertBefore(home, card.firstChild);
+      }
     }
     if (help){
       help.classList.add('hidden');
