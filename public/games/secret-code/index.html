@@ -198,7 +198,6 @@
     border-radius:8px;
     border:1px solid var(--glass-border);
     background:var(--surface);
-    animation:csCellDeal 0.3s ease backwards;
     color:var(--text);
     font-size:0.68rem;
     font-weight:700;
@@ -1190,15 +1189,23 @@
     startingTeamEl.style.backgroundColor = TEAM_HEX[state.startingTeam];
     startingTeamEl.classList.add('hidden');
 
-    boardEl.innerHTML = state.board.map(function(word, i){
+    state.board.forEach(function(word, i){
       var revealedIndex = roomSession.state && roomSession.state.game ? roomSession.state.game.revealed_indices.indexOf(i) : -1;
       var revealedRole = roomSession.state && roomSession.state.game && roomSession.state.game.revealed_roles ? roomSession.state.game.revealed_roles[revealedIndex] : null;
       var role = revealedRole || state.roles[i];
       var roleClass = role === 'neutral' ? 'role-neutral' : role === 'assassin' ? 'role-assassin' : 'role-' + role;
-      var delay = (i * 12) + 'ms';
       var revealedClass = revealedIndex === -1 ? '' : ' cs-cell-revealed' + (previousRevealed.indexOf(i) === -1 ? ' cs-cell-reveal-flash' : '');
-      return '<div class="cs-cell ' + roleClass + revealedClass + '" data-index="' + i + '" style="animation-delay:' + delay + '">' + escapeHtml(word) + '</div>';
-    }).join('');
+      var cell = boardEl.children[i];
+      if (!cell){
+        cell = document.createElement('div');
+        cell.className = 'cs-cell';
+        cell.dataset.index = String(i);
+        boardEl.appendChild(cell);
+      }
+      cell.className = 'cs-cell ' + roleClass + revealedClass;
+      if (cell.textContent !== word) cell.textContent = word;
+    });
+    while (boardEl.children.length > state.board.length) boardEl.removeChild(boardEl.lastElementChild);
     fitBoardText();
   }
 
