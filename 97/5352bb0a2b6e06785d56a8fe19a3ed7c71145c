@@ -1,0 +1,18 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 28-38,140-195,319-320,322,325,327-329,336-423,566,594-597,600
+public/games/impostor/index.html
+  h_fed6a40af368f7 291
+public/shared.css
+  h_fed6a40af368f7 1807-1808,2008-2013
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "975352bb0a2b6e06785d56a8fe19a3ed7c71145c",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
