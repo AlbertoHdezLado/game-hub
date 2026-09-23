@@ -408,11 +408,11 @@ input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
   min-height:64px;
   margin:0 0 14px;
 }
-.setup-header > h1{
+#screen-setup .setup-header > h1{
   position:absolute;
   left:50%;
   width:calc(100% - 108px);
-  margin:0;
+  margin-bottom:0;
   transform:translateX(-50%);
 }
 .setup-header .back-btn{margin-bottom:0;}
