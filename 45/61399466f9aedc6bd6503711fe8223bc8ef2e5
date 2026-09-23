@@ -1,0 +1,18 @@
+public/games/secret-code/index.html
+  h_fed6a40af368f7 1088,1345-1346
+vercel.json
+  h_fed6a40af368f7 3
+vite.config.ts
+  h_fed6a40af368f7 72-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4561399466f9aedc6bd6503711fe8223bc8ef2e5",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
