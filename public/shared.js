@@ -170,6 +170,7 @@ function initLandscapePrompt(){
   prompt.setAttribute('role', 'status');
   prompt.setAttribute('aria-label', 'Orientación recomendada');
   prompt.innerHTML =
+    '<a class="landscape-prompt-home" href="/" aria-label="Inicio"><span class="home-icon"></span></a>' +
     '<span class="landscape-prompt-icon" aria-hidden="true"></span>' +
     '<p class="landscape-prompt-title">Gira el móvil</p>' +
     '<p class="landscape-prompt-text">Este juego se disfruta mejor con la pantalla en horizontal.</p>';

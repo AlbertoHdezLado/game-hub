@@ -761,6 +761,26 @@ input:focus-visible{
     color:var(--text);
     text-align:center;
   }
+  .landscape-prompt-home{
+    position:absolute;
+    top:max(16px, env(safe-area-inset-top));
+    left:max(16px, env(safe-area-inset-left));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:42px;
+    height:42px;
+    border:1px solid var(--glass-border);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--text);
+    box-shadow:0 4px 0 var(--shadow);
+    text-decoration:none;
+  }
+  .landscape-prompt-home .home-icon{
+    width:18px;
+    height:18px;
+  }
   .landscape-prompt-icon{
     width:112px;
     height:112px;
