@@ -48,6 +48,14 @@ export function HubPage() {
       <div className="hub-header">
         <HubHeader />
       </div>
+      <a
+        href="https://forms.gle/ne3tXqPzfKN98PuK6"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="suggestion-link"
+      >
+        💡 Enviar una sugerencia
+      </a>
       <div className="hub-body">
         <GameGrid iconsReady={iconsReady} onInfo={setSelectedGame} />
       </div>
@@ -62,14 +70,6 @@ function HubHeader() {
   return (
     <div className="hub-header-content">
       <div className="hub-logo" aria-label="Game Hub" />
-      <a
-        href="https://forms.gle/ne3tXqPzfKN98PuK6"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="suggestion-link"
-      >
-        💡 Enviar una sugerencia
-      </a>
     </div>
   );
 }
