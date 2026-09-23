@@ -1,0 +1,19 @@
+public/games/secret-code/index.html
+  s_ecaac5bbb94565::t_30b1da8bdf3ffa 76-80,458-469,691-695,703-707,938-949,951-954
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "070d7943ab10b268c2019dfa6d7a7f447b1d1d2c",
+  "prompts": {},
+  "sessions": {
+    "s_ecaac5bbb94565": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "bd60be85-33c7-42a4-8ea9-b58848302eb5",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
