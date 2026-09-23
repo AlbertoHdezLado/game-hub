@@ -136,6 +136,7 @@
   .cs-cell.cs-cell-revealed.role-2{background:#4fbf7a;border-color:#4fbf7a;color:#fff;}
   .cs-cell.cs-cell-revealed.role-neutral{background:var(--surface-2);border-color:var(--glass-border);}
   .cs-cell.cs-cell-revealed.role-assassin{background:#161616;border-color:#000;color:#fff;}
+  .cs-cell.cs-cell-revealed{filter:brightness(0.58) saturate(0.72);}
   @keyframes csRevealFlash{0%{transform:scale(.82);filter:brightness(1.8)}100%{transform:scale(1);filter:none}}
   .cs-cell.cs-cell-reveal-flash{animation:csRevealFlash .55s ease both;}
   #turn-timer{font-family:var(--font-display);font-weight:800;margin-right:8px;}
@@ -356,6 +357,12 @@
   .cs-game-header{
     position:static;
   }
+  .cs-game-left{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+  }
   .cs-game-actions{
     margin-left:auto;
     display:flex;
@@ -381,8 +388,8 @@
   .cs-game-topbar{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    min-height:38px;
+    justify-content:flex-end;
+    min-height:0;
     margin:0 8px 6px;
   }
   .cs-starting-team{
@@ -595,8 +602,9 @@
   <div class="screen hidden" id="screen-game">
     <div class="card">
       <div class="setup-header cs-game-header">
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div class="cs-game-left">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <div class="cs-starting-team" id="cs-starting-team" aria-live="polite"></div>
         </div>
         <div class="cs-game-actions">
           <button type="button" class="guide-btn ayuda-trigger" id="guide-btn-game" aria-label="Ayuda">?</button>
@@ -605,7 +613,6 @@
         </div>
       </div>
       <div class="cs-game-topbar">
-        <div class="cs-starting-team" id="cs-starting-team" aria-live="polite"></div>
         <div class="cs-controls-host"><span id="turn-timer" aria-live="polite"></span></div>
       </div>
       <div class="scr-body">
@@ -1224,7 +1231,6 @@
 
   function setKeyVisible(visible){
     boardEl.classList.toggle('key-visible', visible);
-    startingTeamEl.classList.toggle('hidden', !visible);
   }
 
   boardEl.addEventListener('click', function(e){
