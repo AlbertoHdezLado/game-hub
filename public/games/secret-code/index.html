@@ -763,6 +763,12 @@
     statusEl.style.color = isError ? '#c9525c' : '';
   }
 
+  function joinErrorMessage(error, fallback){
+    if (error.message === 'room_not_available') return 'La sala no existe o ya ha caducado.';
+    if (error.message === 'nickname_already_present') return 'Ese nombre ya está en la sala.';
+    return error.message || fallback;
+  }
+
   function setRoomBusy(busy){
     roomCreateBtn.disabled = busy;
     roomCodeInputs.forEach(function(input){ input.disabled = busy; });
@@ -974,7 +980,7 @@
     if (!/^[A-Z0-9]{6}$/.test(code)){ setRoomStatus('El código debe tener 6 caracteres.', true); roomCodeInputs[0].focus(); return; }
     setRoomBusy(true); setRoomStatus('Buscando sala…');
     GameHubSecretCode.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
-      .then(enterRoom).catch(function(error){ setRoomStatus(error.message || 'No se pudo unir a la sala.', true); }).finally(function(){ setRoomBusy(false); });
+      .then(enterRoom).catch(function(error){ setRoomStatus(joinErrorMessage(error, 'No se pudo unir a la sala.'), true); }).finally(function(){ setRoomBusy(false); });
   }
 
   function joinLinkedRoom(code){
@@ -986,7 +992,7 @@
     GameHubSecretCode.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
       .then(enterRoom)
       .catch(function(error){
-        var message = error.message === 'room_not_available' ? 'La sala no existe o ya ha caducado.' : (error.message || 'No se pudo unir a la sala.');
+        var message = joinErrorMessage(error, 'No se pudo unir a la sala.');
         setRoomJoinStatus(message, true);
         roomJoinBackdrop.classList.remove('hidden');
         roomJoinNicknameEl.focus();

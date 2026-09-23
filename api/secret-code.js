@@ -87,6 +87,10 @@ function isPlayerActive(player) {
   return Boolean(player.lastSeenAt && Date.now() - player.lastSeenAt <= PLAYER_ACTIVE_TTL_MS);
 }
 
+function normalizedNickname(nickname) {
+  return String(nickname || '').trim().toLowerCase();
+}
+
 function hasActiveLeader(room, teamIndex) {
   return room.players.some((player) => player.teamIndex === teamIndex && player.isLeader && isPlayerActive(player));
 }
@@ -162,9 +166,14 @@ async function joinRoom(body) {
   const room = await loadRoom(body.room_code);
   if (!room) throw new Error('room_not_available');
   const playerId = String(body.player_id || newId());
+  const nickname = String(body.player_nickname || '').trim();
+  if (!nickname) throw new Error('invalid_nickname');
+  if (room.players.some((member) => member.id !== playerId && normalizedNickname(member.nickname) === normalizedNickname(nickname))) {
+    throw new Error('nickname_already_present');
+  }
   let player = getPlayer(room, playerId);
   if (player) {
-    player.nickname = String(body.player_nickname || player.nickname).trim();
+    player.nickname = nickname;
   } else {
     const leaderlessTeam = room.game
       ? Array.from({ length: room.teamCount }, (_, teamIndex) => teamIndex).find((teamIndex) => !hasActiveLeader(room, teamIndex))
@@ -173,7 +182,6 @@ async function joinRoom(body) {
     room.players.push(player);
   }
   player.lastSeenAt = Date.now();
-  if (!room.players[room.players.length - 1].nickname) throw new Error('invalid_nickname');
   await saveRoom(room);
   return { ...room, team_count: room.teamCount };
 }
