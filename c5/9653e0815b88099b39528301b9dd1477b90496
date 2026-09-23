@@ -1,0 +1,21 @@
+package.json
+  s_7a35f01414ac73::t_21a6f56285bd4b 18
+pnpm-lock.yaml
+  s_7a35f01414ac73::t_794e4047e33e98 13,16,25-28,37,40,44,594-629,1017-1018,1258-1261,1905-1906,1912-1913,1926-1929,3012-3031,3258,3263,3274,3350,3353,3456-3457,4082,4086,4088,4098-4108,4482,4487,4493,4501
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c59653e0815b88099b39528301b9dd1477b90496",
+  "prompts": {},
+  "sessions": {
+    "s_7a35f01414ac73": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "1858a4e6-ab97-4dc9-abdb-2e961573f9ff",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
