@@ -1,0 +1,14 @@
+api/secret-code.js
+  h_fed6a40af368f7 30,34-41,228
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "afcfc56ab3f323730c00f6664e5c789323c91ca7",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
