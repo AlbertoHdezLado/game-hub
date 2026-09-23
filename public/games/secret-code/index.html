@@ -850,7 +850,8 @@
     return GameHubSecretCode.loadRoomState(roomSession.room.id).then(function(data){
       var oldGame = roomSession.state && roomSession.state.game;
       roomSession.state = data;
-      isBoardLeader = Boolean(data.keys);
+      var currentRoomPlayer = data.players.filter(function(player){ return player.user_id === roomSession.userId; })[0];
+      isBoardLeader = Boolean(data.keys || (currentRoomPlayer && currentRoomPlayer.is_leader));
       if (data.room.config && data.room.config.timeLimitSeconds != null){
         config.timeLimitSeconds = Number(data.room.config.timeLimitSeconds);
       }
@@ -866,7 +867,7 @@
         state.roles = data.keys && data.keys.roles ? data.keys.roles : data.game.words.map(function(){ return 'neutral'; });
         switchScreen(screenGame);
         renderBoard();
-        setKeyVisible(true);
+        setKeyVisible(isBoardLeader);
         if (finishedGameId !== data.game.id){
           finishedGameId = data.game.id;
           finalResultBackdrop.classList.remove('hidden');
@@ -879,7 +880,7 @@
         state.roles = data.keys && data.keys.roles ? data.keys.roles : data.game.words.map(function(){ return 'neutral'; });
         switchScreen(screenGame);
         renderBoard();
-        setKeyVisible(Boolean(data.keys));
+        setKeyVisible(isBoardLeader);
         updateTurnControls();
         return data;
       }
