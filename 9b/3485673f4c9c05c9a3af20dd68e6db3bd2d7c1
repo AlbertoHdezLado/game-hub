@@ -1,0 +1,18 @@
+public/games/taboo/index.html
+  h_fed6a40af368f7 210
+public/shared.css
+  h_fed6a40af368f7 186,403,411-417,1439,1656,1677,1810,1861,1874-1876,1880-1881,1888-1898
+public/shared.js
+  h_fed6a40af368f7 266-271,635-636
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9b3485673f4c9c05c9a3af20dd68e6db3bd2d7c1",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
