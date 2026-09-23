@@ -1336,6 +1336,7 @@
   if (!GameHubSecretCode.isConfigured()){
     setRoomStatus('El backend de salas no está disponible.', true);
     roomCreateBtn.disabled = true;
+    roomJoinBtn.disabled = true;
     roomCodeInputs.forEach(function(input){ input.disabled = true; });
   }
 
@@ -1343,19 +1344,19 @@
     var params = new URLSearchParams(window.location.search);
     var roomCode = params.get('room');
     if (roomCode){
-      setRoomCode(roomCode);
+      roomCode = roomCode.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, roomCodeInputs.length);
+      roomJoinForm.dataset.roomCode = roomCode;
       var savedNickname = localStorage.getItem('gamehub.secretCodeNickname') || '';
       if (savedNickname){
-        roomNicknameEl.value = savedNickname;
-        roomCreateBtn.disabled = false;
-        setRoomCodeEnabled(true);
-        setRoomCode(roomCode);
+        roomJoinNicknameEl.value = savedNickname;
       }
+      screenRoom.classList.add('hidden');
+      roomJoinBackdrop.classList.remove('hidden');
+      roomJoinNicknameEl.focus();
     }
     var w = params.get('w');
     if (!w){
       if (roomCode){
-        setRoomStatus('Escribe tu nombre para unirte a la sala.', false);
         return;
       }
       restoreSavedRoom().then(function(restored){
