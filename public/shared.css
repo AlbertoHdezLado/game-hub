@@ -183,6 +183,7 @@ button{
 .scr-body::-webkit-scrollbar{width:6px;}
 .scr-body::-webkit-scrollbar-track{background:transparent;}
 .scr-body::-webkit-scrollbar-thumb{background:var(--accent); border-radius:999px;}
+.screen .scr-body.card-stack-host{overflow:visible;}
 /* pinned action dock: the step's primary/contextual controls (start, next,
    correct/skip...) always stay on screen instead of scrolling away */
 .scr-dock{
@@ -399,12 +400,20 @@ input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
    screen's app bar now that the outer card is edge-to-edge. Bigger,
    filled touch targets so it reads as a proper mobile app bar. ---- */
 .setup-header{
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
   min-height:64px;
   margin:0 0 14px;
+}
+.setup-header > h1{
+  position:absolute;
+  left:50%;
+  width:calc(100% - 108px);
+  margin:0;
+  transform:translateX(-50%);
 }
 .setup-header .back-btn{margin-bottom:0;}
 .guide-btn{
@@ -1427,20 +1436,7 @@ input:focus-visible{
   overflow:hidden;
 }
 #screen-setup .setup-header{
-  position:absolute;
-  top:max(58px, env(safe-area-inset-top));
-  left:max(18px, env(safe-area-inset-left));
-  right:max(18px, env(safe-area-inset-right));
-  min-height:46px;
-  height:46px;
-  margin:0;
-  padding:0;
-  z-index:2;
-}
-#screen-setup h1{
-  margin-top:72px;
-  padding-left:54px;
-  padding-right:54px;
+  margin-bottom:8px;
 }
 #screen-setup .subtitle{
   max-width:34ch;
@@ -1657,7 +1653,7 @@ input:focus-visible{
   flex:0 0 auto;
   display:flex;
   align-items:flex-start;
-  justify-content:space-between;
+  justify-content:flex-start;
   gap:12px;
   min-height:76px;
   margin:0 0 18px;
@@ -1678,6 +1674,7 @@ input:focus-visible{
   padding-top:6px;
 }
 .party-hud-block:last-child{align-items:flex-end; text-align:right;}
+.party-stage .party-game-hud > .party-hud-block:last-child{margin-left:auto;}
 /* "RONDA 1: DESCRIBIR" / "Cartas restantes" style: very pale blue fill with
    a thin blue outline traced on the letters themselves (not a badge box). */
 .party-hud-block > span:first-child{
@@ -1810,7 +1807,7 @@ input:focus-visible{
   background-image:none;
 }
 .flip-card-front-face{
-  background-color:#f7f3df;
+  background-color:#fff;
   transform:rotateY(180deg);
 }
 .tu-word,
@@ -1861,7 +1858,7 @@ input:focus-visible{
   padding:clamp(28px, 6vw, 52px) clamp(22px, 6vw, 64px);
   border:10px solid rgba(255,255,255,0.5);
   border-radius:14px;
-  background:#f7f3df;
+  background:#fff;
   box-shadow:0 10px 18px rgba(10,14,26,0.35);
   color:#18202b;
   text-align:center;
@@ -1874,14 +1871,30 @@ input:focus-visible{
 .ingame-home-btn{
   position:absolute;
   z-index:30;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   top:max(14px, env(safe-area-inset-top));
   left:max(16px, env(safe-area-inset-left));
   margin:0;
+  border:1px solid var(--surface-border);
+  text-decoration:none;
   color:var(--text);
   background:var(--surface-2);
   border-color:var(--surface-border);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
+}
+.party-stage .party-game-hud .ingame-home-btn{
+  position:static;
+  flex:0 0 46px;
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  margin:0;
+  align-self:flex-start;
+  background:var(--surface);
+  box-shadow:0 3px 0 var(--shadow);
 }
 /* pinned opposite the floating home icon — carries whatever game-specific
    controls/status used to live in the now-discarded boxed .setup-header

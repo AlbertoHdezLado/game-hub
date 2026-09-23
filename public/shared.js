@@ -263,7 +263,12 @@ function initIngameHomeControls(){
       home.innerHTML = '<span class="home-icon"></span>';
     }
     home.classList.add('ingame-home-btn');
-    card.insertBefore(home, card.firstChild);
+    var partyHud = screen.classList.contains('party-stage') && card.querySelector(':scope > .party-game-hud');
+    if (partyHud){
+      partyHud.insertBefore(home, partyHud.firstChild);
+    } else {
+      card.insertBefore(home, card.firstChild);
+    }
     if (help){
       help.classList.add('hidden');
       card.appendChild(help);
@@ -627,6 +632,8 @@ function createRevealScreen(screen, stage, content, trigger, onClose){
    single card near the end of the deck. */
 function createCardStack(rootEl, options){
   var slots = Array.prototype.slice.call(rootEl.querySelectorAll('.flip-card'));
+  var stackHost = rootEl.closest('.scr-body');
+  if (stackHost) stackHost.classList.add('card-stack-host');
   var timer = null;
   var busy = false;
   var renderContent = typeof options === 'function' ? options : options && options.render;
