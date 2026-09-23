@@ -69,6 +69,11 @@ function cleanGameRoutes(): Plugin {
 }
 
 function rewriteGameUrl(request: { url?: string }) {
+  const secretCodeJoinMatch = request.url?.match(/^\/secret-code\/join\/[^/?]+(?:\?.*)?$/);
+  if (secretCodeJoinMatch) {
+    request.url = '/games/secret-code/index.html';
+    return;
+  }
   const secretCodeRoomMatch = request.url?.match(/^\/games\/secret-code\/rooms\/[^/?]+(?:\/join)?(?:\?.*)?$/);
   if (secretCodeRoomMatch) {
     request.url = '/games/secret-code/index.html';

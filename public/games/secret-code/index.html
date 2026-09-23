@@ -1085,7 +1085,7 @@
 
   function buildShareUrl(role){
     if (roomSession.room){
-      return window.location.origin + window.location.pathname + '?room=' + roomSession.room.code;
+      return window.location.origin + '/secret-code/join/' + roomSession.room.code;
     }
     var url = window.location.origin + window.location.pathname + '?w=' + encodeURIComponent(state.board.join('|'));
     if (role === 'leader'){
@@ -1342,7 +1342,8 @@
 
   (function bootFromSharedLink(){
     var params = new URLSearchParams(window.location.search);
-    var roomCode = params.get('room');
+    var joinPathMatch = window.location.pathname.match(/^\/secret-code\/join\/([^/]+)\/?$/i);
+    var roomCode = joinPathMatch ? joinPathMatch[1] : params.get('room');
     if (roomCode){
       roomCode = roomCode.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, roomCodeInputs.length);
       roomJoinForm.dataset.roomCode = roomCode;
