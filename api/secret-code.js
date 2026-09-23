@@ -1,9 +1,6 @@
-import { createClient } from 'redis';
-
 const rooms = globalThis.__secretCodeRooms || (globalThis.__secretCodeRooms = new Map());
 const ROOM_TTL_MS = 24 * 60 * 60 * 1000;
 const PLAYER_ACTIVE_TTL_MS = 10 * 1000;
-let redisClientPromise;
 
 function errorResponse(message, status = 400) {
   return new Response(JSON.stringify({ error: { message } }), {
@@ -30,25 +27,18 @@ function newId() {
 }
 
 function cacheConfigured() {
-  return Boolean(process.env.REDIS_URL);
-}
-
-function getRedisClient() {
-  if (!redisClientPromise) {
-    const client = createClient({ url: process.env.REDIS_URL });
-    client.on('error', function() {});
-    redisClientPromise = client.connect().then(function(){ return client; });
-  }
-  return redisClientPromise;
+  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 }
 
 async function cacheCommand(command) {
-  const client = await getRedisClient();
-  const operation = command[0];
-  if (operation === 'GET') return client.get(command[1]);
-  if (operation === 'DEL') return client.del(command[1]);
-  if (operation === 'SET') return client.set(command[1], command[2], { EX: Number(command[4]) });
-  throw new Error('unsupported_cache_command');
+  const response = await fetch(process.env.KV_REST_API_URL, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`, 'content-type': 'application/json' },
+    body: JSON.stringify(command)
+  });
+  if (!response.ok) throw new Error('cache_unavailable');
+  const result = await response.json();
+  return result.result;
 }
 
 async function loadRoom(code) {
@@ -235,15 +225,10 @@ async function selectWord(body) {
   const role = room.game.roles[index];
   room.game.revealedIndices.push(index);
   room.game.revealedRoles.push(role);
-  const roleValue = String(role);
-  if (roleValue === 'assassin') { room.game.status = 'finished'; room.game.endReason = 'assassin'; }
+  if (role === 'assassin') { room.game.status = 'finished'; room.game.endReason = 'assassin'; }
   else {
     const teamComplete = [0, 1, 2].find((team) => team < room.teamCount && room.game.roles.every((item, itemIndex) => item !== String(team) || room.game.revealedIndices.includes(itemIndex)));
     if (teamComplete != null) { room.game.status = 'finished'; room.game.winnerTeam = teamComplete; room.game.endReason = 'all_words'; }
-    else if (roleValue !== String(player.teamIndex)) {
-      room.game.activeTeam = (room.game.activeTeam + 1) % room.teamCount;
-      room.game.turnStartedAt = new Date().toISOString();
-    }
   }
   await saveRoom(room);
   return publicState(room, body.player_id);
