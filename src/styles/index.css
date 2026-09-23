@@ -123,14 +123,6 @@ a { color: inherit; }
     padding-block: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-bottom));
     padding-inline: max(24px, env(safe-area-inset-left)) max(24px, env(safe-area-inset-right));
   }
-  #screen-mode .hub-logo {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    width: 130px;
-    max-width: 130px;
-    margin: 0;
-    justify-self: center;
-  }
   .suggestion-link {
     grid-column: 1;
     grid-row: 3;
@@ -545,8 +537,8 @@ a { color: inherit; }
   line-height: 1.5;
 }
 .hub-logo {
-  width: 100%;
-  max-width: 220px;
+  width: clamp(140px, 42vw, 220px);
+  max-width: 100%;
   aspect-ratio: 1408 / 768;
   margin: 4px auto 8px;
   background: linear-gradient(90deg, #9dc9ff, #e8929c, #c3b1f0, #9ee0da, #9dc9ff);
@@ -554,6 +546,12 @@ a { color: inherit; }
   animation: hubTitleShine 3.5s ease-in-out infinite;
   mask: url('/resources/images/hub/logo-logo.svg') center / contain no-repeat;
   -webkit-mask: url('/resources/images/hub/logo-logo.svg') center / contain no-repeat;
+}
+@media (orientation: landscape) {
+  .hub-logo {
+    width: clamp(110px, 24vw, 150px);
+    margin: 0 auto 4px;
+  }
 }
 @keyframes hubTitleShine { 0%, 100% { background-position: 0% center; } 50% { background-position: 100% center; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
