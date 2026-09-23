@@ -27,10 +27,10 @@
     text-align:center;
     font-family:var(--font-display);
     font-weight:700;
-    font-size:1.35rem;
+    font-size:clamp(1.05rem, 3.8vw, 1.6rem);
     line-height:1.35;
     word-break:break-word;
-    margin:14px 0;
+    width:100%;
   }
   .qpref-option-a{color:#9dc9ff;}
   .qpref-option-b{color:#f5a875;}
@@ -38,10 +38,27 @@
     text-align:center;
     font-family:var(--font-display);
     font-weight:800;
-    font-size:0.85rem;
+    font-size:1rem;
     color:var(--text-dim);
-    margin:10px 0;
+    margin:0;
     letter-spacing:1px;
+  }
+  .qpref-board{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    min-height:100%;
+  }
+  .qpref-choice-stack{
+    width:min(100%, 760px);
+    min-height:clamp(118px, 23vh, 190px);
+    margin:0;
+  }
+  .qpref-choice-stack .flip-card-front-face{
+    padding:clamp(18px, 4vw, 36px);
   }
   #screen-setup .scr-body, #screen-game .scr-body{
     display:flex;
@@ -102,10 +119,10 @@
       <p class="subtitle" style="margin-top:0;">¿Qué preferirías...?</p>
 
       <div class="scr-body">
-        <div class="prompt-card">
-          <div class="qpref-option qpref-option-a" id="qpref-option-a"></div>
+        <div class="qpref-board">
+          <div class="qpref-choice-stack qpref-choice-a" id="qpref-choice-a"></div>
           <div class="qpref-divider">O</div>
-          <div class="qpref-option qpref-option-b" id="qpref-option-b"></div>
+          <div class="qpref-choice-stack qpref-choice-b" id="qpref-choice-b"></div>
         </div>
       </div>
 
@@ -157,7 +174,8 @@
   }
 
   var startBtn = document.getElementById('start-btn');
-  var optionStack = createCardStack(document.querySelector('.prompt-card'), { render: renderPairCard });
+  var optionStackA = createCardStack(document.getElementById('qpref-choice-a'), { render: renderOptionCard });
+  var optionStackB = createCardStack(document.getElementById('qpref-choice-b'), { render: renderOptionCard });
   var nextBtn = document.getElementById('next-btn');
 
   // picks 2 distinct options at random, but only from the same nivel (desirability
@@ -178,18 +196,23 @@
     return [optionA, optionB];
   }
 
-  function renderPairCard(content, pair){
-    content.innerHTML = '<div class="qpref-option qpref-option-a">' + escapeHtml(pair[0]) + '</div><div class="qpref-divider">O</div><div class="qpref-option qpref-option-b">' + escapeHtml(pair[1]) + '</div>';
+  function renderOptionCard(content, option){
+    content.innerHTML = '<div class="qpref-option">' + escapeHtml(option) + '</div>';
   }
 
   function showPair(animate){
     var pair = pickPair();
-    if (animate) optionStack.discard('right', pair, 3);
-    else optionStack.reveal(pair, 3);
+    if (animate){
+      optionStackA.discard('right', pair[0], 3);
+      optionStackB.discard('right', pair[1], 3);
+    } else {
+      optionStackA.reveal(pair[0], 3);
+      optionStackB.reveal(pair[1], 3);
+    }
   }
 
   nextBtn.addEventListener('click', function(){
-    if (!optionStack.isBusy()) showPair(true);
+    if (!optionStackA.isBusy() && !optionStackB.isBusy()) showPair(true);
   });
 
   startBtn.addEventListener('click', function(){
