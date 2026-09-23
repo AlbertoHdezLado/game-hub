@@ -69,12 +69,12 @@ function cleanGameRoutes(): Plugin {
 }
 
 function rewriteGameUrl(request: { url?: string }) {
-  const secretCodeJoinMatch = request.url?.match(/^\/secret-code\/join\/[^/?]+(?:\?.*)?$/);
-  if (secretCodeJoinMatch) {
+  const secretCodePathMatch = request.url?.match(/^\/secret-code\/room\/[^/?]+(?:\?.*)?$/);
+  if (secretCodePathMatch) {
     request.url = '/games/secret-code/index.html';
     return;
   }
-  const secretCodeRoomMatch = request.url?.match(/^\/games\/secret-code\/rooms\/[^/?]+(?:\/join)?(?:\?.*)?$/);
+  const secretCodeRoomMatch = request.url?.match(/^\/games\/secret-code\/rooms\/[^/?]+(?:\?.*)?$/);
   if (secretCodeRoomMatch) {
     request.url = '/games/secret-code/index.html';
     return;

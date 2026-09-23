@@ -943,7 +943,11 @@
     setRoomJoinStatus('Buscando sala…');
     GameHubSecretCode.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
       .then(enterRoom)
-      .catch(function(error){ setRoomJoinStatus(error.message || 'No se pudo unir a la sala.', true); })
+      .catch(function(error){
+        setRoomJoinStatus(error.message || 'No se pudo unir a la sala.', true);
+        roomJoinBackdrop.classList.remove('hidden');
+        roomJoinNicknameEl.focus();
+      })
       .finally(function(){ roomJoinBtn.disabled = false; });
   }
 
@@ -1085,7 +1089,7 @@
 
   function buildShareUrl(role){
     if (roomSession.room){
-      return window.location.origin + '/secret-code/join/' + roomSession.room.code;
+      return window.location.origin + '/secret-code/room/' + roomSession.room.code;
     }
     var url = window.location.origin + window.location.pathname + '?w=' + encodeURIComponent(state.board.join('|'));
     if (role === 'leader'){
@@ -1342,27 +1346,27 @@
 
   (function bootFromSharedLink(){
     var params = new URLSearchParams(window.location.search);
-    var joinPathMatch = window.location.pathname.match(/^\/secret-code\/join\/([^/]+)\/?$/i);
-    var roomCode = joinPathMatch ? joinPathMatch[1] : params.get('room');
+    var roomPathMatch = window.location.pathname.match(/^\/secret-code\/room\/([^/]+)\/?$/i);
+    var roomCode = roomPathMatch ? roomPathMatch[1] : params.get('room');
     if (roomCode){
       roomCode = roomCode.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, roomCodeInputs.length);
       roomJoinForm.dataset.roomCode = roomCode;
       var savedNickname = localStorage.getItem('gamehub.secretCodeNickname') || '';
+      screenRoom.classList.add('hidden');
       if (savedNickname){
         roomJoinNicknameEl.value = savedNickname;
+        joinLinkedRoom(roomCode);
+      } else {
+        roomJoinBackdrop.classList.remove('hidden');
+        roomJoinNicknameEl.focus();
       }
-      screenRoom.classList.add('hidden');
-      roomJoinBackdrop.classList.remove('hidden');
-      roomJoinNicknameEl.focus();
     }
     var w = params.get('w');
     if (!w){
       if (roomCode){
         return;
       }
-      restoreSavedRoom().then(function(restored){
-        if (!restored) setRoomStatus('Crea una sala nueva o introduce un código para unirte.', false);
-      });
+      setRoomStatus('Crea una sala nueva o introduce un código para unirte.', false);
       return;
     }
     var words = w.split('|').map(function(s){ return s.trim(); }).filter(Boolean);
