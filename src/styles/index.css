@@ -46,10 +46,26 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+#root,
+#root * {
+  scrollbar-width: none;
+}
+#root::-webkit-scrollbar,
+#root *::-webkit-scrollbar {
+  display: none;
+}
+html,
+body {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
 html, body, #root { min-height: 100%; margin: 0; }
 html { background: var(--bg2); overflow-x: hidden; }
 body {
-  min-width: 320px;
+  min-width: 0;
   background: var(--bg2);
   color: var(--text);
   font-family: var(--font-body);
@@ -89,7 +105,8 @@ a { color: inherit; }
   text-decoration: none;
 }
 .suggestion-link:active { transform: scale(.97); }
-.mode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.mode-grid-shell { width: 100%; max-width: 100%; margin-inline: auto; }
+.mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr)); gap: 14px; }
 .carousel-arrow { display: none; }
 @media (orientation: landscape) {
   #screen-mode {
@@ -540,6 +557,20 @@ a { color: inherit; }
 }
 @keyframes hubTitleShine { 0%, 100% { background-position: 0% center; } 50% { background-position: 100% center; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.hub-header,
+.hub-body,
+.hub-footer {
+  width: min(100%, 980px);
+  margin-inline: auto;
+  padding-inline: max(18px, env(safe-area-inset-left)) max(18px, env(safe-area-inset-right));
+}
+.hub-footer-content {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 .hub-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; color: var(--text-dim); font-size: .75rem; }
 .hub-shell, .game-shell { width: min(100%, 980px); min-height: 100dvh; margin: 0 auto; padding: max(28px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-left)) max(28px, env(safe-area-inset-bottom)); }
 .icon-button, .dialog-close { display: grid; place-items: center; border: 1px solid var(--glass-border); color: var(--muted); background: var(--glass); }

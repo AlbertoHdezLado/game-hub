@@ -243,18 +243,26 @@ function createDots(container){
   };
 }
 
-/* In-game screens use one unobtrusive home control instead of an app bar.
-   Reuse each screen's existing link before removing the header so every game
-   gets the same placement without duplicating markup across all mode files. */
+/* In-game screens keep one unobtrusive home control outside the app bar.
+  Reuse each screen's existing link when available and create one for HUD-only
+  screens so every game has the same way back to the hub. */
 function initIngameHomeControls(){
   var screens = document.querySelectorAll('.screen');
   Array.prototype.forEach.call(screens, function(screen){
+    if (screen.id === 'screen-setup') return;
     var card = screen.querySelector(':scope > .card');
     if (!card) return;
     var header = card.querySelector(':scope > .setup-header');
     var home = header && header.querySelector('a[aria-label="Inicio"]');
     var help = header && header.querySelector('.ayuda-trigger');
-    if (home) home.remove();
+    if (!home){
+      home = document.createElement('a');
+      home.href = '/';
+      home.setAttribute('aria-label', 'Inicio');
+      home.innerHTML = '<span class="home-icon"></span>';
+    }
+    home.classList.add('ingame-home-btn');
+    card.insertBefore(home, card.firstChild);
     if (help){
       help.classList.add('hidden');
       card.appendChild(help);
@@ -297,7 +305,7 @@ function initIngameHomeControls(){
         if (controlsHost){
           controlsHost.appendChild(extras);
         } else {
-          card.insertBefore(extras, card.firstChild);
+          card.insertBefore(extras, card.firstChild.nextSibling);
         }
       }
     }
