@@ -783,6 +783,7 @@
 
   function enterRoom(room){
     roomSession.room = room;
+    window.history.replaceState(null, '', '/games/secret-code/room/' + room.code);
     localStorage.setItem(ROOM_STORAGE_KEY, JSON.stringify({ roomId: room.id, code: room.code }));
     setRoomStatus('Sala ' + room.code + ' lista.');
     roomSession.userId = null;
@@ -1089,7 +1090,7 @@
 
   function buildShareUrl(role){
     if (roomSession.room){
-      return window.location.origin + '/secret-code/room/' + roomSession.room.code;
+      return window.location.origin + '/games/secret-code/room/' + roomSession.room.code;
     }
     var url = window.location.origin + window.location.pathname + '?w=' + encodeURIComponent(state.board.join('|'));
     if (role === 'leader'){
@@ -1346,7 +1347,7 @@
 
   (function bootFromSharedLink(){
     var params = new URLSearchParams(window.location.search);
-    var roomPathMatch = window.location.pathname.match(/^\/secret-code\/room\/([^/]+)\/?$/i);
+    var roomPathMatch = window.location.pathname.match(/^\/games\/secret-code\/room\/([^/]+)\/?$/i);
     var roomCode = roomPathMatch ? roomPathMatch[1] : params.get('room');
     if (roomCode){
       roomCode = roomCode.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, roomCodeInputs.length);
@@ -1366,7 +1367,9 @@
       if (roomCode){
         return;
       }
-      setRoomStatus('Crea una sala nueva o introduce un código para unirte.', false);
+      restoreSavedRoom().then(function(restored){
+        if (!restored) setRoomStatus('Crea una sala nueva o introduce un código para unirte.', false);
+      });
       return;
     }
     var words = w.split('|').map(function(s){ return s.trim(); }).filter(Boolean);

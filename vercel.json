@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/secret-code/room/:code", "destination": "/games/secret-code/index.html" },
+    { "source": "/games/secret-code/room/:code", "destination": "/games/secret-code/index.html" },
     { "source": "/games/secret-code/rooms/:code", "destination": "/games/secret-code/index.html" },
     { "source": "/((?!api|data|resources).*)", "destination": "/index.html" }
   ],

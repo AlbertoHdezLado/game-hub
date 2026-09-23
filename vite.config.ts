@@ -69,7 +69,7 @@ function cleanGameRoutes(): Plugin {
 }
 
 function rewriteGameUrl(request: { url?: string }) {
-  const secretCodePathMatch = request.url?.match(/^\/secret-code\/room\/[^/?]+(?:\?.*)?$/);
+  const secretCodePathMatch = request.url?.match(/^\/games\/secret-code\/room\/[^/?]+(?:\?.*)?$/);
   if (secretCodePathMatch) {
     request.url = '/games/secret-code/index.html';
     return;
