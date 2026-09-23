@@ -254,7 +254,11 @@ async function selectWord(body) {
   const role = room.game.roles[index];
   room.game.revealedIndices.push(index);
   room.game.revealedRoles.push(role);
-  if (role === 'assassin') { room.game.status = 'finished'; room.game.endReason = 'assassin'; }
+  if (role === 'assassin') {
+    room.game.status = 'finished';
+    room.game.endReason = 'assassin';
+    room.game.winnerTeam = (room.game.activeTeam + 1) % room.teamCount;
+  }
   else {
     const teamComplete = [0, 1, 2].find((team) => team < room.teamCount && room.game.roles.every((item, itemIndex) => item !== String(team) || room.game.revealedIndices.includes(itemIndex)));
     if (teamComplete != null) { room.game.status = 'finished'; room.game.winnerTeam = teamComplete; room.game.endReason = 'all_words'; }

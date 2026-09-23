@@ -143,8 +143,9 @@
   #turn-timer{font-family:var(--font-display);font-weight:800;margin-right:8px;}
   #screen-final{max-width:min(520px,94vw);}
   #final-result-backdrop .guide-modal{max-width:min(420px, calc(100vw - 32px));}
+  #final-winner{font-family:var(--font-display);font-weight:800;}
   #reveal-confirm-backdrop .guide-modal{max-width:min(420px, calc(100vw - 32px));}
-  #reveal-confirm-backdrop h2{margin-bottom:18px;}
+  #reveal-confirm-backdrop h2{margin-bottom:18px;text-align:center;}
   .cs-reveal-word{color:var(--text);font-family:var(--font-display);font-size:1.2rem;font-weight:800;}
   .cs-reveal-actions{display:grid;gap:10px;}
   .cs-reveal-actions button{width:100%;margin:0;}
@@ -285,6 +286,10 @@
     align-items:center;
     gap:26px;
     margin-top:10px;
+    width:100%;
+    max-width:620px;
+    margin-left:auto;
+    margin-right:auto;
   }
   .cs-share-info{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0;}
   .cs-share-actions{
@@ -356,8 +361,11 @@
   #share-modal-backdrop .guide-modal::-webkit-scrollbar{display:none;}
   @media (max-width:560px){
     .cs-share-layout{grid-template-columns:1fr;gap:18px;}
-    .cs-share-info{grid-column:1;grid-row:1;}
-    .cs-share-actions,.cs-share-qr-wrap{grid-column:1;grid-row:auto;}
+    .cs-share-info{display:contents;}
+    .cs-share-room-label{grid-column:1;grid-row:1;}
+    .cs-share-room-code{grid-column:1;grid-row:2;}
+    .cs-share-qr-wrap{grid-column:1;grid-row:3;}
+    .cs-share-actions{grid-column:1;grid-row:4;}
   }
 
   .cs-game-header{
@@ -690,6 +698,7 @@
       <button type="button" class="guide-modal-close" id="final-result-close" aria-label="Cerrar">✕</button>
       <h2 id="final-title">Partida terminada</h2>
       <p class="count-info" id="final-message"></p>
+      <p class="count-info" id="final-winner"></p>
       <button class="btn-main" id="final-lobby-btn" type="button">Volver a la sala</button>
     </div>
   </div>
@@ -937,8 +946,19 @@
   }
 
   function renderFinal(game){
-    document.getElementById('final-title').textContent = game.end_reason === 'assassin' ? 'El asesino ha sido descubierto' : '¡Gana el equipo ' + TEAM_NAMES[game.winner_team] + '!';
-    document.getElementById('final-message').textContent = game.end_reason === 'assassin' ? 'La partida termina al descubrir el asesino.' : 'Todas sus palabras han sido reveladas.';
+    var finalTitle = document.getElementById('final-title');
+    var finalMessage = document.getElementById('final-message');
+    var finalWinner = document.getElementById('final-winner');
+    var winnerTeam = Number(game.winner_team);
+    finalWinner.textContent = 'Gana el equipo ' + TEAM_NAMES[winnerTeam];
+    finalWinner.style.color = TEAM_HEX[winnerTeam];
+    if (game.end_reason === 'assassin'){
+      finalTitle.textContent = 'DERROTA';
+      finalMessage.textContent = 'Descubriste al asesino';
+    } else {
+      finalTitle.textContent = '¡Gana el equipo ' + TEAM_NAMES[winnerTeam] + '!';
+      finalMessage.textContent = 'Todas sus palabras han sido reveladas.';
+    }
   }
 
   function playerRow(player){
