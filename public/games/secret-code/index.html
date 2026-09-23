@@ -144,9 +144,8 @@
   #screen-final{max-width:min(520px,94vw);}
   #final-result-backdrop .guide-modal{max-width:min(420px, calc(100vw - 32px));}
   #reveal-confirm-backdrop .guide-modal{max-width:min(420px, calc(100vw - 32px));}
-  #reveal-confirm-backdrop h2{margin-bottom:10px;}
-  #reveal-confirm-backdrop p{margin:0 0 18px;text-align:center;}
-  .cs-reveal-word{display:block;margin-top:6px;color:var(--text);font-family:var(--font-display);font-size:1.2rem;font-weight:800;}
+  #reveal-confirm-backdrop h2{margin-bottom:18px;}
+  .cs-reveal-word{color:var(--text);font-family:var(--font-display);font-size:1.2rem;font-weight:800;}
   .cs-reveal-actions{display:grid;gap:10px;}
   .cs-reveal-actions button{width:100%;margin:0;}
   #screen-game{
@@ -588,10 +587,9 @@
   <!-- REVEAL CONFIRM: shown before selecting a word from the board -->
   <div class="guide-modal-backdrop hidden" id="reveal-confirm-backdrop">
     <div class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="reveal-confirm-title">
-      <h2 id="reveal-confirm-title">¿Revelar esta palabra?</h2>
-      <p>Se descubrirá el color de la carta y contará para el turno.<span class="cs-reveal-word" id="reveal-confirm-word"></span></p>
+      <h2 id="reveal-confirm-title">¿Revelar <span class="cs-reveal-word" id="reveal-confirm-word"></span>?</h2>
       <div class="cs-reveal-actions">
-        <button class="btn-main" id="reveal-confirm-btn" type="button">Revelar palabra</button>
+        <button class="btn-main" id="reveal-confirm-btn" type="button">Confirmar</button>
         <button type="button" class="cs-key-hide-btn" id="reveal-cancel-btn">Cancelar</button>
       </div>
     </div>
@@ -1313,7 +1311,7 @@
     var index = Number(cell.dataset.index);
     if (!player || !game || game.status !== 'playing' || player.is_leader || player.team_index !== game.active_team || game.revealed_indices.indexOf(index) !== -1) return;
     pendingReveal = { cell: cell, gameId: game.id, wordIndex: index + 1 };
-    revealConfirmWord.textContent = '«' + cell.textContent + '»';
+    revealConfirmWord.textContent = cell.textContent;
     revealConfirmBackdrop.classList.remove('hidden');
   });
 
