@@ -1190,9 +1190,9 @@
   function renderBoard(){
     startingTeamEl.textContent = 'Empieza equipo ' + TEAM_NAMES[state.startingTeam].toLowerCase();
     startingTeamEl.style.backgroundColor = TEAM_HEX[state.startingTeam];
-    startingTeamEl.classList.add('hidden');
+    startingTeamEl.classList.remove('hidden');
 
-    state.board.forEach(function(word, i){
+    (Array.isArray(state.board) ? state.board : []).forEach(function(word, i){
       var revealedIndex = roomSession.state && roomSession.state.game ? roomSession.state.game.revealed_indices.indexOf(i) : -1;
       var revealedRole = roomSession.state && roomSession.state.game && roomSession.state.game.revealed_roles ? roomSession.state.game.revealed_roles[revealedIndex] : null;
       var role = revealedRole || state.roles[i];
@@ -1208,7 +1208,7 @@
       cell.className = 'cs-cell ' + roleClass + revealedClass;
       if (cell.textContent !== word) cell.textContent = word;
     });
-    while (boardEl.children.length > state.board.length) boardEl.removeChild(boardEl.lastElementChild);
+    while (boardEl.children.length > (Array.isArray(state.board) ? state.board.length : 0)) boardEl.removeChild(boardEl.lastElementChild);
     fitBoardText();
   }
 
