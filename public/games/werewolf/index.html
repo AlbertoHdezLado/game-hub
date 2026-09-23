@@ -22,6 +22,9 @@
        the raw background color showing on some viewports/scroll ranges */
     background-color:var(--bg2);
   }
+  .reveal-screen{
+    display:block;
+  }
 
   /* the narrator's inline night/lynch reveal cards (always "revealed",
      never covered) still show the portrait full-bleed at a fixed height;
@@ -58,7 +61,11 @@
     filter:none;
   }
   .reveal-screen .reveal-content{
+    position:absolute;
+    inset:0;
     cursor:default;
+    opacity:1;
+    filter:none;
   }
   .reveal-screen .reveal-content img.reveal-portrait{
     position:static;
@@ -70,11 +77,59 @@
     border-radius:0;
     filter:none;
   }
+  .reveal-screen .reveal-btn{
+    background:transparent;
+    text-shadow:0 2px 8px rgba(0,0,0,0.8);
+  }
+  .reveal-tap-hint{
+    position:absolute;
+    top:calc(46% + min(41vw, 180px) + 18px);
+    left:50%;
+    width:min(82vw, 360px);
+    margin:0;
+    transform:translateX(-50%);
+    color:rgba(255,255,255,0.82);
+    font-family:var(--font-body);
+    font-size:0.85rem;
+    text-align:center;
+  }
+  .reveal-screen.revealed .reveal-tap-hint{
+    visibility:hidden;
+    opacity:0;
+  }
+  .reveal-screen .reveal-name-caption{
+    position:absolute;
+    top:calc(46% + min(41vw, 180px) + 18px);
+    left:50%;
+    width:min(82vw, 360px);
+    margin:0;
+    transform:translateX(-50%);
+    transition:opacity .5s ease;
+  }
+  .reveal-screen.revealed .reveal-name-caption{
+    transform:translateX(-50%);
+  }
+  .reveal-screen.revealing .reveal-content{
+    animation:none;
+  }
   .reveal-screen .reveal-image-stage{
+    position:absolute;
+    top:46%;
+    left:50%;
     width:min(82vw, 360px);
     height:auto;
     aspect-ratio:1;
     padding:0;
+    transform:translate(-50%, -50%);
+  }
+  .reveal-screen .reveal-stage{
+    background:transparent;
+    border:0;
+    box-shadow:none;
+    overflow:visible;
+  }
+  .reveal-screen .alarm-pending{
+    animation:none !important;
   }
   .reveal-screen .reveal-flip-content{
     width:100%;
@@ -88,6 +143,7 @@
     position:relative;
     width:100%;
     height:100%;
+    border-radius:18px;
     transform-style:preserve-3d;
   }
   .reveal-card-face{
@@ -944,10 +1000,9 @@
   <dialog class="reveal-screen hidden" id="reveal-modal-backdrop" aria-label="Contenido privado">
     <div class="reveal-stage reveal-wrap" id="reveal-wrap">
       <div class="reveal-content" id="reveal-content"></div>
-      <button type="button" class="reveal-btn" id="reveal-btn">
-        <span class="reveal-text">Revelar</span>
-      </button>
+      <button type="button" class="reveal-btn" id="reveal-btn" aria-label="Revelar"></button>
     </div>
+    <p class="reveal-tap-hint">Pulsa la carta para revelar el rol</p>
     <div class="reveal-name-caption" id="reveal-name-caption"></div>
   </dialog>
 
