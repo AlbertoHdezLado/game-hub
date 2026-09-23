@@ -417,11 +417,6 @@
     -webkit-mask-position:center;
     -webkit-mask-size:contain;
   }
-  #key-toggle-btn.key-visible{background:var(--accent); color:#fff;}
-  #key-toggle-btn.key-visible .eye-icon{
-    mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>');
-    -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>');
-  }
 </style>
 </head>
 <body data-landscape-recommended>
@@ -540,7 +535,7 @@
       <p>Cada equipo tiene a alguien que conoce la clave (puede turnarse). Esa persona da una palabra y un número — por ejemplo "Océano, 2" — para que su equipo adivine dos palabras del tablero relacionadas con "Océano". No puede decir ninguna de las palabras del tablero ni derivados obvios.</p>
 
       <h3>La clave</h3>
-      <p>Pulsa "Ver clave" para colorear el tablero: azul y rojo son las palabras de cada equipo, gris son neutras, y la negra 💀 es el asesino — si un equipo la dice, pierde la partida en el acto. El indicador superior muestra qué equipo empieza. Solo quien da las pistas debe mirar esta pantalla; el resto del equipo mira el tablero sin colorear.</p>
+      <p>El líder ve la clave coloreada: azul y rojo son las palabras de cada equipo, gris son neutras, y la negra 💀 es el asesino — si un equipo la dice, pierde la partida en el acto. El indicador superior muestra qué equipo empieza. El resto del equipo mira el tablero sin colorear.</p>
 
       <h3>Compartir la clave</h3>
       <p>Si jugáis con alguien en remoto, podéis haceros una captura de pantalla con la clave revelada y enviarla por privado — la app no lo hace por vosotros.</p>
@@ -589,7 +584,6 @@
         </div>
         <div class="cs-game-actions">
           <button type="button" class="guide-btn ayuda-trigger" id="guide-btn-game" aria-label="Ayuda">?</button>
-          <button type="button" class="guide-btn" id="key-toggle-btn" aria-label="Ver clave" aria-pressed="false"><span class="eye-icon"></span></button>
           <button type="button" class="guide-btn" id="share-board-btn" aria-label="Compartir tablero"><span class="share-icon"></span></button>
         </div>
       </div>
@@ -762,8 +756,7 @@
         state.roles = data.keys && data.keys.roles ? data.keys.roles : data.game.words.map(function(){ return 'neutral'; });
         switchScreen(screenGame);
         renderBoard();
-        keyToggleBtn.classList.toggle('hidden', !data.keys);
-        setKeyVisible(false);
+        setKeyVisible(Boolean(data.keys));
         updateTurnControls();
         return data;
       }
@@ -1046,7 +1039,6 @@
   // ---------- game screen ----------
   var startingTeamEl = document.getElementById('cs-starting-team');
   var boardEl = document.getElementById('cs-board');
-  var keyToggleBtn = document.getElementById('key-toggle-btn');
   var exitConfirmBackdrop = document.getElementById('exit-confirm-backdrop');
   var exitConfirmBtn = document.getElementById('exit-confirm-btn');
   var exitCancelBtn = document.getElementById('exit-cancel-btn');
@@ -1211,9 +1203,6 @@
   function setKeyVisible(visible){
     boardEl.classList.toggle('key-visible', visible);
     startingTeamEl.classList.toggle('hidden', !visible);
-    keyToggleBtn.classList.toggle('key-visible', visible);
-    keyToggleBtn.setAttribute('aria-pressed', String(visible));
-    keyToggleBtn.setAttribute('aria-label', visible ? 'Ocultar clave' : 'Ver clave');
   }
 
   boardEl.addEventListener('click', function(e){
@@ -1274,17 +1263,8 @@
       .finally(function(){ button.disabled = false; });
   });
 
-  keyToggleBtn.addEventListener('click', function(){
-    if (boardEl.classList.contains('key-visible')){
-      setKeyVisible(false);
-      return;
-    }
-    setKeyVisible(true);
-  });
-
   function exitViewOnly(){
     viewOnly = false;
-    keyToggleBtn.classList.remove('hidden');
     window.history.replaceState(null, '', window.location.pathname);
     enterSetup();
   }
@@ -1297,7 +1277,7 @@
       return;
     }
     buildBoard();
-    setKeyVisible(false);
+    setKeyVisible(true);
     switchScreen(screenGame);
     renderBoard();
   });
@@ -1308,7 +1288,6 @@
     state.board = words;
     state.roles = isLeader ? sharedRoles : words.map(function(){ return 'neutral'; });
     state.startingTeam = isLeader ? sharedStartingTeam : 0;
-    keyToggleBtn.classList.toggle('hidden', !isLeader);
     switchScreen(screenGame);
     renderBoard();
     setKeyVisible(isLeader);
