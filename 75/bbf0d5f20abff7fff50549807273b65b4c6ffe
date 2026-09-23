@@ -1,0 +1,18 @@
+public/games/times-up/index.html
+  h_fed6a40af368f7 21
+public/games/werewolf/index.html
+  h_fed6a40af368f7 25-27,64-65,67-68,80-114,116-118,123-132,146,1003,1005
+public/shared.css
+  h_fed6a40af368f7 1177,1183,1511,1523,1531,1534
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "75bbf0d5f20abff7fff50549807273b65b4c6ffe",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
