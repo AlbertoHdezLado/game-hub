@@ -1209,9 +1209,11 @@
   }
 
   function renderBoard(){
-    startingTeamEl.textContent = 'Empieza equipo ' + TEAM_NAMES[state.startingTeam].toLowerCase();
-    startingTeamEl.style.backgroundColor = TEAM_HEX[state.startingTeam];
-    startingTeamEl.classList.remove('hidden');
+    if (startingTeamEl){
+      startingTeamEl.textContent = 'Empieza equipo ' + TEAM_NAMES[state.startingTeam].toLowerCase();
+      startingTeamEl.style.backgroundColor = TEAM_HEX[state.startingTeam];
+      startingTeamEl.classList.remove('hidden');
+    }
 
     (Array.isArray(state.board) ? state.board : []).forEach(function(word, i){
       var revealedIndex = roomSession.state && roomSession.state.game ? roomSession.state.game.revealed_indices.indexOf(i) : -1;
