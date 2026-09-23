@@ -73,6 +73,11 @@
   #lobby-settings-backdrop .guide-modal::-webkit-scrollbar{display:none;width:0;height:0;}
   #screen-room{max-width:min(520px, 94vw);}
   #screen-room .scr-body,#screen-lobby .scr-body{flex:0 1 auto;margin-top:auto;margin-bottom:auto;width:100%;}
+  #room-join-backdrop .guide-modal{width:min(420px, calc(100vw - 32px));}
+  #room-join-backdrop .guide-modal h2{margin-bottom:10px;}
+  .cs-room-join-form{display:grid;gap:10px;margin-top:18px;}
+  .cs-room-join-form input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid var(--glass-border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;}
+  .cs-room-join-form input:focus{border-color:var(--accent2);outline:2px solid color-mix(in srgb, var(--accent2) 24%, transparent);outline-offset:1px;}
   .cs-room-actions{display:grid;gap:10px;margin-top:16px;}
   .cs-room-actions input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid var(--glass-border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;}
   #room-create-btn:disabled{background:var(--surface-2);border-color:var(--glass-border);color:var(--text-dim);opacity:.55;cursor:not-allowed;box-shadow:none;}
@@ -450,6 +455,18 @@
     </div>
   </div>
 
+  <div class="guide-modal-backdrop hidden" id="room-join-backdrop">
+    <div class="guide-modal">
+      <h2>Unirse a la sala</h2>
+      <p>Escribe tu nombre para entrar.</p>
+      <form class="cs-room-join-form" id="room-join-form">
+        <input id="room-join-nickname" type="text" maxlength="30" autocomplete="nickname" placeholder="Tu nombre" aria-label="Tu nombre">
+        <button class="btn-main" id="room-join-btn" type="submit">Unirme</button>
+      </form>
+      <p class="cs-room-status" id="room-join-status" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
   <!-- ONLINE LOBBY -->
   <div class="screen hidden" id="screen-lobby">
     <div class="card">
@@ -671,11 +688,21 @@
   var roomCodeInputs = Array.prototype.slice.call(document.querySelectorAll('.cs-room-code'));
   var roomStatusEl = document.getElementById('room-status');
   var roomCreateBtn = document.getElementById('room-create-btn');
+  var roomJoinBackdrop = document.getElementById('room-join-backdrop');
+  var roomJoinForm = document.getElementById('room-join-form');
+  var roomJoinNicknameEl = document.getElementById('room-join-nickname');
+  var roomJoinBtn = document.getElementById('room-join-btn');
+  var roomJoinStatusEl = document.getElementById('room-join-status');
   var ROOM_STORAGE_KEY = 'gamehub.secretCodeRoom';
 
   function setRoomStatus(message, isError){
     roomStatusEl.textContent = message;
     roomStatusEl.style.color = isError ? '#c9525c' : '';
+  }
+
+  function setRoomJoinStatus(message, isError){
+    roomJoinStatusEl.textContent = message;
+    roomJoinStatusEl.style.color = isError ? '#c9525c' : '';
   }
 
   function setRoomBusy(busy){
@@ -908,7 +935,23 @@
       .then(enterRoom).catch(function(error){ setRoomStatus(error.message || 'No se pudo unir a la sala.', true); }).finally(function(){ setRoomBusy(false); });
   }
 
+  function joinLinkedRoom(code){
+    var nickname = roomJoinNicknameEl.value.trim();
+    if (!nickname){ setRoomJoinStatus('Escribe tu nombre para continuar.', true); roomJoinNicknameEl.focus(); return; }
+    localStorage.setItem('gamehub.secretCodeNickname', nickname);
+    roomJoinBtn.disabled = true;
+    setRoomJoinStatus('Buscando sala…');
+    GameHubSecretCode.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
+      .then(enterRoom)
+      .catch(function(error){ setRoomJoinStatus(error.message || 'No se pudo unir a la sala.', true); })
+      .finally(function(){ roomJoinBtn.disabled = false; });
+  }
+
   roomCreateBtn.addEventListener('click', createRoom);
+  roomJoinForm.addEventListener('submit', function(event){
+    event.preventDefault();
+    joinLinkedRoom(roomJoinForm.dataset.roomCode);
+  });
   roomNicknameEl.addEventListener('input', function(){
     var hasNickname = Boolean(roomNicknameEl.value.trim());
     roomCreateBtn.disabled = !hasNickname;
