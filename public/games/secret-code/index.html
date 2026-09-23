@@ -714,13 +714,16 @@
   var roomJoinStatusEl = document.getElementById('room-join-status');
 
   function setRoomStatus(message, isError){
+    if (!roomStatusEl) return;
     roomStatusEl.textContent = message;
     roomStatusEl.style.color = isError ? '#c9525c' : '';
   }
 
   function setRoomJoinStatus(message, isError){
-    roomJoinStatusEl.textContent = message;
-    roomJoinStatusEl.style.color = isError ? '#c9525c' : '';
+    var statusEl = roomJoinStatusEl || roomStatusEl;
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.style.color = isError ? '#c9525c' : '';
   }
 
   function setRoomBusy(busy){
@@ -944,7 +947,8 @@
     GameHubSecretCode.rpc('secret_code_join_room', { room_code: code, player_nickname: nickname })
       .then(enterRoom)
       .catch(function(error){
-        setRoomJoinStatus(error.message || 'No se pudo unir a la sala.', true);
+        var message = error.message === 'room_not_available' ? 'La sala no existe o ya ha caducado.' : (error.message || 'No se pudo unir a la sala.');
+        setRoomJoinStatus(message, true);
         roomJoinBackdrop.classList.remove('hidden');
         roomJoinNicknameEl.focus();
       })
