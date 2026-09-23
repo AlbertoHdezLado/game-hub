@@ -375,6 +375,43 @@
     align-items:center;
     gap:8px;
   }
+  .cs-team-counts{
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .cs-team-count{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    min-width:34px;
+    height:34px;
+    padding:0 7px;
+    border:1px solid currentColor;
+    border-radius:10px;
+    font-family:var(--font-display);
+    font-size:.82rem;
+    font-weight:800;
+    line-height:1;
+  }
+  .cs-team-count .cards-icon{
+    width:14px;
+    height:14px;
+  }
+  .cards-icon{
+    display:block;
+    flex:0 0 auto;
+    background-color:currentColor;
+    mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2.5a2 2 0 0 1 2.27 1.68l.18 1.2 6.28-.95a2 2 0 0 1 2.27 1.68l1.68 11.05a2 2 0 0 1-1.68 2.27l-8.42 1.28a2 2 0 0 1-2.27-1.68L5.63 7.04l-.22-1.5A2 2 0 0 1 7 2.5Zm.62 5.2 1.52 9.99 8.57-1.3-1.52-9.98-8.57 1.3ZM7.39 4.48a.5.5 0 0 0-.42.57l.1.66 8.57-1.3-.1-.66a.5.5 0 0 0-.57-.42l-7.58 1.15Z"/></svg>');
+    -webkit-mask-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2.5a2 2 0 0 1 2.27 1.68l.18 1.2 6.28-.95a2 2 0 0 1 2.27 1.68l1.68 11.05a2 2 0 0 1-1.68 2.27l-8.42 1.28a2 2 0 0 1-2.27-1.68L5.63 7.04l-.22-1.5A2 2 0 0 1 7 2.5Zm.62 5.2 1.52 9.99 8.57-1.3-1.52-9.98-8.57 1.3ZM7.39 4.48a.5.5 0 0 0-.42.57l.1.66 8.57-1.3-.1-.66a.5.5 0 0 0-.57-.42l-7.58 1.15Z"/></svg>');
+    mask-repeat:no-repeat;
+    mask-position:center;
+    mask-size:contain;
+    -webkit-mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    -webkit-mask-size:contain;
+  }
   .cs-game-actions .cs-key-hide-btn{
     width:auto;
     height:46px;
@@ -624,6 +661,7 @@
           <div class="cs-starting-team" id="cs-starting-team" aria-live="polite"></div>
         </div>
         <div class="cs-game-actions">
+          <div class="cs-team-counts hidden" id="cs-team-counts" aria-label="Cartas restantes por equipo"></div>
           <button type="button" class="guide-btn ayuda-trigger" id="guide-btn-game" aria-label="Ayuda">?</button>
           <button type="button" class="cs-key-hide-btn hidden" id="finish-turn-btn">Finalizar turno</button>
           <button type="button" class="guide-btn" id="share-board-btn" aria-label="Compartir tablero"><span class="share-icon"></span></button>
@@ -797,6 +835,7 @@
     return GameHubSecretCode.loadRoomState(roomSession.room.id).then(function(data){
       var oldGame = roomSession.state && roomSession.state.game;
       roomSession.state = data;
+      isBoardLeader = Boolean(data.keys);
       if (data.room.config && data.room.config.timeLimitSeconds != null){
         config.timeLimitSeconds = Number(data.room.config.timeLimitSeconds);
       }
@@ -1135,10 +1174,12 @@
 
   // ---------- game screen ----------
   var startingTeamEl = document.getElementById('cs-starting-team');
+  var teamCountsEl = document.getElementById('cs-team-counts');
   var boardEl = document.getElementById('cs-board');
   var exitConfirmBackdrop = document.getElementById('exit-confirm-backdrop');
   var exitConfirmBtn = document.getElementById('exit-confirm-btn');
   var exitCancelBtn = document.getElementById('exit-cancel-btn');
+  var isBoardLeader = true;
   var viewOnly = false; // true when this page was opened from a shared board link (?w=...)
 
   // ---------- share board (QR + link, no team/key info) ----------
@@ -1251,12 +1292,38 @@
     state.roles = shuffle(roles);
   }
 
+  function renderTeamCardCounts(){
+    if (!teamCountsEl) return;
+    if (!isBoardLeader || !Array.isArray(state.roles)){
+      teamCountsEl.classList.add('hidden');
+      teamCountsEl.innerHTML = '';
+      return;
+    }
+    var game = roomSession.state && roomSession.state.game;
+    var revealedIndices = game && Array.isArray(game.revealed_indices) ? game.revealed_indices : [];
+    var teamCount = roomSession.state && roomSession.state.room ? roomSession.state.room.team_count : config.numTeams;
+    var highestTeam = state.roles.reduce(function(highest, role){
+      return /^\d+$/.test(String(role)) ? Math.max(highest, Number(role) + 1) : highest;
+    }, 0);
+    teamCount = Math.max(teamCount, highestTeam);
+    var markers = [];
+    for (var team = 0; team < teamCount; team++){
+      var remaining = state.roles.reduce(function(count, role, index){
+        return String(role) === String(team) && revealedIndices.indexOf(index) === -1 ? count + 1 : count;
+      }, 0);
+      markers.push('<span class="cs-team-count" style="color:' + TEAM_HEX[team] + '" aria-label="Equipo ' + TEAM_NAMES[team] + ': ' + remaining + ' cartas restantes"><span class="cards-icon" aria-hidden="true"></span><span>' + remaining + '</span></span>');
+    }
+    teamCountsEl.innerHTML = markers.join('');
+    teamCountsEl.classList.remove('hidden');
+  }
+
   function renderBoard(){
     if (startingTeamEl){
       startingTeamEl.textContent = 'Empieza equipo ' + TEAM_NAMES[state.startingTeam].toLowerCase();
       startingTeamEl.style.backgroundColor = TEAM_HEX[state.startingTeam];
-      startingTeamEl.classList.remove('hidden');
+      startingTeamEl.classList.toggle('hidden', !isBoardLeader);
     }
+    renderTeamCardCounts();
 
     (Array.isArray(state.board) ? state.board : []).forEach(function(word, i){
       var revealedIndex = roomSession.state && roomSession.state.game ? roomSession.state.game.revealed_indices.indexOf(i) : -1;
@@ -1407,6 +1474,7 @@
   // ---------- shared board view (opened via ?w=... link/QR) ----------
   function enterSharedBoard(words, sharedRoles, sharedStartingTeam, isLeader){
     viewOnly = true;
+    isBoardLeader = isLeader;
     state.board = words;
     state.roles = isLeader ? sharedRoles : words.map(function(){ return 'neutral'; });
     state.startingTeam = isLeader ? sharedStartingTeam : 0;
