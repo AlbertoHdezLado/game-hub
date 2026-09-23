@@ -258,6 +258,10 @@ async function selectWord(body) {
   else {
     const teamComplete = [0, 1, 2].find((team) => team < room.teamCount && room.game.roles.every((item, itemIndex) => item !== String(team) || room.game.revealedIndices.includes(itemIndex)));
     if (teamComplete != null) { room.game.status = 'finished'; room.game.winnerTeam = teamComplete; room.game.endReason = 'all_words'; }
+    else if (role !== String(room.game.activeTeam)) {
+      room.game.activeTeam = (room.game.activeTeam + 1) % room.teamCount;
+      room.game.turnStartedAt = new Date().toISOString();
+    }
   }
   await saveRoom(room);
   return publicState(room, body.player_id);
