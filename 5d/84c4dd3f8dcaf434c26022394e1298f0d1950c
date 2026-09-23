@@ -1,0 +1,14 @@
+public/games/secret-code/index.html
+  h_fed6a40af368f7 958-976,1373
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5d84c4dd3f8dcaf434c26022394e1298f0d1950c",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
