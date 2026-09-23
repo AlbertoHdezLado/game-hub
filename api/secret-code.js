@@ -1,6 +1,9 @@
+import { createClient } from 'redis';
+
 const rooms = globalThis.__secretCodeRooms || (globalThis.__secretCodeRooms = new Map());
 const ROOM_TTL_MS = 24 * 60 * 60 * 1000;
-const PLAYER_ACTIVE_TTL_MS = 30 * 1000;
+const PLAYER_ACTIVE_TTL_MS = 10 * 1000;
+let redisClientPromise;
 
 function errorResponse(message, status = 400) {
   return new Response(JSON.stringify({ error: { message } }), {
@@ -27,26 +30,25 @@ function newId() {
 }
 
 function cacheConfigured() {
-  return Boolean(getCacheUrl() && getCacheToken());
+  return Boolean(process.env.REDIS_URL);
 }
 
-function getCacheUrl() {
-  return process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-}
-
-function getCacheToken() {
-  return process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+function getRedisClient() {
+  if (!redisClientPromise) {
+    const client = createClient({ url: process.env.REDIS_URL });
+    client.on('error', function() {});
+    redisClientPromise = client.connect().then(function(){ return client; });
+  }
+  return redisClientPromise;
 }
 
 async function cacheCommand(command) {
-  const response = await fetch(getCacheUrl(), {
-    method: 'POST',
-    headers: { authorization: `Bearer ${getCacheToken()}`, 'content-type': 'application/json' },
-    body: JSON.stringify(command)
-  });
-  if (!response.ok) throw new Error('cache_unavailable');
-  const result = await response.json();
-  return result.result;
+  const client = await getRedisClient();
+  const operation = command[0];
+  if (operation === 'GET') return client.get(command[1]);
+  if (operation === 'DEL') return client.del(command[1]);
+  if (operation === 'SET') return client.set(command[1], command[2], { EX: Number(command[4]) });
+  throw new Error('unsupported_cache_command');
 }
 
 async function loadRoom(code) {
@@ -65,19 +67,7 @@ async function loadRoom(code) {
   return room;
 }
 
-async function saveRoom(room, mergePlayers = false) {
-  if (mergePlayers) {
-    const latestRoom = await loadRoom(room.code);
-    if (latestRoom) {
-      const playersById = new Map(latestRoom.players.map((player) => [player.id, player]));
-      room.players.forEach((player) => playersById.set(player.id, player));
-      room.players = Array.from(playersById.values());
-      room.createdBy = latestRoom.createdBy;
-      room.teamCount = latestRoom.teamCount;
-      room.config = latestRoom.config;
-      room.game = latestRoom.game;
-    }
-  }
+async function saveRoom(room) {
   room.updatedAt = Date.now();
   if (cacheConfigured()) {
     await cacheCommand(['SET', `secret-code:room:${room.code}`, JSON.stringify(room), 'EX', Math.ceil(ROOM_TTL_MS / 1000)]);
@@ -179,7 +169,7 @@ async function createRoom(body) {
 }
 
 async function joinRoom(body) {
-  const room = await loadRoom(String(body.room_code || '').trim().toUpperCase());
+  const room = await loadRoom(body.room_code);
   if (!room) throw new Error('room_not_available');
   const playerId = String(body.player_id || newId());
   let player = getPlayer(room, playerId);
@@ -194,7 +184,7 @@ async function joinRoom(body) {
   }
   player.lastSeenAt = Date.now();
   if (!room.players[room.players.length - 1].nickname) throw new Error('invalid_nickname');
-  await saveRoom(room, true);
+  await saveRoom(room);
   return { ...room, team_count: room.teamCount };
 }
 
@@ -289,6 +279,11 @@ async function handle(request) {
   if (action === 'state') {
     const room = await loadRoom(body.room);
     if (!room) throw new Error('room_not_available');
+    const player = getPlayer(room, body.player_id);
+    if (player) {
+      player.lastSeenAt = Date.now();
+      await saveRoom(room);
+    }
     return jsonResponse(publicState(room, body.player_id));
   }
   if (action === 'set_team') return jsonResponse(await updateRoom(body, 'set_team'));
