@@ -118,6 +118,11 @@ function hasActiveLeader(room, teamIndex) {
 function publicState(room, viewerId) {
   const viewer = viewerId ? getPlayer(room, viewerId) : null;
   const creator = getPlayer(room, room.createdBy);
+  const teamRemaining = room.game
+    ? Array.from({ length: room.teamCount }, (_, teamIndex) => room.game.roles.reduce((count, role, index) => (
+      String(role) === String(teamIndex) && !room.game.revealedIndices.includes(index) ? count + 1 : count
+    ), 0))
+    : null;
   return {
     room: {
       id: room.id,
@@ -143,6 +148,7 @@ function publicState(room, viewerId) {
       words: room.game.words,
       revealed_indices: room.game.revealedIndices,
       revealed_roles: room.game.revealedRoles,
+      team_remaining: teamRemaining,
       starting_team: room.game.startingTeam,
       active_team: room.game.activeTeam,
       turn_started_at: room.game.turnStartedAt,

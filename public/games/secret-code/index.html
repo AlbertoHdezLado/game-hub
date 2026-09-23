@@ -1321,13 +1321,14 @@
 
   function renderTeamCardCounts(){
     if (!teamCountsEl) return;
-    if (!isBoardLeader || !Array.isArray(state.roles)){
+    if (!Array.isArray(state.roles) && !(roomSession.state && roomSession.state.game && Array.isArray(roomSession.state.game.team_remaining))){
       teamCountsEl.classList.add('hidden');
       teamCountsEl.innerHTML = '';
       return;
     }
     var game = roomSession.state && roomSession.state.game;
     var revealedIndices = game && Array.isArray(game.revealed_indices) ? game.revealed_indices : [];
+    var teamRemaining = game && Array.isArray(game.team_remaining) ? game.team_remaining : null;
     var teamCount = roomSession.state && roomSession.state.room ? roomSession.state.room.team_count : config.numTeams;
     var highestTeam = state.roles.reduce(function(highest, role){
       return /^\d+$/.test(String(role)) ? Math.max(highest, Number(role) + 1) : highest;
@@ -1335,7 +1336,7 @@
     teamCount = Math.max(teamCount, highestTeam);
     var markers = [];
     for (var team = 0; team < teamCount; team++){
-      var remaining = state.roles.reduce(function(count, role, index){
+      var remaining = teamRemaining ? Number(teamRemaining[team]) || 0 : state.roles.reduce(function(count, role, index){
         return String(role) === String(team) && revealedIndices.indexOf(index) === -1 ? count + 1 : count;
       }, 0);
       markers.push('<span class="cs-team-count" style="color:' + TEAM_HEX[team] + '" aria-label="Equipo ' + TEAM_NAMES[team] + ': ' + remaining + ' cartas restantes"><span class="cards-icon" aria-hidden="true"></span><span>' + remaining + '</span></span>');
