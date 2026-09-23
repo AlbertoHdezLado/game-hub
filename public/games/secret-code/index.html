@@ -692,7 +692,6 @@
   var roomJoinNicknameEl = document.getElementById('room-join-nickname');
   var roomJoinBtn = document.getElementById('room-join-btn');
   var roomJoinStatusEl = document.getElementById('room-join-status');
-  var ROOM_STORAGE_KEY = 'gamehub.secretCodeRoom';
 
   function setRoomStatus(message, isError){
     roomStatusEl.textContent = message;
@@ -727,12 +726,6 @@
     if (!nickname){ setRoomStatus('Escribe tu nombre para continuar.', true); roomNicknameEl.focus(); return null; }
     localStorage.setItem('gamehub.secretCodeNickname', nickname);
     return nickname;
-  }
-
-  function forgetSavedRoom(){
-    localStorage.removeItem(ROOM_STORAGE_KEY);
-    roomSession.room = null;
-    roomSession.state = null;
   }
 
   function refreshRoom(){
@@ -783,28 +776,11 @@
   function enterRoom(room){
     roomSession.room = room;
     window.history.replaceState(null, '', '/games/secret-code/room/' + room.code);
-    localStorage.setItem(ROOM_STORAGE_KEY, JSON.stringify({ roomId: room.id, code: room.code }));
     setRoomStatus('Sala ' + room.code + ' lista.');
     roomSession.userId = null;
     if (roomSession.unsubscribe) roomSession.unsubscribe();
     roomSession.unsubscribe = GameHubSecretCode.subscribeToRoom(room.id, function(){ refreshRoom().catch(function(){}); });
     return GameHubSecretCode.currentUserId().then(function(userId){ roomSession.userId = userId; return refreshRoom(); });
-  }
-
-  function restoreSavedRoom(){
-    var savedRoom;
-    try { savedRoom = JSON.parse(localStorage.getItem(ROOM_STORAGE_KEY) || 'null'); } catch (error) { savedRoom = null; }
-    if (!savedRoom || !savedRoom.roomId || !savedRoom.code) return Promise.resolve(false);
-    return enterRoom({ id: savedRoom.roomId, code: savedRoom.code }).then(function(){ return true; }).catch(function(error){
-      if (error.message === 'room_not_available'){
-        forgetSavedRoom();
-        setRoomStatus('La sala guardada ya no está disponible.', true);
-      } else if (error.message === 'not_a_member'){
-        forgetSavedRoom();
-        setRoomStatus('Tu sesión de esa sala ha caducado.', true);
-      }
-      return false;
-    });
   }
 
   function renderLobby(data){
@@ -1374,9 +1350,7 @@
       if (roomCode){
         return;
       }
-      restoreSavedRoom().then(function(restored){
-        if (!restored) setRoomStatus('Crea una sala nueva o introduce un código para unirte.', false);
-      });
+      setRoomStatus('Crea una sala nueva o introduce un código para unirte.', false);
       return;
     }
     var words = w.split('|').map(function(s){ return s.trim(); }).filter(Boolean);
