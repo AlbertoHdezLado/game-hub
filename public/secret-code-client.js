@@ -23,7 +23,10 @@
     };
     var payload = Object.assign({}, args || {});
     if (payload.room_code) payload.room_code = String(payload.room_code).toUpperCase();
-    if (payload.target_game && gameRooms[payload.target_game]) payload.target_room = gameRooms[payload.target_game];
+    if (payload.target_game){
+      payload.target_room = gameRooms[payload.target_game];
+      delete payload.target_game;
+    }
     return request(actions[name], payload);
   }
 

@@ -362,6 +362,22 @@
     align-items:center;
     gap:8px;
   }
+  .cs-game-actions .cs-key-hide-btn{
+    width:auto;
+    height:46px;
+    min-height:46px;
+    margin:0;
+    padding:8px 16px;
+    border:1px solid transparent;
+    border-radius:16px;
+    color:#fff;
+    font:inherit;
+    font-size:.9rem;
+    font-weight:800;
+    line-height:1;
+    white-space:nowrap;
+    box-shadow:0 3px 0 var(--shadow);
+  }
   .cs-game-topbar{
     display:flex;
     align-items:center;
@@ -584,12 +600,13 @@
         </div>
         <div class="cs-game-actions">
           <button type="button" class="guide-btn ayuda-trigger" id="guide-btn-game" aria-label="Ayuda">?</button>
+          <button type="button" class="cs-key-hide-btn hidden" id="finish-turn-btn">Finalizar turno</button>
           <button type="button" class="guide-btn" id="share-board-btn" aria-label="Compartir tablero"><span class="share-icon"></span></button>
         </div>
       </div>
       <div class="cs-game-topbar">
         <div class="cs-starting-team" id="cs-starting-team" aria-live="polite"></div>
-        <div class="cs-controls-host"><span id="turn-timer" aria-live="polite"></span><button type="button" class="cs-key-hide-btn hidden" id="finish-turn-btn">Finalizar turno</button></div>
+        <div class="cs-controls-host"><span id="turn-timer" aria-live="polite"></span></div>
       </div>
       <div class="scr-body">
         <div class="cs-board-row">
@@ -814,7 +831,12 @@
     var player = currentPlayer();
     var game = roomSession.state && roomSession.state.game;
     var canAct = Boolean(player && game && game.status === 'playing' && !player.is_leader && player.team_index === game.active_team);
-    document.getElementById('finish-turn-btn').classList.toggle('hidden', !canAct);
+    var finishTurnBtn = document.getElementById('finish-turn-btn');
+    finishTurnBtn.classList.toggle('hidden', !canAct);
+    if (canAct){
+      finishTurnBtn.style.backgroundColor = TEAM_HEX[game.active_team];
+      finishTurnBtn.style.borderColor = TEAM_HEX[game.active_team];
+    }
   }
 
   function renderFinal(game){
