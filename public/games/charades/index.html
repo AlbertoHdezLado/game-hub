@@ -25,6 +25,17 @@
   /* wide, rounded "mobile game" display face used for every text on this page */
   body{font-family:var(--font-display);}
 
+  .party-stage{
+    --party-bg:#f6d2a6;
+    --party-label:#70451f;
+    --party-ring-track:rgba(112,69,31,0.2);
+    --party-ring-arc:#e88924;
+    --party-ring-bg:rgba(255,255,255,0.48);
+  }
+  .party-stage .party-hud-block > span:first-child{color:#70451f;}
+  .party-stage .party-hud-value,
+  .party-stage .party-hud-timer-value{color:#70451f;}
+
   .team-color-0{background:#5b8fe0;}
   .team-color-1{background:#c9525c;}
   .team-color-2{background:#4fbf7a;}
@@ -126,6 +137,62 @@
     box-shadow:0 3px 10px rgba(0,0,0,0.3);
   }
   #turn-intro .team-turn-badge{display:none;}
+  #turn-intro{
+    position:absolute;
+    inset:0;
+    z-index:0;
+  }
+  #turn-intro .scr-body{
+    position:absolute;
+    inset:0;
+    flex:none;
+    height:auto;
+    width:100%;
+    box-sizing:border-box;
+  }
+  #turn-intro .scr-body,
+  #turn-play .scr-body,
+  #turn-end .scr-body{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  #turn-intro #turn-start-btn{
+    display:block;
+    width:max-content;
+    max-width:100%;
+    margin:0 0 0 auto;
+    padding:14px 24px;
+    white-space:normal;
+  }
+  #turn-intro .scr-dock{
+    position:absolute;
+    bottom:16px;
+    right:18px;
+    padding:0;
+  }
+  .turn-player-display{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    pointer-events:none;
+  }
+  .turn-player-display .player-name{
+    margin:0;
+    color:#70451f;
+  }
+  .turn-player-display .pass-hint{
+    max-width:70%;
+    margin:8px 0 0;
+  }
   .mimica-timer-wrap{margin-bottom:2px;}
   .mimica-timer{
     font-family:var(--font-display);
@@ -249,19 +316,111 @@
     max-width:100%;
   }
   .mimica-word-pill{
-    display:inline-flex;
+    flex:0 1 auto;
+    width:auto;
     max-width:100%;
-    padding:5px 9px;
+    padding:6px 12px;
     border-radius:999px;
     color:#fff;
-    font-size:0.72rem;
+    font-size:0.76rem;
     font-weight:700;
+    line-height:1.15;
+    text-align:center;
+    white-space:normal;
     overflow-wrap:anywhere;
   }
   /* missed words keep their team color, just struck through — only correctly
      guessed words stay plain so the two states read at a glance */
   .mimica-word-pill.turn-missed{text-decoration:line-through; opacity:.75;}
   button.mimica-word-pill{border:0; cursor:pointer; font:inherit;}
+  #turn-end .scr-body{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr);
+    grid-template-areas:
+      "title"
+      "words";
+    align-content:start;
+    justify-content:stretch;
+    width:100%;
+    max-width:none;
+    box-sizing:border-box;
+    padding:0 clamp(12px, 4vw, 28px);
+    overflow-y:auto;
+    padding-bottom:18px;
+    padding-top:31vh;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  #turn-end .scr-body::-webkit-scrollbar{display:none;}
+  #turn-end .scr-body::before{
+    content:'Resumen del turno';
+    position:fixed;
+    top:calc(env(safe-area-inset-top) + clamp(4rem, 14vh, 6rem));
+    left:0;
+    z-index:20;
+    display:block;
+    width:100vw;
+    box-sizing:border-box;
+    margin:0;
+    padding:1vh 0 1.5vh;
+    color:var(--accent);
+    background:transparent;
+    font-family:var(--font-display);
+    font-size:clamp(1rem, 4.5vw, 1.35rem);
+    font-weight:900;
+    letter-spacing:0.02em;
+    text-align:center;
+    pointer-events:none;
+  }
+  #turn-end h1,
+  #turn-end .subtitle{display:none;}
+  #turn-end .mimica-word-pill-wrap{
+    grid-area:words;
+    justify-content:center;
+    gap:6px;
+    margin-top:6vh;
+  }
+  #turn-end-scoreboard{
+    position:fixed;
+    top:calc(env(safe-area-inset-top) + clamp(1rem, 3vh, 2rem));
+    left:50%;
+    z-index:21;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:1vw;
+    width:max-content;
+    max-width:calc(100% - 6vw);
+    margin:0;
+  }
+  #turn-end-scoreboard .team-score-row{
+    flex:0 1 auto;
+    width:auto;
+    min-width:22vw;
+    max-width:38vw;
+    margin-bottom:0;
+    padding:1vh 2vw;
+    gap:1vw;
+    border:0;
+    border-radius:999px;
+    color:#fff;
+    box-shadow:none;
+  }
+  #turn-end-scoreboard .team-score-row.team-color-0{background:#5b8fe0;}
+  #turn-end-scoreboard .team-score-row.team-color-1{background:#c9525c;}
+  #turn-end-scoreboard .team-score-row .mini-score-pill{display:none;}
+  #turn-end-scoreboard .team-score-name{
+    min-width:0;
+    gap:0;
+    color:inherit;
+    white-space:nowrap;
+  }
+  #turn-end-scoreboard .team-score-value{
+    color:inherit;
+    font-size:0.95rem;
+  }
   .end-player-extreme{
     display:flex;
     justify-content:space-between;
@@ -404,7 +563,7 @@
       <ol>
         <li>Añade a los jugadores por su nombre. Después, en "Equipos", arrástralos a la caja de cada equipo (hasta 4 equipos) o usa el dado para repartirlos al azar.</li>
         <li>Elige las categorías, cuántas rondas jugará cada equipo, cuánto dura cada turno y cuántos segundos resta pasar una palabra.</li>
-        <li>Pasa el dispositivo a quien le toca actuar y pulsa "Empezar mi minuto".</li>
+        <li>Pasa el dispositivo a quien le toca actuar y pulsa "Empezar".</li>
         <li>Cada palabra acertada suma un punto para el equipo y se guarda en la lista de aciertos del turno. Si os atascáis, saltadla: pasar palabra resta algunos segundos al cronómetro (configurable).</li>
         <li>Al acabar el tiempo, pasa el turno al siguiente equipo. Gana quien más puntos tenga al terminar todos los turnos; al final verás también quién acertó más y menos palabras.</li>
       </ol>
@@ -432,11 +591,13 @@
       <div id="turn-intro">
         <div class="scr-body">
           <div class="team-turn-badge" id="turn-team-badge">ROJO</div>
-          <div class="player-name" id="turn-player-name">Nombre</div>
-          <p class="pass-hint">Pasa el dispositivo a esta persona. Que actúe sin hablar mientras su equipo adivina.</p>
+          <div class="turn-player-display">
+            <div class="player-name" id="turn-player-name">Nombre</div>
+            <p class="pass-hint">Pasa el dispositivo a esta persona. Que actúe sin hablar mientras su equipo adivina.</p>
+          </div>
         </div>
         <div class="scr-dock">
-          <button class="btn-main" id="turn-start-btn">Empezar mi minuto ▶</button>
+          <button class="btn-main" id="turn-start-btn">Empezar</button>
         </div>
       </div>
 

@@ -1804,7 +1804,8 @@ input:focus-visible{
 .flip-card-back-design{
   border-color:#fff;
   background-color:var(--party-bg, var(--accent));
-  background-image:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M-7 7 L7 -7 M0 28 L28 0 M21 35 L35 21' stroke='white' stroke-width='3' opacity='.42'/%3E%3C/svg%3E");
+  background-repeat:repeat;
 }
 .flip-card-front-face{
   background-color:#fff;
@@ -2004,7 +2005,12 @@ input[type="text"]{
 .stepper button,
 .reveal-btn,
 .btn-main{background:var(--accent);}
-.flip-card-back-design{background-color:var(--accent); background-image:none;}
+.reveal-btn,
+.flip-card-back-design{
+  background-color:var(--accent);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M-7 7 L7 -7 M0 28 L28 0 M21 35 L35 21' stroke='white' stroke-width='3' opacity='.42'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+}
 .guide-modal-backdrop{background:var(--overlay);}
 .guide-modal-close{background:var(--surface-2); color:var(--text);}
 .guide-modal h2{color:var(--text);}

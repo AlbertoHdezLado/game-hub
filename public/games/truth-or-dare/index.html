@@ -147,7 +147,6 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <div class="player-name" id="player-name">1</div>
-      <div class="pass-hint">Elige verdad o reto. Nadie más debe elegir por ti.</div>
 
       <div class="scr-body">
         <div class="reveal-wrap" id="reveal-wrap">
@@ -167,7 +166,6 @@
 
       <div class="scr-dock">
         <button class="btn-main" id="next-btn" disabled>Siguiente jugador</button>
-        <div class="progress-dots" id="progress-dots"></div>
       </div>
     </div>
   </div>
@@ -457,10 +455,7 @@
   var truthBtn = document.getElementById('truth-btn');
   var dareBtn = document.getElementById('dare-btn');
   var nextBtn = document.getElementById('next-btn');
-  var progressDots = document.getElementById('progress-dots');
   var newRoundBtn = document.getElementById('new-round-btn');
-
-  var dots = createDots(progressDots);
 
   var REVEAL_MAX_FONT_REM = 1.4;
   var REVEAL_MIN_FONT_REM = 0.85;
@@ -502,7 +497,6 @@
 
   function showPlayer(idx){
     playerName.textContent = state.playerNames[idx];
-    dots.update(idx);
     resetReveal();
   }
 
@@ -524,7 +518,6 @@
     state.players = state.playerNames.length;
     state.current = 0;
 
-    dots.build(state.players);
     showPlayer(0);
     switchScreen(screenGame);
   });
