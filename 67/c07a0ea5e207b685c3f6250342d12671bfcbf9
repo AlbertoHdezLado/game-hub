@@ -1,0 +1,25 @@
+public/games/hot-potato/index.html
+  s_8639da95e2f451::t_f98ff76f542abc 113
+public/games/times-up/index.html
+  s_8639da95e2f451::t_24096d7ded69e0 577,579-595,814,1254-1259,1261-1276,1517,1543
+public/games/werewolf/index.html
+  s_8639da95e2f451::t_c19632a5c539c2 79-125,1757
+public/shared.js
+  s_8639da95e2f451::t_d42b004acb55d4 606,612-617
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "67c07a0ea5e207b685c3f6250342d12671bfcbf9",
+  "prompts": {},
+  "sessions": {
+    "s_8639da95e2f451": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "cf2ef129-0b96-47fc-81d3-970c3e179c9d",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
