@@ -574,11 +574,25 @@
                 <button type="button" id="turn-seconds-plus">+</button>
               </div>
 
-              <label>Segundos que resta saltar carta</label>
+              <label>Segundos que resta pasar carta en Ronda I</label>
               <div class="stepper">
-                <button type="button" id="skip-seconds-minus">−</button>
-                <div class="value" id="skip-seconds-value">5</div>
-                <button type="button" id="skip-seconds-plus">+</button>
+                <button type="button" id="skip-seconds-r1-minus">−</button>
+                <div class="value" id="skip-seconds-r1-value">5</div>
+                <button type="button" id="skip-seconds-r1-plus">+</button>
+              </div>
+
+              <label>Segundos que resta pasar carta en Ronda II</label>
+              <div class="stepper">
+                <button type="button" id="skip-seconds-r2-minus">−</button>
+                <div class="value" id="skip-seconds-r2-value">0</div>
+                <button type="button" id="skip-seconds-r2-plus">+</button>
+              </div>
+
+              <label>Segundos que resta pasar carta en Ronda III</label>
+              <div class="stepper">
+                <button type="button" id="skip-seconds-r3-minus">−</button>
+                <div class="value" id="skip-seconds-r3-value">0</div>
+                <button type="button" id="skip-seconds-r3-plus">+</button>
               </div>
             </div>
           </details>
@@ -797,7 +811,7 @@
   var config = {
     numTeams: 2,
     turnSeconds: 60,
-    skipPenaltySeconds: 5,
+    skipPenaltySeconds: [5, 0, 0],
     selectedPackages: [],
     rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n, team: 0 }; })
   };
@@ -1237,19 +1251,29 @@
   });
 
   // ---------- skip penalty ----------
-  var skipSecondsValueEl = document.getElementById('skip-seconds-value');
-  var skipSecondsMinusBtn = document.getElementById('skip-seconds-minus');
-  var skipSecondsPlusBtn = document.getElementById('skip-seconds-plus');
-  function renderSkipSeconds(){ skipSecondsValueEl.textContent = config.skipPenaltySeconds; }
-  skipSecondsMinusBtn.addEventListener('click', function(){
-    config.skipPenaltySeconds = clamp(config.skipPenaltySeconds - SKIP_SECONDS_STEP, MIN_SKIP_SECONDS, MAX_SKIP_SECONDS);
-    renderSkipSeconds();
-    popValue(skipSecondsValueEl);
+  var skipSecondsControls = [0, 1, 2].map(function(phaseIdx){
+    return {
+      value: document.getElementById('skip-seconds-r' + (phaseIdx + 1) + '-value'),
+      minus: document.getElementById('skip-seconds-r' + (phaseIdx + 1) + '-minus'),
+      plus: document.getElementById('skip-seconds-r' + (phaseIdx + 1) + '-plus')
+    };
   });
-  skipSecondsPlusBtn.addEventListener('click', function(){
-    config.skipPenaltySeconds = clamp(config.skipPenaltySeconds + SKIP_SECONDS_STEP, MIN_SKIP_SECONDS, MAX_SKIP_SECONDS);
-    renderSkipSeconds();
-    popValue(skipSecondsValueEl);
+  function renderSkipSeconds(){
+    skipSecondsControls.forEach(function(control, phaseIdx){
+      control.value.textContent = config.skipPenaltySeconds[phaseIdx];
+    });
+  }
+  skipSecondsControls.forEach(function(control, phaseIdx){
+    control.minus.addEventListener('click', function(){
+      config.skipPenaltySeconds[phaseIdx] = clamp(config.skipPenaltySeconds[phaseIdx] - SKIP_SECONDS_STEP, MIN_SKIP_SECONDS, MAX_SKIP_SECONDS);
+      renderSkipSeconds();
+      popValue(control.value);
+    });
+    control.plus.addEventListener('click', function(){
+      config.skipPenaltySeconds[phaseIdx] = clamp(config.skipPenaltySeconds[phaseIdx] + SKIP_SECONDS_STEP, MIN_SKIP_SECONDS, MAX_SKIP_SECONDS);
+      renderSkipSeconds();
+      popValue(control.value);
+    });
   });
 
   function validateSetup(){
@@ -1490,7 +1514,7 @@
     var word = state.deck.shift();
     state.deck.push(word); // missed/passed: back of the deck, resurfaces later this phase
     state.turnResults.push({ word: word, correct: false });
-    state.timeRemaining = Math.max(0, state.timeRemaining - config.skipPenaltySeconds);
+    state.timeRemaining = Math.max(0, state.timeRemaining - config.skipPenaltySeconds[state.phase]);
     updateTimerDisplay(state.timeRemaining);
     tuTimerEl.classList.remove('skip-pulse');
     void tuTimerEl.offsetWidth;
@@ -1516,6 +1540,7 @@
 
     if (hasActiveWord !== false){
       var expiredWord = state.deck.shift(); // the active card expires with the turn
+      state.deck.push(expiredWord); // missed: return it to the back for the next turn
       state.turnResults.push({ word: expiredWord, correct: false });
     }
     if (state.deck.length === 0){

@@ -603,13 +603,18 @@ WordRevealComponent.prototype.show = function(value, className, description){
 
 function ImageRevealComponent(options){
   RevealComponent.call(this, options);
+  this.backImage = options.backImage || '';
   this.stage.classList.add('reveal-image-stage');
 }
 ImageRevealComponent.prototype = Object.create(RevealComponent.prototype);
 ImageRevealComponent.prototype.constructor = ImageRevealComponent;
 ImageRevealComponent.prototype.show = function(image, title, description, className){
-  this.content.innerHTML = '<img class="reveal-portrait" src="' + escapeHtml(image) + '" alt="" draggable="false" oncontextmenu="return false">';
-  this.content.className = 'reveal-content ' + className;
+  var backFace = this.backImage ?
+    '<div class="reveal-card-face reveal-card-back"><img src="' + escapeHtml(this.backImage) + '" alt="" draggable="false" oncontextmenu="return false"></div>' : '';
+  this.content.innerHTML = '<div class="reveal-card-inner">' + backFace +
+    '<div class="reveal-card-face reveal-card-front"><img class="reveal-portrait" src="' + escapeHtml(image) + '" alt="" draggable="false" oncontextmenu="return false"></div>' +
+    '</div>';
+  this.content.className = 'reveal-content ' + (this.backImage ? 'reveal-flip-content ' : '') + className;
   if (this.caption){
     this.caption.innerHTML = escapeHtml(title) + '<span class="reveal-role-description">' + escapeHtml(description) + '</span>';
     this.caption.className = 'reveal-name-caption ' + className;
