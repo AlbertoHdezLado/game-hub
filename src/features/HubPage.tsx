@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type WheelEvent } from 'react';
 import { GameCard } from '@/components/GameCard';
 import { InfoDialog } from '@/components/InfoDialog';
 import { games } from '@/data/games';
@@ -116,6 +116,15 @@ function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo
     hasUserScrolledRef.current = true;
   };
 
+  const handleGridWheel = (event: WheelEvent<HTMLDivElement>) => {
+    const grid = gridRef.current;
+    if (!grid || grid.scrollWidth <= grid.clientWidth || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+
+    event.preventDefault();
+    markGridInteraction();
+    grid.scrollBy({ left: event.deltaY, behavior: 'auto' });
+  };
+
   return (
     <div className="mode-grid-shell">
       {canScrollLeft && (
@@ -127,7 +136,7 @@ function GameGrid({ iconsReady, onInfo }: Readonly<{ iconsReady: boolean; onInfo
         ref={gridRef}
         className={`mode-grid${iconsReady ? ' ready' : ''}`}
         onPointerDown={markGridInteraction}
-        onWheel={markGridInteraction}
+        onWheel={handleGridWheel}
       >
         {games.map((game) => (
           <GameCard key={game.slug} game={game} onInfo={onInfo} />

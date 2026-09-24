@@ -462,7 +462,7 @@ a { color: inherit; }
   position: relative;
   inset: auto;
   width: 100%;
-  max-width: 380px;
+  max-width: 100%;
   max-height: calc(100dvh - 96px);
   overflow-y: auto;
   scrollbar-width: thin;
@@ -473,6 +473,12 @@ a { color: inherit; }
   background: transparent;
   color: inherit;
   text-align: center;
+}
+@media (orientation: landscape) {
+  .desc-overlay { max-width: 80%; }
+}
+@media (min-width: 1200px) {
+  .desc-overlay { max-width: 520px; }
 }
 .desc-overlay::-webkit-scrollbar { width: 7px; }
 .desc-overlay::-webkit-scrollbar-track { background: transparent; }
