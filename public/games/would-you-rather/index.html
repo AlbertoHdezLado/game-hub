@@ -101,7 +101,7 @@
       <ol>
         <li>Pulsa "Iniciar partida".</li>
         <li>Cada ronda combina dos opciones al azar de una gran pila de posibilidades, así que casi nunca sale la misma pareja dos veces.</li>
-        <li>Cuando el grupo termine de decidir y debatir, pulsa "Siguiente" para pasar a la próxima. No hay rondas ni final: jugad tanto como queráis.</li>
+        <li>Cuando el grupo termine de decidir y debatir, toca la pantalla para pasar a la próxima. No hay rondas ni final: jugad tanto como queráis.</li>
       </ol>
     </div>
   </div>
@@ -126,9 +126,6 @@
         </div>
       </div>
 
-      <div class="scr-dock">
-        <button class="btn-main" id="next-btn">Siguiente</button>
-      </div>
     </div>
   </div>
 
@@ -176,7 +173,6 @@
   var startBtn = document.getElementById('start-btn');
   var optionStackA = createCardStack(document.getElementById('qpref-choice-a'), { render: renderOptionCard });
   var optionStackB = createCardStack(document.getElementById('qpref-choice-b'), { render: renderOptionCard });
-  var nextBtn = document.getElementById('next-btn');
 
   // picks 2 distinct options at random, but only from the same nivel (desirability
   // tier) — so a round never mixes a dream power with a costly sacrifice. With 70+
@@ -211,8 +207,13 @@
     }
   }
 
-  nextBtn.addEventListener('click', function(){
+  function showNextPair(){
     if (!optionStackA.isBusy() && !optionStackB.isBusy()) showPair(true);
+  }
+
+  screenGame.addEventListener('click', function(e){
+    if (e.target.closest('a, button')) return;
+    showNextPair();
   });
 
   startBtn.addEventListener('click', function(){

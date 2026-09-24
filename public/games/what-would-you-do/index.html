@@ -91,7 +91,7 @@
       <ol>
         <li>Elige las categorías de escenarios que queráis usar.</li>
         <li>Se muestra un escenario en pantalla, para que todo el grupo lo lea o lo escuche.</li>
-        <li>Cuando terminéis de comentarlo, pulsad "Siguiente" para pasar al próximo.</li>
+        <li>Cuando terminéis de comentarlo, tocad la pantalla para pasar al próximo.</li>
       </ol>
 
       <h3>Categorías</h3>
@@ -120,9 +120,6 @@
         </div>
       </div>
 
-      <div class="scr-dock">
-        <button class="btn-main" id="next-btn">Siguiente</button>
-      </div>
     </div>
   </div>
 
@@ -243,7 +240,6 @@
 
   // ---------- prompt screen (scenario shown immediately, no privacy) ----------
   var phraseEl = document.querySelector('.prompt-card .flip-card-word-text') || document.getElementById('qh-phrase');
-  var nextBtn = document.getElementById('next-btn');
   var cardStack = createCardStack(document.querySelector('.prompt-card'), { render: renderPromptCard });
 
   function fitPhraseText(target){
@@ -274,7 +270,7 @@
     phraseResizeTimer = setTimeout(fitPhraseText, 150);
   });
 
-  nextBtn.addEventListener('click', function(){
+  function showNextRound(){
     if (cardStack.isBusy()) return;
     state.index++;
     if (state.index >= state.deck.length){
@@ -282,6 +278,11 @@
       state.index = 0;
     }
     showRound(state.index, true);
+  }
+
+  screenGame.addEventListener('click', function(e){
+    if (e.target.closest('a, button')) return;
+    showNextRound();
   });
 
   startBtn.addEventListener('click', function(){
