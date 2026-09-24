@@ -1,0 +1,18 @@
+public/games/times-up/index.html
+  h_fed6a40af368f7 20,22
+src/components/GameCard.tsx
+  h_fed6a40af368f7 16-20,22-32
+src/styles/index.css
+  h_fed6a40af368f7 110,231-233,266-267,276-292,368-389,393-394,401,620
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6a38a2eca62b16ffe5cd998d2f1f5b567550a805",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
