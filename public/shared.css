@@ -718,7 +718,7 @@ input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
 }
 .dot.done{background:var(--safe);}
 .dot.current{
-  background:var(--reveal-b, var(--accent));
+  background:var(--accent);
   animation:dotPop .4s ease;
 }
 @keyframes dotPop{
@@ -903,10 +903,10 @@ input:focus-visible{
   align-items:center;
   gap:8px;
   padding:6px 10px 6px 12px;
-  border:1px solid var(--glass-border);
+  border:1px solid var(--accent);
   border-radius:999px;
-  background:var(--surface);
-  color:var(--text);
+  background:var(--accent);
+  color:var(--player-chip-text, #fff);
   font-size:0.88rem;
   font-weight:600;
   max-width:100%;
@@ -920,21 +920,23 @@ input:focus-visible{
 .player-chip-remove{
   display:grid;
   place-items:center;
-  width:22px;
+  width:18px;
   height:22px;
   flex-shrink:0;
   border:0;
-  border-radius:999px;
-  background:var(--surface-2);
-  color:var(--text);
-  font-size:1.05rem;
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  font-family:inherit;
+  font-size:1rem;
+  font-weight:700;
   line-height:1;
   cursor:pointer;
   padding:0;
   box-shadow:none;
   transition:background .15s ease, transform .12s ease;
 }
-.player-chip-remove:hover:not(:disabled){background:var(--accent2); color:#fff;}
+.player-chip-remove:hover:not(:disabled){background:transparent; color:var(--accent2);}
 .player-chip-remove:active:not(:disabled){transform:scale(.9);}
 .player-chip-remove:disabled{opacity:0.25; cursor:not-allowed;}
 .player-input-row{

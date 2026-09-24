@@ -33,7 +33,7 @@
     --party-ring-bg:rgba(255,255,255,0.48);
   }
   .party-stage .party-hud-block > span:first-child{color:#70451f;}
-  .party-stage .party-hud-value,
+  .party-stage .party-hud-value{color:var(--accent);}
   .party-stage .party-hud-timer-value{color:#70451f;}
 
   .team-color-0{background:#5b8fe0;}
@@ -162,7 +162,11 @@
     width:max-content;
     max-width:100%;
     margin:0 0 0 auto;
-    padding:14px 24px;
+    min-height:52px;
+    padding:10px 24px;
+    border:none;
+    border-radius:11px;
+    box-shadow:0 4px 0 var(--shadow);
     white-space:normal;
   }
   #turn-intro .scr-dock{
@@ -187,11 +191,7 @@
   }
   .turn-player-display .player-name{
     margin:0;
-    color:#70451f;
-  }
-  .turn-player-display .pass-hint{
-    max-width:70%;
-    margin:8px 0 0;
+    color:var(--accent);
   }
   .mimica-timer-wrap{margin-bottom:2px;}
   .mimica-timer{
@@ -592,8 +592,8 @@
         <div class="scr-body">
           <div class="team-turn-badge" id="turn-team-badge">ROJO</div>
           <div class="turn-player-display">
+            <div class="turn-player-label">Turno de</div>
             <div class="player-name" id="turn-player-name">Nombre</div>
-            <p class="pass-hint">Pasa el dispositivo a esta persona. Que actúe sin hablar mientras su equipo adivina.</p>
           </div>
         </div>
         <div class="scr-dock">

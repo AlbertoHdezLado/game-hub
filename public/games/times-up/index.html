@@ -18,6 +18,7 @@
     --reveal-b:#8fd9ac;
   }
   #screen-setup .scr-dock{padding-top:0;}
+  #screen-setup .error-msg:empty{display:none;}
   #screen-setup .night-nav,
   #screen-setup .final-nav{margin-top:16px;}
   #screen-setup .night-nav > .nav-spacer,
@@ -155,6 +156,7 @@
     display:grid;
     grid-template-columns:1fr;
     gap:8px;
+    padding-bottom:8px;
   }
   .team-box{
     border-radius:14px;
@@ -450,6 +452,17 @@
     background:var(--surface-2);
   }
   .team-score-row.has-members{display:block;}
+  #screen-phase-end .team-score-row{
+    padding:10px 0;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+  }
+  #screen-phase-end .team-score-row.winner{
+    border-color:transparent;
+    background:transparent;
+  }
   .team-score-header{
     display:flex;
     align-items:center;
@@ -457,6 +470,14 @@
     gap:16px;
   }
   .team-score-name{display:flex; align-items:center; gap:8px; font-weight:700;}
+  #screen-phase-end .mini-score-pill{
+    min-width:auto;
+    height:auto;
+    padding:0;
+    border-radius:0;
+    background:transparent;
+    color:var(--text);
+  }
   .team-score-value{font-family:var(--font-display); font-weight:800; font-size:1.1rem;}
   .team-score-members{
     margin-top:8px;
@@ -467,14 +488,13 @@
     line-height:1.45;
     text-align:left;
   }
+  #screen-phase-end .team-score-members{
+    margin-top:8px;
+    padding-top:8px;
+    border-top:1px solid var(--glass-border);
+  }
   .team-score-members-label{
-    display:block;
-    margin-bottom:2px;
-    color:var(--text);
-    font-size:0.72rem;
-    font-weight:800;
-    letter-spacing:0.04em;
-    text-transform:uppercase;
+    display:none;
   }
 
   .tu-word-pill-wrap{
@@ -577,9 +597,9 @@
   }
   #turn-end-scoreboard .team-score-row{
     flex:0 1 auto;
-    width:auto;
-    min-width:22vw;
-    max-width:38vw;
+    width:max-content;
+    min-width:0;
+    max-width:100%;
     margin-bottom:0;
     padding:1vh 2vw;
     gap:1vw;
@@ -609,6 +629,7 @@
     line-height:1.5;
     margin:10px 0 20px;
   }
+  #phase-intro-scores{display:none;}
   @media (max-height:640px){
     #turn-end .end-icon{font-size:1.9rem;}
     #turn-end h1{font-size:1.2rem !important;}
@@ -1434,7 +1455,15 @@
   function renderScoreboardRows(container, highlightWinner, showRank, showMembers){
     var scoresDesc = state.teams.map(function(t){ return t.score; }).sort(function(a, b){ return b - a; });
     var maxScore = scoresDesc[0];
-    container.innerHTML = state.teams.map(function(team, t){
+    var teamsToRender = state.teams.map(function(team, index){
+      return { team: team, index: index };
+    });
+    if (showRank){
+      teamsToRender.sort(function(a, b){ return b.team.score - a.team.score || a.index - b.index; });
+    }
+    container.innerHTML = teamsToRender.map(function(entry){
+      var team = entry.team;
+      var t = entry.index;
       var isTop = highlightWinner && team.score === maxScore;
       var pillLabel = showRank ? (scoresDesc.indexOf(team.score) + 1) + 'º' : (t + 1);
       var memberNames = team.memberIdxs.map(function(idx){ return state.playerNames[idx]; }).filter(Boolean);
@@ -1443,7 +1472,7 @@
           '<span class="team-score-name"><span class="mini-score-pill team-color-' + t + '">' + pillLabel + '</span>Equipo ' + escapeHtml(TEAM_NAMES[t]) + '</span>' +
           '<span class="team-score-value">' + team.score + '</span>' +
         '</div>' +
-        (showMembers ? '<div class="team-score-members"><span class="team-score-members-label">Participantes</span>' + escapeHtml(memberNames.join(' · ')) + '</div>' : '') +
+        (showMembers ? '<div class="team-score-members"><span class="team-score-members-label">Participantes</span>' + escapeHtml(memberNames.join(', ')) + '</div>' : '') +
       '</div>';
     }).join('');
   }
@@ -1525,6 +1554,7 @@
     turnPlayerNameEl.textContent = state.playerNames[actorIdx];
     turnPlayerNameEl.style.color = TEAM_HEX[teamIdx];
     hudPlayerEl.textContent = state.playerNames[actorIdx];
+    hudPlayerEl.style.color = TEAM_HEX[teamIdx];
 
     turnIntroEl.classList.remove('hidden');
     turnPlayEl.classList.add('hidden');

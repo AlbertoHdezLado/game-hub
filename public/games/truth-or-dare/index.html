@@ -29,6 +29,9 @@
     gap:2px;
     transition:opacity .25s, visibility .25s;
   }
+  .reveal-wrap{
+    height:clamp(160px, 35vh, 240px);
+  }
   .reveal-wrap.revealed .td-buttons{
     opacity:0;
     visibility:hidden;
@@ -58,6 +61,14 @@
     display:flex;
     flex-direction:column;
     justify-content:center;
+    flex:0 0 auto;
+    overflow:visible;
+  }
+  #screen-game > .card{
+    justify-content:center;
+  }
+  #screen-game .player-name{
+    color:var(--accent);
   }
 </style>
 </head>
@@ -164,9 +175,6 @@
         </div>
       </div>
 
-      <div class="scr-dock">
-        <button class="btn-main" id="next-btn" disabled>Siguiente jugador</button>
-      </div>
     </div>
   </div>
 
@@ -454,7 +462,6 @@
   var tdButtons = document.getElementById('td-buttons');
   var truthBtn = document.getElementById('truth-btn');
   var dareBtn = document.getElementById('dare-btn');
-  var nextBtn = document.getElementById('next-btn');
   var newRoundBtn = document.getElementById('new-round-btn');
 
   var REVEAL_MAX_FONT_REM = 1.4;
@@ -480,7 +487,6 @@
     revealContent.style.fontSize = '';
     void tdButtons.offsetWidth; // force reflow so the cover snaps back with no transition
     tdButtons.style.transition = '';
-    nextBtn.disabled = true;
   }
 
   function reveal(kind){
@@ -489,7 +495,6 @@
     revealContent.className = 'reveal-content ' + (kind === 'verdad' ? 'safe' : 'danger');
     revealWrap.classList.add('revealed');
     fitRevealText();
-    nextBtn.disabled = false;
   }
 
   truthBtn.addEventListener('click', function(){ reveal('verdad'); });
@@ -500,14 +505,19 @@
     resetReveal();
   }
 
-  nextBtn.addEventListener('click', function(){
-    if (nextBtn.disabled) return;
+  function advancePlayer(){
+    if (!revealWrap.classList.contains('revealed')) return;
     state.current++;
     if (state.current >= state.players){
       switchScreen(screenEnd);
     } else {
       showPlayer(state.current);
     }
+  }
+
+  screenGame.addEventListener('click', function(e){
+    if (e.target.closest('button, a')) return;
+    advancePlayer();
   });
 
   startBtn.addEventListener('click', function(){
