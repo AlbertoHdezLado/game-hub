@@ -1,0 +1,16 @@
+public/games/charades/index.html
+  h_fed6a40af368f7 523
+public/games/times-up/index.html
+  h_fed6a40af368f7 23-50,401-407,410-427,630,637,644,815,940,1381,1387-1393,1465,1543-1546,1569,1579,1607,1623-1629,1637-1639,1658-1659,1681
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9f3ea67d46c53c9a9003ff84ea12662c9fede5e0",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
