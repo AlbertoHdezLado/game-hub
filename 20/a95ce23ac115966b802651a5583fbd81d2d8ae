@@ -1,0 +1,14 @@
+src/styles/index.css
+  h_fed6a40af368f7 331-333,335-336,344,361
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "20a95ce23ac115966b802651a5583fbd81d2d8ae",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
