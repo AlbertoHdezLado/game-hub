@@ -68,7 +68,7 @@
   .cs-settings-team-control button:disabled{opacity:.35;cursor:not-allowed;}
   .cs-settings-team-value{min-width:32px;color:var(--accent);font-size:1.4rem;font-weight:800;text-align:center;}
   #lobby-settings-backdrop .scr-dock{padding-top:14px;}
-  #lobby-settings-backdrop .btn-main{margin-top:0;min-height:48px;border-radius:13px;box-shadow:0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent);}
+  #lobby-settings-backdrop .btn-main{margin-top:0;min-height:48px;border-radius:13px;box-shadow:0 4px 0 var(--shadow);}
   #lobby-settings-backdrop .guide-modal{scrollbar-width:none;-ms-overflow-style:none;}
   #lobby-settings-backdrop .guide-modal::-webkit-scrollbar{display:none;width:0;height:0;}
   #screen-room{width:100%;max-width:min(520px, calc(100vw - 20px));box-sizing:border-box;}
@@ -77,11 +77,11 @@
   #room-join-backdrop .guide-modal{width:min(420px, calc(100vw - 32px));}
   #room-join-backdrop .guide-modal h2{margin-bottom:10px;}
   .cs-room-join-form{display:grid;gap:10px;margin-top:18px;width:100%;min-width:0;}
-  .cs-room-join-form input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid var(--glass-border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;}
+  .cs-room-join-form input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid var(--glass-border);border-radius:12px;background:color-mix(in srgb, var(--surface) 55%, transparent);color:var(--text);font:inherit;}
   .cs-room-join-form input:focus{border-color:var(--accent2);outline:2px solid color-mix(in srgb, var(--accent2) 24%, transparent);outline-offset:1px;}
   .cs-room-actions{display:grid;gap:10px;margin-top:16px;width:100%;min-width:0;}
-  .cs-room-actions input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid var(--glass-border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;}
-  #room-create-btn:disabled{background:var(--surface-2);border-color:var(--glass-border);color:var(--text-dim);opacity:.55;cursor:not-allowed;box-shadow:none;}
+  .cs-room-actions input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid var(--glass-border);border-radius:12px;background:color-mix(in srgb, var(--surface) 55%, transparent);color:var(--text);font:inherit;}
+  #room-create-btn:disabled{background:var(--surface-2);border:1px solid var(--glass-border);color:var(--text-dim);opacity:1;cursor:not-allowed;box-shadow:0 4px 0 var(--shadow);}
   .cs-room-code-group{display:flex;justify-content:center;gap:clamp(4px, 2vw, 8px);margin-top:2px;width:100%;min-width:0;}
   .cs-room-code{width:auto!important;min-width:0;flex:1 1 42px;max-width:42px;height:48px;padding:0!important;text-transform:uppercase;text-align:center;font-size:1.15rem;font-weight:800;}
   .cs-room-code:disabled{background:var(--surface-2);border-color:var(--glass-border);color:var(--text-dim);opacity:.55;cursor:not-allowed;}
@@ -344,6 +344,7 @@
   }
   .cs-share-btn{width:100%; margin-top:0;}
   .cs-share-room-code{margin:0;text-align:center;color:var(--accent);font-family:var(--font-body);font-size:clamp(1.8rem,5vw,2.7rem);font-weight:800;letter-spacing:.16em;font-variant-numeric:tabular-nums;}
+  #share-modal-backdrop .cs-share-room-code{font-size:clamp(1.8rem,8vw,2.7rem);color:var(--accent);}
   .cs-share-room-label{display:block;margin:0;text-align:center;color:var(--text-dim);font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
   #share-modal-backdrop .guide-modal{
     position:fixed;
@@ -360,12 +361,27 @@
   #share-modal-backdrop .guide-modal-close{display:none;}
   #share-modal-backdrop .guide-modal::-webkit-scrollbar{display:none;}
   @media (max-width:560px){
+    #share-modal-backdrop .guide-modal{
+      width:calc(100vw - 32px);
+      max-width:calc(100vw - 32px);
+      max-height:calc(100dvh - 32px);
+      margin:16px;
+      padding:18px 14px;
+      overflow-y:auto;
+    }
     .cs-share-layout{grid-template-columns:1fr;gap:18px;}
+    .cs-share-layout{width:100%;max-width:100%;}
     .cs-share-info{display:contents;}
     .cs-share-room-label{grid-column:1;grid-row:1;}
     .cs-share-room-code{grid-column:1;grid-row:2;}
     .cs-share-qr-wrap{grid-column:1;grid-row:3;}
     .cs-share-actions{grid-column:1;grid-row:4;}
+    .cs-share-qr-wrap{width:100%;max-width:100%;}
+    .cs-share-qr-wrap img{
+      width:min(70vw, calc(100dvh - 300px), 280px);
+      max-width:100%;
+      max-height:none;
+    }
   }
 
   .cs-game-header{
@@ -525,7 +541,6 @@
             <input class="cs-room-code" id="room-code-6" type="text" maxlength="1" inputmode="latin" aria-label="Carácter 6 de 6" disabled>
           </div>
         </div>
-        <p class="cs-room-status" id="room-status" role="status" aria-live="polite"></p>
       </div>
     </div>
   </div>

@@ -56,7 +56,10 @@ img{
   }
 }
 html{
-  background-color:var(--bg2);
+  background-color:var(--surface-2) !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Ccircle cx='28' cy='34' r='13' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpath d='M118 16 L132 30 L118 44 L104 30 Z' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpolygon points='150,116 161,136 139,136' fill='none' stroke='rgba(255,255,255,0.14)' stroke-width='2'/%3E%3Ccircle cx='58' cy='150' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Ccircle cx='168' cy='62' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Cpath d='M30 110 L42 122 L30 134 L18 122 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:180px 180px;
   overflow-x:hidden;
 }
 html,body{
@@ -64,7 +67,10 @@ html,body{
   margin:0;
   font-family:var(--font-body);
   -webkit-font-smoothing:antialiased;
-  background-color:var(--bg2);
+  background-color:var(--surface-2) !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Ccircle cx='28' cy='34' r='13' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpath d='M118 16 L132 30 L118 44 L104 30 Z' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpolygon points='150,116 161,136 139,136' fill='none' stroke='rgba(255,255,255,0.14)' stroke-width='2'/%3E%3Ccircle cx='58' cy='150' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Ccircle cx='168' cy='62' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Cpath d='M30 110 L42 122 L30 134 L18 122 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='2'/%3E%3C/svg%3E") !important;
+  background-repeat:repeat;
+  background-size:180px 180px;
   color:var(--text);
   overflow-x:hidden;
   overscroll-behavior:none;
@@ -248,7 +254,7 @@ input[type="text"]{
   padding:14px 16px;
   border-radius:14px;
   border:1px solid var(--glass-border);
-  background:var(--surface);
+  background:color-mix(in srgb, var(--surface) 55%, transparent);
   color:var(--text);
   font-size:1rem;
   outline:none;
@@ -256,7 +262,7 @@ input[type="text"]{
 }
 input[type="text"]:focus{
   border-color:var(--accent2);
-  background:var(--surface-2);
+  background:color-mix(in srgb, var(--surface-2) 70%, transparent);
 }
 input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
 
@@ -316,7 +322,7 @@ input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
   font-weight:700;
   letter-spacing:0.5px;
   cursor:pointer;
-  box-shadow:0 6px 20px rgba(124,77,255,0.35);
+  box-shadow:0 4px 0 var(--shadow);
   transition:transform .15s, box-shadow .15s;
 }
 .btn-main:active{transform:translateY(1px) scale(0.99);}
@@ -1458,7 +1464,7 @@ input:focus-visible{
   filter:saturate(0.8);
 }
 #screen-setup input[type="text"]{
-  background:var(--surface);
+  background:color-mix(in srgb, var(--surface) 55%, transparent);
   border-color:var(--surface-border);
   border-radius:12px;
 }
@@ -1467,7 +1473,7 @@ input:focus-visible{
 }
 #screen-setup input[type="text"]:focus{
   border-color:var(--accent2);
-  background:var(--surface-2);
+  background:color-mix(in srgb, var(--surface-2) 70%, transparent);
 }
 #screen-setup .stepper,
 #screen-setup .submode-toggle,
@@ -1524,8 +1530,30 @@ input:focus-visible{
   gap:6px;
 }
 #screen-setup .night-nav-btn{
-  min-height:46px;
+  min-height:52px;
   border-radius:11px;
+  padding:10px 24px;
+}
+#screen-setup #setup-prev-btn{
+  flex:0 0 auto;
+  margin-right:auto;
+}
+#screen-setup #setup-final-back-btn{
+  flex:0 0 auto;
+  margin-right:auto;
+}
+#screen-setup #setup-next-btn{
+  flex:0 0 auto;
+  margin-left:auto;
+}
+#screen-setup #setup-next-btn{
+  background:var(--accent);
+  border-color:var(--accent2);
+  color:#fff;
+}
+#screen-setup #setup-next-btn:hover{
+  background:var(--accent);
+  filter:brightness(1.08);
 }
 #screen-setup .scr-dock{
   padding-top:10px;
@@ -1537,11 +1565,15 @@ input:focus-visible{
   overflow:visible;
 }
 #screen-setup .btn-main{
+  flex:0 0 auto;
+  width:auto;
   margin-top:0;
-  min-height:50px;
+  min-height:52px;
+  padding:10px 24px;
   border-radius:11px;
   background:var(--accent);
-  box-shadow:0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent);
+  border:1px solid var(--accent2);
+  box-shadow:0 4px 0 var(--shadow);
 }
 #screen-setup .btn-main:hover{
   filter:brightness(1.08);

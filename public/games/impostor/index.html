@@ -253,6 +253,7 @@
   }
   #vote-section .scr-body{
     flex:0 0 auto;
+    overflow:visible;
   }
   #vote-section .scr-body > label,
   #vote-section #vote-players-list{
@@ -271,12 +272,33 @@
   }
   #vote-section .scr-dock{
     display:flex;
-    justify-content:center;
+    justify-content:flex-end;
     padding-top:12px;
   }
   #vote-section #confirm-vote-btn{
     width:auto;
-    min-width:180px;
+    min-width:0;
+    min-height:52px;
+    margin:0 0 0 auto;
+    padding:10px 24px;
+    border:1px solid var(--accent2);
+    border-radius:11px;
+    box-shadow:0 4px 0 var(--shadow);
+  }
+  #vote-result .scr-dock{
+    display:flex;
+    justify-content:flex-end;
+    padding-top:12px;
+  }
+  #vote-result #vote-next-btn{
+    width:auto;
+    min-width:0;
+    min-height:52px;
+    margin:0 0 0 auto;
+    padding:10px 24px;
+    border:1px solid var(--accent2);
+    border-radius:11px;
+    box-shadow:0 4px 0 var(--shadow);
   }
 </style>
 </head>
@@ -377,11 +399,11 @@
 
       <div class="scr-dock">
         <div class="night-nav" id="setup-nav">
-          <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="setup-prev-btn">Volver</button>
           <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
         </div>
         <div class="final-nav hidden" id="setup-final-nav">
-          <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="setup-final-back-btn">Volver</button>
           <button class="btn-main" id="impostor-start-btn">Iniciar partida</button>
         </div>
       </div>
