@@ -1548,7 +1548,7 @@ input:focus-visible{
 }
 #screen-setup #setup-next-btn{
   background:var(--accent);
-  border-color:var(--accent2);
+  border:none;
   color:#fff;
 }
 #screen-setup #setup-next-btn:hover{
@@ -1572,7 +1572,7 @@ input:focus-visible{
   padding:10px 24px;
   border-radius:11px;
   background:var(--accent);
-  border:1px solid var(--accent2);
+  border:none;
   box-shadow:0 4px 0 var(--shadow);
 }
 #screen-setup .btn-main:hover{
