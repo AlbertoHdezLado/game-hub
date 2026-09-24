@@ -475,6 +475,10 @@ a { color: inherit; }
   text-align: center;
 }
 @media (orientation: landscape) {
+  .desc-overlay-backdrop { padding-block: 16px; }
+  .desc-overlay { max-height: calc(100dvh - 32px); }
+}
+@media (orientation: landscape) {
   .desc-overlay { max-width: 80%; }
 }
 @media (min-width: 1200px) {
