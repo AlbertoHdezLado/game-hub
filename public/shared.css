@@ -196,6 +196,13 @@ button{
   flex:0 0 auto;
   padding-top:10px;
 }
+.scr-dock--right{
+  display:flex;
+  justify-content:flex-end;
+}
+.scr-dock--right .btn-main{
+  width:auto;
+}
 /* modals and other non-shell usages of .card keep the glass panel look
    (.guide-modal/.card-modal are themselves the glass panel; .card-modal
    wraps a nested .card for its centered-text variants — see werewolf) */

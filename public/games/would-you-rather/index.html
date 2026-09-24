@@ -23,42 +23,71 @@
     background-color:var(--bg2);
   }
 
-  .qpref-option{
-    text-align:center;
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:clamp(1.05rem, 3.8vw, 1.6rem);
-    line-height:1.35;
-    word-break:break-word;
-    width:100%;
-  }
-  .qpref-option-a{color:#9dc9ff;}
-  .qpref-option-b{color:#f5a875;}
-  .qpref-divider{
-    text-align:center;
-    font-family:var(--font-display);
-    font-weight:800;
-    font-size:1rem;
-    color:var(--text-dim);
-    margin:0;
-    letter-spacing:1px;
-  }
   .qpref-board{
     display:flex;
-    flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:10px;
     width:100%;
     min-height:100%;
   }
-  .qpref-choice-stack{
+  .qpref-card-stack{
     width:min(100%, 760px);
-    min-height:clamp(118px, 23vh, 190px);
+    min-height:clamp(240px, 43vh, 360px);
     margin:0;
   }
-  .qpref-choice-stack .flip-card-front-face{
+  .qpref-card-stack .flip-card-front-face{
+    padding:0;
+    border:8px solid #fff;
+    overflow:hidden;
+  }
+  .qpref-card-content{
+    position:relative;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    width:100%;
+    height:100%;
+    min-height:clamp(240px, 43vh, 360px);
+    overflow:hidden;
+    background-color:var(--accent);
+  }
+  .qpref-card-content::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:0;
+    background-color:#fff;
+    clip-path:polygon(0 0, 49.5% 0, 50.5% 100%, 0 100%);
+  }
+  .qpref-option{
+    position:relative;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     padding:clamp(18px, 4vw, 36px);
+    text-align:center;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(1rem, 2.8vw, 1.5rem);
+    line-height:1.35;
+    overflow-wrap:anywhere;
+  }
+  .qpref-option-a{color:var(--accent);}
+  .qpref-option-b{color:#fff;}
+  .qpref-card-stack .flip-card-front-face .qpref-card-content{
+    border-radius:4px;
+  }
+  .qpref-card-stack .flip-card:not(.flip-card-depth-0){
+    visibility:hidden;
+  }
+  @media (max-width:600px){
+    .qpref-card-content{
+      grid-template-columns:1fr;
+      grid-template-rows:1fr 1fr;
+    }
+    .qpref-card-content::before{
+      clip-path:polygon(0 0, 100% 0, 100% 49.5%, 0 50.5%);
+    }
   }
   #screen-setup .scr-body, #screen-game .scr-body{
     display:flex;
@@ -82,8 +111,8 @@
         <p class="subtitle">Dos opciones al azar, sin ganadores ni puntos. Elige una en voz alta y debatid por qué.</p>
       </div>
 
-      <div class="scr-dock">
-        <button class="btn-main" id="start-btn">Iniciar partida</button>
+      <div class="scr-dock scr-dock--right">
+        <button class="btn-main" id="start-btn">Empezar</button>
       </div>
     </div>
   </div>
@@ -99,7 +128,7 @@
 
       <h3>Usar la app</h3>
       <ol>
-        <li>Pulsa "Iniciar partida".</li>
+        <li>Pulsa "Empezar".</li>
         <li>Cada ronda combina dos opciones al azar de una gran pila de posibilidades, así que casi nunca sale la misma pareja dos veces.</li>
         <li>Cuando el grupo termine de decidir y debatir, toca la pantalla para pasar a la próxima. No hay rondas ni final: jugad tanto como queráis.</li>
       </ol>
@@ -120,9 +149,7 @@
 
       <div class="scr-body">
         <div class="qpref-board">
-          <div class="qpref-choice-stack qpref-choice-a" id="qpref-choice-a"></div>
-          <div class="qpref-divider">O</div>
-          <div class="qpref-choice-stack qpref-choice-b" id="qpref-choice-b"></div>
+          <div class="qpref-card-stack" id="qpref-card"></div>
         </div>
       </div>
 
@@ -171,8 +198,7 @@
   }
 
   var startBtn = document.getElementById('start-btn');
-  var optionStackA = createCardStack(document.getElementById('qpref-choice-a'), { render: renderOptionCard });
-  var optionStackB = createCardStack(document.getElementById('qpref-choice-b'), { render: renderOptionCard });
+  var optionStack = createCardStack(document.getElementById('qpref-card'), { render: renderPairCard });
 
   // picks 2 distinct options at random, but only from the same nivel (desirability
   // tier) — so a round never mixes a dream power with a costly sacrifice. With 70+
@@ -192,23 +218,21 @@
     return [optionA, optionB];
   }
 
-  function renderOptionCard(content, option){
-    content.innerHTML = '<div class="qpref-option">' + escapeHtml(option) + '</div>';
+  function renderPairCard(content, pair){
+    content.innerHTML = '<div class="qpref-card-content">'
+      + '<div class="qpref-option qpref-option-a">' + escapeHtml(pair[0]) + '</div>'
+      + '<div class="qpref-option qpref-option-b">' + escapeHtml(pair[1]) + '</div>'
+      + '</div>';
   }
 
   function showPair(animate){
     var pair = pickPair();
-    if (animate){
-      optionStackA.discard('right', pair[0], 3);
-      optionStackB.discard('right', pair[1], 3);
-    } else {
-      optionStackA.reveal(pair[0], 3);
-      optionStackB.reveal(pair[1], 3);
-    }
+    if (animate) optionStack.discard('right', pair, 3);
+    else optionStack.reveal(pair, 3);
   }
 
   function showNextPair(){
-    if (!optionStackA.isBusy() && !optionStackB.isBusy()) showPair(true);
+    if (!optionStack.isBusy()) showPair(true);
   }
 
   screenGame.addEventListener('click', function(e){
