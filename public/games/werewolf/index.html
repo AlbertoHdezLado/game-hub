@@ -240,6 +240,49 @@
     opacity:1;
     visibility:visible;
   }
+  #lynch-reveal-backdrop{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+    background:rgba(5,7,13,0.9);
+  }
+  #lynch-reveal-backdrop #lynch-reveal-name{
+    position:static;
+    width:auto;
+    margin:0 0 12px;
+    transform:none;
+    opacity:1;
+    color:#fff;
+    font-size:1rem;
+  }
+  #lynch-reveal-backdrop .reveal-stage{
+    flex:0 0 auto;
+    width:min(82vw, 360px);
+    height:auto;
+    aspect-ratio:1;
+    margin:0 auto;
+    padding:0;
+    background:transparent;
+    border:0;
+    box-shadow:none;
+    overflow:visible;
+  }
+  #lynch-reveal-backdrop .reveal-content{
+    position:absolute;
+    inset:0;
+    padding:0;
+    opacity:1;
+    filter:none;
+  }
+  #lynch-reveal-backdrop #lynch-reveal-role{
+    position:static;
+    width:auto;
+    transform:none;
+    opacity:1;
+    margin:10px 0 0;
+  }
 
   #screen-setup .card{padding-bottom:24px;}
   #screen-setup .card.balance-visible{padding-bottom:88px;}
@@ -613,14 +656,50 @@
   #screen-narrator .narrator-balance-track{
   }
   #screen-narrator .ingame-extra-controls{
+    display:grid;
+    grid-template-columns:minmax(38px, 1fr) auto minmax(38px, 1fr);
+    grid-template-rows:38px;
+    grid-template-areas:"home status characters";
     right:max(16px, env(safe-area-inset-right));
-    width:calc(100% - max(32px, env(safe-area-inset-left) + env(safe-area-inset-right)));
-    justify-content:space-between;
+    width:100%;
   }
-  #screen-narrator .ingame-controls-spacer{
-    width:8px;
-    height:1px;
-    flex:1 1 auto;
+  #screen-narrator .ingame-extra-controls .guide-btn{
+    position:static;
+    width:38px;
+    height:38px;
+    padding:0;
+    box-sizing:border-box;
+    border-radius:12px;
+  }
+  #screen-narrator .ingame-home-btn{
+    grid-area:home;
+    justify-self:start;
+  }
+  #screen-narrator #day-night-status{
+    grid-area:status;
+    justify-self:center;
+  }
+  #screen-narrator #tab-deaths-btn{
+    grid-area:characters;
+    justify-self:end;
+  }
+  #screen-narrator #night-progress-dots{
+    margin-top:0;
+  }
+  #screen-narrator #vote-announce-list{
+    border:0;
+    padding:0;
+    margin:0;
+  }
+  #screen-narrator .submode-toggle .submode-btn-stacked{
+    flex-direction:row;
+    justify-content:center;
+    gap:6px;
+    padding:8px 6px;
+    white-space:nowrap;
+  }
+  #screen-narrator .submode-toggle .submode-btn-stacked .submode-btn-icon{
+    font-size:1rem;
   }
   #panel-night, #panel-vote{
     display:flex;
@@ -1030,6 +1109,7 @@
           </div>
         </div>
       </div>
+      <div class="progress-dots" id="night-progress-dots"></div>
       <div class="narrator-balance-track" id="narrator-balance-track">
         <div class="narrator-balance-fill-lobos" id="narrator-balance-lobos"></div>
         <div class="narrator-balance-fill-aldeanos" id="narrator-balance-aldeanos"></div>
@@ -1054,7 +1134,6 @@
             <button type="button" class="night-nav-btn icon-only" id="night-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
             <button type="button" class="night-nav-btn" id="night-next-btn">Siguiente</button>
           </div>
-          <div class="progress-dots" id="night-progress-dots"></div>
         </div>
       </div>
 
@@ -1073,7 +1152,7 @@
           </div>
 
           <div class="scr-dock">
-            <button class="btn-main" id="vote-announce-continue-btn">Continuar al debate ›</button>
+            <button class="btn-main" id="vote-announce-continue-btn">Continuar</button>
           </div>
         </div>
         <div id="vote-select-view" class="hidden">
@@ -1138,7 +1217,7 @@
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
       <h1 style="font-size:1.5rem;">JUGADORES Y ROLES</h1>
-      <p class="subtitle" id="roster-subtitle">Modo no guiado: toca a un jugador para marcarlo como eliminado o revivirlo.</p>
+      <p class="subtitle" id="roster-subtitle">Modo no guiado: toca a un jugador para marcarlo como eliminado o resucitarlo.</p>
 
       <div class="scr-body">
         <div class="roster-list" id="roster-list"></div>
@@ -1189,17 +1268,12 @@
   </div>
 
   <!-- LYNCH REVEAL: shows the voted-out player's card to the table before continuing -->
-  <div class="card-modal-backdrop hidden" id="lynch-reveal-backdrop">
-    <div class="card-modal">
-      <div class="card" style="text-align:center;">
-        <div class="reveal-wrap revealed" id="lynch-reveal-wrap">
-          <div class="reveal-content" id="lynch-reveal-content"></div>
-        </div>
-        <div class="card-modal-name" id="lynch-reveal-name"></div>
-        <div class="card-modal-team" id="lynch-reveal-role"></div>
-        <button class="btn-main" id="lynch-reveal-continue-btn" style="margin-top:14px;">Continuar ›</button>
-      </div>
+  <div class="reveal-screen hidden" id="lynch-reveal-backdrop" aria-label="Carta revelada">
+    <div class="reveal-name-caption visible" id="lynch-reveal-name"></div>
+    <div class="reveal-stage reveal-wrap revealed" id="lynch-reveal-wrap">
+      <div class="reveal-content" id="lynch-reveal-content"></div>
     </div>
+    <div class="reveal-name-caption visible" id="lynch-reveal-role"></div>
   </div>
 
 </div>
@@ -1230,7 +1304,7 @@
     {"id": "aldeano_comun", "nombre": "Aldeano Común", "equipo": "aldeanos", "expansion": "base", "imagen": "/resources/images/hombres-lobo/aldeano_comun.png", "descripcion": "No tiene ninguna habilidad especial. Su única arma es la palabra: debate y vota durante el día para intentar descubrir a los lobos.", "defaultCount": 0, "maxCount": 20, "poder": 1},
     {"id": "vidente", "nombre": "La Vidente", "equipo": "aldeanos", "expansion": "base", "imagen": "/resources/images/hombres-lobo/vidente.png", "descripcion": "Cada noche puede mirar en secreto la carta de rol de un jugador de su elección.", "defaultCount": 0, "maxCount": 1, "poder": 2},
     {"id": "cupido", "nombre": "Cupido", "equipo": "aldeanos", "expansion": "base", "imagen": "/resources/images/hombres-lobo/cupido.png", "descripcion": "La primera noche, y solo esa noche, designa a dos jugadores que quedarán enamorados. Si uno muere, el otro muere de pena inmediatamente después.", "defaultCount": 0, "maxCount": 1, "poder": 1.1},
-    {"id": "bruja", "nombre": "La Bruja", "equipo": "aldeanos", "expansion": "base", "imagen": "/resources/images/hombres-lobo/bruja.png", "descripcion": "Dispone de dos pociones de un solo uso: una para resucitar a la víctima de los lobos, otra para envenenar a un jugador a su elección.", "defaultCount": 0, "maxCount": 1, "poder": 2.2},
+    {"id": "bruja", "nombre": "La Bruja", "equipo": "aldeanos", "expansion": "base", "imagen": "/resources/images/hombres-lobo/bruja.png", "descripcion": "Dispone de dos pociones de un solo uso: una para resucitar a la víctima de los lobos, otra para matar a un jugador a su elección.", "defaultCount": 0, "maxCount": 1, "poder": 2.2},
     {"id": "cazador", "nombre": "El Cazador", "equipo": "aldeanos", "expansion": "base", "imagen": "/resources/images/hombres-lobo/cazador.png", "descripcion": "En el momento en que muere, por la razón que sea, dispara y elimina inmediatamente a otro jugador de su elección.", "defaultCount": 0, "maxCount": 1, "poder": 1.5},
     {"id": "nina_pequena", "nombre": "La Niña Pequeña", "equipo": "aldeanos", "expansion": "base", "imagen": "/resources/images/hombres-lobo/nina_pequena.png", "descripcion": "Puede espiar a los lobos durante la fase nocturna entreabriendo los ojos, con el riesgo de ser descubierta y devorada.", "defaultCount": 0, "maxCount": 1, "poder": 1},
     {"id": "protector", "nombre": "El Protector", "equipo": "aldeanos", "expansion": "base", "imagen": "/resources/images/hombres-lobo/protector.png", "descripcion": "Cada noche protege a un jugador (no puede repetir a la misma persona dos noches seguidas) para que los lobos no puedan devorarlo esa noche.", "defaultCount": 0, "maxCount": 1, "poder": 1.7},
@@ -1380,8 +1454,7 @@
       return (
         '<div class="player-chip">' +
           '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
-          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
-            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '">✕</button>' +
         '</div>'
       );
     }).join('');
@@ -1412,7 +1485,7 @@
 
   playersChipsList.addEventListener('click', function(e){
     var removeBtn = e.target.closest('.player-chip-remove');
-    if (!removeBtn || removeBtn.disabled) return;
+    if (!removeBtn) return;
     var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
     config.rows.splice(rIdx, 1);
     renderRows();
@@ -1865,7 +1938,11 @@
     }
   }
 
-  revealCompleteMessageEl.addEventListener('click', continueAfterReveal);
+  screenGame.addEventListener('click', function(e){
+    if (revealCompleteMessageEl.classList.contains('hidden')) return;
+    if (e.target.closest('a, button')) return;
+    continueAfterReveal();
+  });
 
   startBtn.addEventListener('click', function(){
     if (!validateSetup()) return;
@@ -2114,7 +2191,6 @@
     narratorWakeCueEl.textContent = '☀️ El pueblo se despierta';
     renderDeathAnnouncement();
     voteAnnounceViewEl.classList.remove('hidden');
-    voteAnnounceContinueBtn.textContent = status.over ? 'Continuar ›' : 'Continuar al debate ›';
   }
 
   function renderDeathAnnouncement(){
@@ -2748,7 +2824,7 @@
       return idx !== selfIdx && idx !== state.lastProtectedIdx;
     } });
     return (
-      '<label>¿A quién protege esta noche?</label>' +
+      '<label>¿A quién protege?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2790,8 +2866,8 @@
     if (brujaActiveTab === 'death' && (!deathAvailable || deathLocked)) brujaActiveTab = 'life';
 
     var tabsHtml = '<div class="submode-toggle">' +
-      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'life' ? ' active' : '') + '" data-action="bruja-tab" data-tab="life"' + (!lifeAvailable || lifeLocked ? ' disabled' : '') + '><span class="submode-btn-icon">💚</span>Poción de vida</button>' +
-      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'death' ? ' active' : '') + '" data-action="bruja-tab" data-tab="death"' + (!deathAvailable || deathLocked ? ' disabled' : '') + '><span class="submode-btn-icon">☠️</span>Poción de muerte</button>' +
+      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'life' ? ' active' : '') + '" data-action="bruja-tab" data-tab="life"' + (!lifeAvailable || lifeLocked ? ' disabled' : '') + '><span class="submode-btn-icon">💚</span>Resucitar</button>' +
+      '<button type="button" class="submode-btn submode-btn-stacked' + (brujaActiveTab === 'death' ? ' active' : '') + '" data-action="bruja-tab" data-tab="death"' + (!deathAvailable || deathLocked ? ' disabled' : '') + '><span class="submode-btn-icon">☠️</span>Matar</button>' +
     '</div>';
 
     if (brujaActiveTab === 'life'){
@@ -2799,7 +2875,7 @@
       if (state.brujaLifeUsedThisRound){
         var savedIdx = state.brujaLifeSavedIdx;
         return tabsHtml +
-          '<label>¿A quién revive?</label>' +
+          '<label>¿A quién resucita?</label>' +
           '<div class="role-widget-checklist"><button type="button" class="chip selected" data-action="bruja-life-toggle" data-idx="' + savedIdx + '">' + escapeHtml(state.playerNames[savedIdx]) + '</button></div>';
       }
       // the life potion only ever saves one of THIS round's pending victims
@@ -2815,13 +2891,13 @@
       // first hit) was never really going to die — nothing there to revive
       var pending = allPending.filter(function(p){ return !pendingKillSurvives(p.idx); });
       if (pending.length === 0){
-        return tabsHtml + '<div class="role-widget-status">La víctima de esta noche está a salvo de todas formas: no hay a quién revivir.</div>';
+        return tabsHtml + '<div class="role-widget-status">La víctima de esta noche está a salvo de todas formas: no hay a quién resucitar.</div>';
       }
       var lifeButtons = pending.map(function(p){
         return '<button type="button" class="chip" data-action="bruja-life-toggle" data-idx="' + p.idx + '">' + escapeHtml(state.playerNames[p.idx]) + '</button>';
       }).join('');
       return tabsHtml +
-        '<label>¿A quién revive?</label>' +
+        '<label>¿A quién resucita?</label>' +
         '<div class="role-widget-checklist">' + lifeButtons + '</div>';
     }
 
@@ -2829,7 +2905,7 @@
     if (state.brujaDeathUsedThisRound){
       var poisonedIdx = state.brujaDeathPoisonedIdx;
       return tabsHtml +
-        '<label>¿A quién envenena?</label>' +
+        '<label>¿A quién mata?</label>' +
         '<div class="role-widget-checklist"><button type="button" class="chip selected" data-action="bruja-death-toggle" data-idx="' + poisonedIdx + '">' + escapeHtml(state.playerNames[poisonedIdx]) + '</button></div>';
     }
     // can't poison anyone already marked to die tonight (only saved or left to die), nor herself
@@ -2839,7 +2915,7 @@
       return state.alive[idx] && idx !== brujaIdx && pendingIdxs.indexOf(idx) === -1;
     } });
     return tabsHtml +
-      '<label>¿A quién envenena?</label>' +
+      '<label>¿A quién mata?</label>' +
       '<div class="role-widget-checklist">' + deathBtns + '</div>';
   }
   function actionBrujaTab(tab){
@@ -2931,7 +3007,7 @@
     var selfIdx = roleActorIndex('cuervo');
     var buttons = playerButtonsHtml('raven-pick', { selected: state.ravenMark, filter: function(idx){ return idx !== selfIdx; } });
     return (
-      '<label>¿A quién marca esta noche?</label>' +
+      '<label>¿A quién marca?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>' +
       '<div class="role-widget-status">La marca da +2 votos mañana.</div>'
     );
@@ -2977,7 +3053,7 @@
   function widgetWolfKillHtml(){
     var buttons = playerButtonsHtml('wolf-kill-pick', { selected: state.pendingNightKillIdx, filter: function(idx){ return state.alive[idx] && roleOf(idx).equipo !== 'lobos'; } });
     return (
-      '<label>¿A quién devoran los lobos esta noche?</label>' +
+      '<label>¿A quién devoran?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -2994,7 +3070,7 @@
       return state.alive[idx] && idx !== selfIdx && roleOf(idx).equipo === 'lobos';
     } });
     return (
-      '<label>¿A qué otro Hombre Lobo elimina en secreto esta noche?</label>' +
+      '<label>¿A qué Hombre Lobo elimina en secreto?</label>' +
       '<div class="role-widget-checklist">' + buttons + '</div>'
     );
   }
@@ -3098,7 +3174,7 @@
         '<div class="role-picker-name">Ninguno (pasa esta noche)</div>' +
       '</div>';
     return (
-      '<label>¿Qué poder toma prestado esta noche?</label>' +
+      '<label>¿Qué poder toma prestado?</label>' +
       '<div class="role-picker-grid">' + cards + skipCard + '</div>'
     );
   }
@@ -3252,7 +3328,6 @@
   var lynchRevealContent = document.getElementById('lynch-reveal-content');
   var lynchRevealName = document.getElementById('lynch-reveal-name');
   var lynchRevealRole = document.getElementById('lynch-reveal-role');
-  var lynchRevealContinueBtn = document.getElementById('lynch-reveal-continue-btn');
 
   var lynchRevealContinueCallback = null; // reused for any "show this player's card" moment: the vote result, the Cazador's victim, the Vidente's peek…
 
@@ -3260,13 +3335,13 @@
     var role = roleOf(idx);
     lynchRevealContent.innerHTML = '<img class="reveal-portrait" src="' + role.imagen + '" alt="" draggable="false" oncontextmenu="return false">';
     lynchRevealContent.className = 'reveal-content ' + TEAM_CLASS[role.equipo];
-    lynchRevealName.textContent = state.playerNames[idx];
+    lynchRevealName.textContent = state.playerNames[idx] + ' era...';
     lynchRevealRole.textContent = role.nombre;
-    lynchRevealRole.className = 'card-modal-team ' + TEAM_CLASS[role.equipo];
+    lynchRevealRole.className = 'reveal-name-caption visible ' + TEAM_CLASS[role.equipo];
     lynchRevealContinueCallback = onContinue || null;
     lynchRevealBackdrop.classList.remove('hidden');
   }
-  lynchRevealContinueBtn.addEventListener('click', function(){
+  lynchRevealBackdrop.addEventListener('click', function(){
     lynchRevealBackdrop.classList.add('hidden');
     var cb = lynchRevealContinueCallback;
     lynchRevealContinueCallback = null;
@@ -3560,7 +3635,7 @@
 
   function renderRoster(){
     var aliveCount = state.alive.filter(Boolean).length;
-    rosterSubtitleEl.textContent = 'Modo no guiado: toca a un jugador para marcarlo como eliminado o revivirlo. Vivos: ' +
+    rosterSubtitleEl.textContent = 'Modo no guiado: toca a un jugador para marcarlo como eliminado o resucitarlo. Vivos: ' +
       aliveCount + ' / ' + state.players + '.';
     rosterListEl.innerHTML = state.playerNames.map(function(name, idx){
       var role = ROLES.filter(function(r){ return r.id === state.roleIds[idx]; })[0];

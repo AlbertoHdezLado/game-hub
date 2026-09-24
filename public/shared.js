@@ -270,7 +270,7 @@ function initIngameHomeControls(){
       home.classList.add('ingame-home-btn');
       if (partyHud){
         partyHud.insertBefore(home, partyHud.firstChild);
-      } else {
+      } else if (screen.id !== 'screen-narrator'){
         card.insertBefore(home, card.firstChild);
       }
     }
@@ -302,13 +302,8 @@ function initIngameHomeControls(){
       if (leftover.length){
         var extras = document.createElement('div');
         extras.className = 'ingame-extra-controls';
-        leftover.forEach(function(el, index){
-          if (screen.id === 'screen-narrator' && index === 1){
-            var spacer = document.createElement('span');
-            spacer.className = 'ingame-controls-spacer';
-            spacer.setAttribute('aria-hidden', 'true');
-            extras.appendChild(spacer);
-          }
+        if (screen.id === 'screen-narrator') extras.appendChild(home);
+        leftover.forEach(function(el){
           extras.appendChild(el);
         });
         var balanceTrack = screen.id === 'screen-narrator' && card.querySelector('#narrator-balance-track');
