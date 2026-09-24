@@ -20,8 +20,37 @@
   #screen-setup .scr-dock{padding-top:0;}
   #screen-setup .night-nav,
   #screen-setup .final-nav{margin-top:16px;}
+  #screen-setup .night-nav > .nav-spacer,
+  #screen-setup .final-nav > .nav-spacer{flex:1;}
+  #screen-setup .night-nav > .night-nav-btn,
+  #screen-setup .final-nav > .night-nav-btn,
+  #screen-setup .final-nav > #start-btn{flex:0 0 auto;}
+  #screen-setup .night-nav-btn{
+    min-height:52px;
+    padding-inline:24px;
+  }
+  #screen-setup #start-btn{
+    background:var(--accent);
+    border-color:var(--accent2);
+    color:#fff;
+  }
+  #screen-setup #setup-next-btn{
+    background:var(--accent);
+    border-color:var(--accent2);
+    color:#fff;
+  }
+  #screen-setup #setup-next-btn:hover{
+    background:var(--accent);
+    filter:brightness(1.08);
+  }
+  #screen-setup,
+  #screen-phase-intro,
   #screen-phase-end{
     animation:none;
+    background-color:var(--surface-2);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Ccircle cx='28' cy='34' r='13' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpath d='M118 16 L132 30 L118 44 L104 30 Z' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpolygon points='150,116 161,136 139,136' fill='none' stroke='rgba(255,255,255,0.14)' stroke-width='2'/%3E%3Ccircle cx='58' cy='150' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Ccircle cx='168' cy='62' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Cpath d='M30 110 L42 122 L30 134 L18 122 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat:repeat;
+    background-size:180px 180px;
   }
   #screen-phase-end>.card{
     position:relative;
@@ -51,7 +80,10 @@
   html,body{
     /* flat solid fill — a multi-layer gradient here used to leave gaps of
        the raw background color showing on some viewports/scroll ranges */
-    background-color:var(--bg2);
+    background-color:var(--surface-2);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Ccircle cx='28' cy='34' r='13' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpath d='M118 16 L132 30 L118 44 L104 30 Z' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='2'/%3E%3Cpolygon points='150,116 161,136 139,136' fill='none' stroke='rgba(255,255,255,0.14)' stroke-width='2'/%3E%3Ccircle cx='58' cy='150' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Ccircle cx='168' cy='62' r='3' fill='rgba(255,255,255,0.16)'/%3E%3Cpath d='M30 110 L42 122 L30 134 L18 122 Z' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat:repeat;
+    background-size:180px 180px;
   }
   /* override shared.css's dark neutral party-stage backdrop with a pastel
      green tone matching this game's accent — shared.css defaults to a dark
@@ -351,13 +383,32 @@
     width:100%;
     box-sizing:border-box;
   }
-  #turn-intro #turn-start-btn,
-  #screen-phase-intro #phase-intro-start-btn{
+  .nav-primary-btn{
     display:block;
+    flex:0 0 auto;
     width:max-content;
     max-width:100%;
     margin:0 0 0 auto;
-    padding:14px 24px;
+    min-height:52px;
+    padding:10px 24px;
+    border-radius:11px;
+    background:var(--accent);
+    border:1px solid var(--accent2);
+    color:#fff;
+    white-space:normal;
+  }
+  #screen-phase-intro #phase-intro-start-btn{
+    display:block;
+    flex:0 0 auto;
+    width:max-content;
+    max-width:100%;
+    margin:0 0 0 auto;
+    min-height:52px;
+    padding:10px 24px;
+    border-radius:11px;
+    background:var(--accent);
+    border-color:var(--accent2);
+    color:#fff;
     white-space:normal;
   }
   #turn-intro .scr-dock{
@@ -656,12 +707,14 @@
 
       <div class="scr-dock">
         <div class="night-nav" id="setup-nav">
-          <button type="button" class="night-nav-btn icon-only" id="setup-prev-btn" aria-label="Anterior"><span class="back-icon"></span></button>
+          <button type="button" class="night-nav-btn" id="setup-prev-btn">Volver</button>
+          <span class="nav-spacer" aria-hidden="true"></span>
           <button type="button" class="night-nav-btn" id="setup-next-btn">Siguiente</button>
         </div>
         <div class="final-nav hidden" id="setup-final-nav">
-          <button type="button" class="night-nav-btn icon-only" id="setup-final-back-btn" aria-label="Anterior"><span class="back-icon"></span></button>
-          <button class="btn-main" id="start-btn">Iniciar partida</button>
+          <button type="button" class="night-nav-btn" id="setup-final-back-btn">Volver</button>
+          <span class="nav-spacer" aria-hidden="true"></span>
+          <button class="night-nav-btn" id="start-btn">Iniciar partida</button>
         </div>
       </div>
     </div>
@@ -711,7 +764,7 @@
       <div class="phase-rule-box" id="phase-intro-rule"></div>
       <div class="phase-intro-cards-remaining"><span class="tu-cards-icon"></span><span id="phase-intro-cards-value">x40</span></div>
       <div id="phase-intro-scores"></div>
-      <button class="btn-main" id="phase-intro-start-btn">Empezar</button>
+      <button class="night-nav-btn nav-primary-btn" id="phase-intro-start-btn">Empezar</button>
     </div>
   </div>
 
@@ -742,7 +795,7 @@
           </div>
         </div>
         <div class="scr-dock">
-          <button class="btn-main" id="turn-start-btn">Empezar</button>
+          <button class="night-nav-btn nav-primary-btn" id="turn-start-btn">Empezar</button>
         </div>
       </div>
 
@@ -790,7 +843,7 @@
           <div id="turn-end-scoreboard"></div>
         </div>
         <div class="scr-dock">
-          <button class="btn-main" id="turn-continue-btn">Continuar</button>
+          <button class="night-nav-btn nav-primary-btn" id="turn-continue-btn">Continuar</button>
         </div>
       </div>
     </div>
@@ -812,7 +865,7 @@
         <div id="phase-end-scoreboard"></div>
       </div>
       <div class="scr-dock">
-        <button class="btn-main" id="phase-end-continue-btn">Continuar</button>
+        <button class="night-nav-btn nav-primary-btn" id="phase-end-continue-btn">Continuar</button>
       </div>
     </div>
   </div>
@@ -834,7 +887,7 @@
         <div id="end-scoreboard"></div>
       </div>
       <div class="scr-dock">
-        <button class="btn-main" id="new-round-btn">Nueva partida</button>
+        <button class="night-nav-btn nav-primary-btn" id="new-round-btn">Nueva partida</button>
       </div>
     </div>
   </div>
