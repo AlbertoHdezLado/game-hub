@@ -1,0 +1,19 @@
+public/games/times-up/index.html
+  s_59fc1aa1627a0d::t_54452822f055f1 23-47,50-53,83-86,386-399,402,406-411,710-711,715-717,767,798,846,868,890
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4e7528261ff593d8af8f456f027a60579507e8a0",
+  "prompts": {},
+  "sessions": {
+    "s_59fc1aa1627a0d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "4f54a409-6ecc-4800-9ec1-5c60d4c6dcab",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
