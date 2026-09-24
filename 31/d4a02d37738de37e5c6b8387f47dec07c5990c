@@ -1,0 +1,21 @@
+public/games/charades/index.html
+  s_59fc1aa1627a0d::t_c69b059e5be90c 36,165-169,194,595
+public/games/truth-or-dare/index.html
+  s_59fc1aa1627a0d::t_a1f1fd27819c77 32-34,64-71,508-509,516-520
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "31d4a02d37738de37e5c6b8387f47dec07c5990c",
+  "prompts": {},
+  "sessions": {
+    "s_59fc1aa1627a0d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "4f54a409-6ecc-4800-9ec1-5c60d4c6dcab",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
