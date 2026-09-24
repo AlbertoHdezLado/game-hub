@@ -20,6 +20,34 @@
   #screen-setup .scr-dock{padding-top:0;}
   #screen-setup .night-nav,
   #screen-setup .final-nav{margin-top:16px;}
+  #screen-phase-end{
+    animation:none;
+  }
+  #screen-phase-end>.card{
+    position:relative;
+  }
+  #screen-phase-end .scr-body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  #screen-phase-end .end-icon{
+    display:none;
+  }
+  #screen-phase-end .scr-dock{
+    position:absolute;
+    right:max(18px, env(safe-area-inset-right));
+    bottom:max(16px, env(safe-area-inset-bottom));
+    width:auto;
+    padding:0;
+  }
+  #screen-phase-end #phase-end-continue-btn{
+    width:auto;
+    min-width:118px;
+    padding:10px 18px;
+  }
   html,body{
     /* flat solid fill — a multi-layer gradient here used to leave gaps of
        the raw background color showing on some viewports/scroll ranges */
@@ -370,8 +398,33 @@
     border-color:var(--accent);
     background:var(--surface-2);
   }
+  .team-score-row.has-members{display:block;}
+  .team-score-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
   .team-score-name{display:flex; align-items:center; gap:8px; font-weight:700;}
   .team-score-value{font-family:var(--font-display); font-weight:800; font-size:1.1rem;}
+  .team-score-members{
+    margin-top:8px;
+    padding-top:8px;
+    border-top:1px solid var(--glass-border);
+    color:var(--text-dim);
+    font-size:0.82rem;
+    line-height:1.45;
+    text-align:left;
+  }
+  .team-score-members-label{
+    display:block;
+    margin-bottom:2px;
+    color:var(--text);
+    font-size:0.72rem;
+    font-weight:800;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
 
   .tu-word-pill-wrap{
     display:flex;
@@ -574,21 +627,21 @@
                 <button type="button" id="turn-seconds-plus">+</button>
               </div>
 
-              <label>Segundos que resta pasar carta en Ronda I</label>
+              <label>Segundos que resta pasar en Ronda I</label>
               <div class="stepper">
                 <button type="button" id="skip-seconds-r1-minus">−</button>
                 <div class="value" id="skip-seconds-r1-value">5</div>
                 <button type="button" id="skip-seconds-r1-plus">+</button>
               </div>
 
-              <label>Segundos que resta pasar carta en Ronda II</label>
+              <label>Segundos que resta pasar en Ronda II</label>
               <div class="stepper">
                 <button type="button" id="skip-seconds-r2-minus">−</button>
                 <div class="value" id="skip-seconds-r2-value">0</div>
                 <button type="button" id="skip-seconds-r2-plus">+</button>
               </div>
 
-              <label>Segundos que resta pasar carta en Ronda III</label>
+              <label>Segundos que resta pasar en Ronda III</label>
               <div class="stepper">
                 <button type="button" id="skip-seconds-r3-minus">−</button>
                 <div class="value" id="skip-seconds-r3-value">0</div>
@@ -759,7 +812,7 @@
         <div id="phase-end-scoreboard"></div>
       </div>
       <div class="scr-dock">
-        <button class="btn-main" id="phase-end-continue-btn">Comenzar Ronda II</button>
+        <button class="btn-main" id="phase-end-continue-btn">Continuar</button>
       </div>
     </div>
   </div>
@@ -884,6 +937,7 @@
     turnCorrect: 0,
     turnWords: [],
     turnResults: [],
+    turnResultId: 0,
     timeRemaining: 30,
     carryOverTurn: null,
     timerInterval: null,
@@ -1324,15 +1378,19 @@
   // ---------- scoreboard rows (reused by phase-intro / turn-end / phase-end / final) ----------
   // ranks: equal scores share the same position (1º, 2º...); showRank swaps
   // the mini pill from "team number" to "position" for the final results
-  function renderScoreboardRows(container, highlightWinner, showRank){
+  function renderScoreboardRows(container, highlightWinner, showRank, showMembers){
     var scoresDesc = state.teams.map(function(t){ return t.score; }).sort(function(a, b){ return b - a; });
     var maxScore = scoresDesc[0];
     container.innerHTML = state.teams.map(function(team, t){
       var isTop = highlightWinner && team.score === maxScore;
       var pillLabel = showRank ? (scoresDesc.indexOf(team.score) + 1) + 'º' : (t + 1);
-      return '<div class="team-score-row team-color-' + t + (isTop ? ' winner' : '') + '">' +
-        '<span class="team-score-name"><span class="mini-score-pill team-color-' + t + '">' + pillLabel + '</span>' + escapeHtml(TEAM_NAMES[t]) + '</span>' +
-        '<span class="team-score-value">' + team.score + '</span>' +
+      var memberNames = team.memberIdxs.map(function(idx){ return state.playerNames[idx]; }).filter(Boolean);
+      return '<div class="team-score-row team-color-' + t + (isTop ? ' winner' : '') + (showMembers ? ' has-members' : '') + '">' +
+        '<div class="team-score-header">' +
+          '<span class="team-score-name"><span class="mini-score-pill team-color-' + t + '">' + pillLabel + '</span>Equipo ' + escapeHtml(TEAM_NAMES[t]) + '</span>' +
+          '<span class="team-score-value">' + team.score + '</span>' +
+        '</div>' +
+        (showMembers ? '<div class="team-score-members"><span class="team-score-members-label">Participantes</span>' + escapeHtml(memberNames.join(' · ')) + '</div>' : '') +
       '</div>';
     }).join('');
   }
@@ -1404,6 +1462,7 @@
     state.turnCorrect = 0;
     state.turnWords = [];
     state.turnResults = [];
+    state.turnResultId = 0;
     state.timeRemaining = carriedTurn ? carriedTurn.timeRemaining : config.turnSeconds;
 
     phaseStatusEl.textContent = 'RONDA ' + (state.phase + 1) + ': ' + PHASES[state.phase].subtitle;
@@ -1481,6 +1540,10 @@
     osc.stop(now + 0.22);
   }
 
+  function recordTurnResult(word, correct){
+    state.turnResults.push({ id: state.turnResultId++, word: word, correct: correct });
+  }
+
   turnStartBtn.addEventListener('click', function(){
     unlockAlarmAudio();
     turnIntroEl.classList.add('hidden');
@@ -1503,7 +1566,7 @@
     state.teams[teamIdx].score++;
     state.turnCorrect++;
     state.turnWords.push(word);
-    state.turnResults.push({ word: word, correct: true });
+    recordTurnResult(word, true);
     renderCardsRemaining();
     if (state.deck.length === 0){ endTurn(true); return; }
     tuCardStack.discard('right', state.deck[0], state.deck.length);
@@ -1513,7 +1576,7 @@
     playSkipSound();
     var word = state.deck.shift();
     state.deck.push(word); // missed/passed: back of the deck, resurfaces later this phase
-    state.turnResults.push({ word: word, correct: false });
+    recordTurnResult(word, false);
     state.timeRemaining = Math.max(0, state.timeRemaining - config.skipPenaltySeconds[state.phase]);
     updateTimerDisplay(state.timeRemaining);
     tuTimerEl.classList.remove('skip-pulse');
@@ -1541,7 +1604,7 @@
     if (hasActiveWord !== false){
       var expiredWord = state.deck.shift(); // the active card expires with the turn
       state.deck.push(expiredWord); // missed: return it to the back for the next turn
-      state.turnResults.push({ word: expiredWord, correct: false });
+      recordTurnResult(expiredWord, false);
     }
     if (state.deck.length === 0){
       showPhaseEnd();
@@ -1557,8 +1620,13 @@
 
   function renderTurnResults(){
     var teamIdx = state.turnTeamPointer === 0 ? state.teams.length - 1 : state.turnTeamPointer - 1;
-    turnEndWordsEl.innerHTML = state.turnResults.map(function(result, index){
-      return '<button type="button" class="tu-word-pill team-color-' + teamIdx + (result.correct ? '' : ' turn-missed') + '" data-index="' + index + '" aria-label="Marcar ' + escapeHtml(result.word) + (result.correct ? ' como no acertada' : ' como acertada') + '">' + escapeHtml(result.word) + '</button>';
+    var latestByWord = Object.create(null);
+    state.turnResults.forEach(function(result){ latestByWord[result.word] = result; });
+    var visibleResults = state.turnResults.filter(function(result){
+      return latestByWord[result.word] === result;
+    });
+    turnEndWordsEl.innerHTML = visibleResults.map(function(result){
+      return '<button type="button" class="tu-word-pill team-color-' + teamIdx + (result.correct ? '' : ' turn-missed') + '" data-result-id="' + result.id + '" aria-label="Marcar ' + escapeHtml(result.word) + (result.correct ? ' como no acertada' : ' como acertada') + '">' + escapeHtml(result.word) + '</button>';
     }).join('');
     renderScoreboardRows(turnEndScoreboardEl, false, false);
   }
@@ -1566,7 +1634,9 @@
   turnEndWordsEl.addEventListener('click', function(e){
     var pill = e.target.closest('.tu-word-pill');
     if (!pill) return;
-    var result = state.turnResults[parseInt(pill.getAttribute('data-index'), 10)];
+    var resultId = parseInt(pill.getAttribute('data-result-id'), 10);
+    var result = state.turnResults.filter(function(entry){ return entry.id === resultId; })[0];
+    if (!result) return;
     var scoreChange = result.correct ? -1 : 1;
     result.correct = !result.correct;
     state.teams[state.turnTeamPointer === 0 ? state.teams.length - 1 : state.turnTeamPointer - 1].score += scoreChange;
@@ -1585,8 +1655,8 @@
 
   function showPhaseEnd(){
     phaseEndTitleEl.textContent = PHASES[state.phase].title + ' TERMINADA';
-    renderScoreboardRows(phaseEndScoreboardEl, false, false);
-    phaseEndContinueBtn.textContent = state.phase >= PHASES.length - 1 ? 'Ver resultados finales' : 'Comenzar ' + PHASES[state.phase + 1].title;
+    renderScoreboardRows(phaseEndScoreboardEl, false, false, true);
+    phaseEndContinueBtn.textContent = 'Continuar';
     switchScreen(screenPhaseEnd);
   }
 
@@ -1608,7 +1678,7 @@
     endSubtitleEl.textContent = winners.length > 1 ?
       'Empate a ' + maxScore + (maxScore === 1 ? ' punto.' : ' puntos.') :
       'Con ' + maxScore + (maxScore === 1 ? ' punto.' : ' puntos.');
-    renderScoreboardRows(endScoreboardEl, true, true);
+    renderScoreboardRows(endScoreboardEl, true, true, true);
     switchScreen(screenEnd);
   }
 
