@@ -13,21 +13,23 @@ export function GameCard({ game, onInfo }: Readonly<GameCardProps>) {
   };
 
   return (
-    <div className={`card mode-card theme-${game.theme}${game.disabled ? ' disabled' : ''}`}>
-      <button type="button" className="mode-info-btn" aria-label="Descripción" onClick={() => onInfo(game)}>
-        <span className="info-icon" aria-hidden="true" />
-      </button>
+    <div className="mode-card-slot">
+      <div className={`card mode-card theme-${game.theme}${game.disabled ? ' disabled' : ''}`}>
+        <button type="button" className="mode-info-btn" aria-label="Descripción" onClick={() => onInfo(game)}>
+          <span className="info-icon" aria-hidden="true" />
+        </button>
 
-      {game.disabled ? (
-        <span className="mode-card-link" aria-label={`${game.title}, próximamente`}>
-          <span className="mode-icon-badge" style={iconStyle} />
-          <span className="coming-soon-badge">Próximamente</span>
-        </span>
-      ) : (
-        <a href={`/games/${game.slug}/`} className="mode-card-link" aria-label={game.title}>
-          <span className="mode-icon-badge" style={iconStyle} />
-        </a>
-      )}
+        {game.disabled ? (
+          <span className="mode-card-link" aria-label={`${game.title}, próximamente`}>
+            <span className="mode-icon-badge" style={iconStyle} />
+            <span className="coming-soon-badge">Próximamente</span>
+          </span>
+        ) : (
+          <a href={`/games/${game.slug}/`} className="mode-card-link" aria-label={game.title}>
+            <span className="mode-icon-badge" style={iconStyle} />
+          </a>
+        )}
+      </div>
     </div>
   );
 }
