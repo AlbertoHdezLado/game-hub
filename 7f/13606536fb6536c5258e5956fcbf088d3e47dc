@@ -1,0 +1,33 @@
+public/games/charades/index.html
+  s_59fc1aa1627a0d::t_10c65813d29162 538,542
+public/games/impostor/index.html
+  s_59fc1aa1627a0d::t_9594f68253ee82 256,275,280-301,402,406
+public/games/secret-code/index.html
+  s_59fc1aa1627a0d::t_b0d4e67be010b5 71,80,83-84,347,364-371,373,379-384
+public/games/taboo/index.html
+  s_59fc1aa1627a0d::t_6f2dff39478521 381,385
+public/games/trivia/index.html
+  s_59fc1aa1627a0d::t_b97fa2c4ef6a60 407,411
+public/games/truth-or-dare/index.html
+  s_59fc1aa1627a0d::t_f14bc7c17c2392 103,107
+public/games/werewolf/index.html
+  s_59fc1aa1627a0d::t_b34bc090d32303 986,990
+public/shared.css
+  s_59fc1aa1627a0d::t_d78e84bc500735 59-62,70-73,257,265,325,1467,1476,1533,1535-1556,1568-1569,1571-1572,1575-1576
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7f13606536fb6536c5258e5956fcbf088d3e47dc",
+  "prompts": {},
+  "sessions": {
+    "s_59fc1aa1627a0d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "4f54a409-6ecc-4800-9ec1-5c60d4c6dcab",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
