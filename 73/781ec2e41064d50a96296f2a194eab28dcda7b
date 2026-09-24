@@ -1,0 +1,18 @@
+public/games/impostor/index.html
+  h_fed6a40af368f7 284,299
+public/games/times-up/index.html
+  h_fed6a40af368f7 34,39,396
+public/shared.css
+  h_fed6a40af368f7 1551,1575
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "73781ec2e41064d50a96296f2a194eab28dcda7b",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
