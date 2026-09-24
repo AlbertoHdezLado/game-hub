@@ -1,0 +1,22 @@
+public/games/most-likely/index.html
+  h_fed6a40af368f7 96,267,275-279
+public/games/werewolf/index.html
+  h_fed6a40af368f7 617-618,620-623,673,838,858,907,911,1054,1057,1076,1141,1155-1162,1192-1201,1233,1383-1384,1415,1868,1956,2117,2751,2793-2794,2802,2818,2824,2832,2842,2934,2980,2997,3101,3255,3263,3265,3269,3563,3652
+public/games/what-would-you-do/index.html
+  h_fed6a40af368f7 94,273,281-285
+public/games/would-you-rather/index.html
+  h_fed6a40af368f7 104,210,212-216
+src/styles/index.css
+  h_fed6a40af368f7 268,318,332,407-408,423-425,429-431,465,662
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b4092e012b04f4a90a35c04b7b2c1ae7e9e26bc4",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
