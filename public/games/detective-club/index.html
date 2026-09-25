@@ -28,6 +28,47 @@
     background-color:var(--bg2);
   }
 
+  /* ---- reveal screen: match Impostor's centered role-selection layout ---- */
+  #screen-reveal .scr-body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+  }
+  #screen-reveal .scr-body > .selector-subtitle{
+    width:100%;
+    margin:0;
+  }
+  #screen-reveal #reveal-roster{
+    width:100%;
+    border:0;
+    border-radius:0;
+    background:none;
+    padding:0;
+    margin-bottom:0;
+  }
+  #screen-reveal .scr-dock{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ---- in-game stages: keep the action area centered like Impostor ---- */
+  #screen-vote .scr-body,
+  #screen-result .scr-body,
+  #screen-final .scr-body{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  #screen-vote .scr-body > .subtitle,
+  #screen-result .scr-body > .subtitle,
+  #screen-final .scr-body > .subtitle{
+    width:100%;
+  }
+
   /* ---- vote candidate list (shared shape for role-reveal is in shared.css;
      this is specific to the private per-detective vote screen) ---- */
   .vote-row{
@@ -164,39 +205,46 @@
     <div class="card">
       <div class="setup-header">
         <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+        <h1>DETECTIVE CLUB</h1>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <h1>DETECTIVE CLUB</h1>
       <p class="subtitle">Necesitas una baraja de cartas Dixit físicas para jugar</p>
 
       <div class="scr-body">
-        <label class="players-label">Jugadores</label>
-        <div class="player-chips-list" id="dc-players-chips"></div>
-        <div class="player-input-row">
-          <input type="text" class="player-name-input" id="dc-players-draft" placeholder="Nombre del jugador..." maxlength="20">
-          <button type="button" class="player-add-btn" id="dc-players-add" aria-label="Añadir jugador">+</button>
-        </div>
-        <div class="error-msg" id="dc-players-error"></div>
-
-        <div class="count-info" id="dc-count-info"></div>
-        <div class="warn-note hidden" id="dc-players-warn">Se recomiendan hasta 8 jugadores para partidas más dinámicas.</div>
-
-        <details class="setup-optional">
-          <summary>Ajustes adicionales</summary>
-          <div class="setup-optional-content">
-            <label><span class="label-icon">🔁</span>Vueltas</label>
-            <div class="stepper">
-              <button type="button" id="laps-minus">−</button>
-              <div class="value" id="laps-value">1</div>
-              <button type="button" id="laps-plus">+</button>
-            </div>
-            <p class="count-info">Cuántas veces es cada jugador el jugador activo.</p>
+        <div id="setup-step-players">
+          <label class="players-label">Jugadores</label>
+          <div class="player-chips-list" id="dc-players-chips"></div>
+          <div class="player-input-row">
+            <input type="text" class="player-name-input" id="dc-players-draft" placeholder="Nombre del jugador..." maxlength="20">
+            <button type="button" class="player-add-btn" id="dc-players-add" aria-label="Añadir jugador">+</button>
           </div>
-        </details>
+          <div class="error-msg" id="dc-players-error"></div>
+
+          <div class="count-info" id="dc-count-info"></div>
+          <div class="warn-note hidden" id="dc-players-warn">Se recomiendan hasta 8 jugadores para partidas más dinámicas.</div>
+        </div>
+
+        <div id="setup-step-settings" class="hidden">
+          <p class="selector-subtitle">AJUSTES ADICIONALES</p>
+          <label><span class="label-icon">🔁</span>Vueltas</label>
+          <div class="stepper">
+            <button type="button" id="laps-minus">−</button>
+            <div class="value" id="laps-value">1</div>
+            <button type="button" id="laps-plus">+</button>
+          </div>
+          <p class="count-info">Cuántas veces es cada jugador el jugador activo.</p>
+        </div>
       </div>
 
       <div class="scr-dock">
-        <button class="btn-main" id="dc-start-btn" disabled>Iniciar partida</button>
+        <div class="night-nav" id="setup-nav">
+          <button type="button" class="night-nav-btn" id="setup-prev-btn">Volver</button>
+          <button type="button" class="night-nav-btn" id="setup-next-btn" disabled>Siguiente</button>
+        </div>
+        <div class="final-nav hidden" id="setup-final-nav">
+          <button type="button" class="night-nav-btn" id="setup-final-back-btn">Volver</button>
+          <button class="btn-main" id="dc-start-btn" disabled>Iniciar partida</button>
+        </div>
       </div>
     </div>
   </div>
@@ -284,7 +332,7 @@
         </div>
         <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
       </div>
-      <p class="subtitle">Toca tu nombre para ver tu carta. Nadie más debe mirar.</p>
+      <p class="selector-subtitle">TOCA TU NOMBRE PARA VER TU CARTA</p>
 
       <div class="scr-body">
         <div class="roster-list" id="reveal-roster"></div>
@@ -463,6 +511,34 @@
   var countInfoEl = document.getElementById('dc-count-info');
   var playersWarnEl = document.getElementById('dc-players-warn');
   var startBtn = document.getElementById('dc-start-btn');
+  var setupStepPlayersEl = document.getElementById('setup-step-players');
+  var setupStepSettingsEl = document.getElementById('setup-step-settings');
+  var setupNavEl = document.getElementById('setup-nav');
+  var setupNextBtn = document.getElementById('setup-next-btn');
+  var setupFinalBackBtn = document.getElementById('setup-final-back-btn');
+  var setupFinalNavEl = document.getElementById('setup-final-nav');
+
+  // 0 = jugadores, 1 = ajustes adicionales
+  var setupStep = 0;
+  function renderSetupStep(){
+    setupStepPlayersEl.classList.toggle('hidden', setupStep !== 0);
+    setupStepSettingsEl.classList.toggle('hidden', setupStep !== 1);
+    setupNavEl.classList.toggle('hidden', setupStep === 1);
+    setupFinalNavEl.classList.toggle('hidden', setupStep !== 1);
+  }
+  setupNextBtn.addEventListener('click', function(){
+    if (setupStep === 0 && !setupNextBtn.disabled){
+      setupStep = 1;
+      renderSetupStep();
+      validateSetup();
+    }
+  });
+  setupFinalBackBtn.addEventListener('click', function(){
+    setupStep = 0;
+    renderSetupStep();
+    validateSetup();
+  });
+  renderSetupStep();
 
   // players are only added once a non-empty name is committed from the draft input;
   // config.rows never carries an empty slot, so effectivePlayerCount is just rows.length.
@@ -523,6 +599,7 @@
     countInfoEl.textContent = describeSetup(players);
     playersWarnEl.classList.toggle('hidden', players <= RECOMMENDED_MAX_PLAYERS);
     var valid = msgs.length === 0;
+    setupNextBtn.disabled = !valid;
     startBtn.disabled = !valid;
     return valid;
   }

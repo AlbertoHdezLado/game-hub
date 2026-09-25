@@ -1724,10 +1724,18 @@
     result.correct = !result.correct;
     state.teams[state.turnTeamPointer === 0 ? state.teams.length - 1 : state.turnTeamPointer - 1].score += scoreChange;
     state.turnCorrect += scoreChange;
+    var deckIdx = state.deck.indexOf(result.word);
+    if (result.correct){
+      if (deckIdx !== -1) state.deck.splice(deckIdx, 1); // now marked correct: out of the remaining deck
+    } else if (deckIdx === -1){
+      state.deck.push(result.word); // now marked missed: back into the remaining deck
+    }
+    renderCardsRemaining();
     renderTurnResults();
   });
 
   turnContinueBtn.addEventListener('click', function(){
+    if (state.deck.length === 0){ showPhaseEnd(); return; }
     startTurn();
   });
 

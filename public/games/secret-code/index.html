@@ -74,6 +74,21 @@
   #screen-room{width:100%;max-width:min(520px, calc(100vw - 20px));box-sizing:border-box;}
   #screen-room>.card,#screen-room .scr-body{width:100%;min-width:0;max-width:100%;box-sizing:border-box;}
   #screen-room .scr-body,#screen-lobby .scr-body{flex:0 1 auto;margin-top:auto;margin-bottom:auto;}
+  #screen-room .setup-header{display:flex;justify-content:flex-start;}
+  #screen-room .setup-header h1{
+    position:static;
+    flex:1 1 auto;
+    width:auto;
+    margin-bottom:0;
+    text-align:center;
+    display:block;
+    visibility:visible;
+    opacity:1;
+    color:var(--accent);
+    background:none;
+    -webkit-background-clip:initial;
+    background-clip:initial;
+  }
   #room-join-backdrop .guide-modal{width:min(420px, calc(100vw - 32px));}
   #room-join-backdrop .guide-modal h2{margin-bottom:10px;}
   .cs-room-join-form{display:grid;gap:10px;margin-top:18px;width:100%;min-width:0;}
@@ -524,10 +539,9 @@
     <div class="card">
       <div class="setup-header">
         <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
-        <span class="cs-lobby-creator" id="lobby-creator" aria-live="polite"></span>
+        <h1>CÓDIGO SECRETO</h1>
       </div>
       <div class="scr-body">
-        <h1>CÓDIGO SECRETO</h1>
         <div class="cs-room-actions">
           <input id="room-nickname" type="text" maxlength="30" autocomplete="nickname" placeholder="Tu nombre" aria-label="Tu nombre">
           <button class="btn-main" id="room-create-btn" type="button" disabled>Crear sala</button>

@@ -17,6 +17,20 @@
     --accent2:#cb78ef;
     --reveal-b:#a970e0;
   }
+  #screen-game.party-stage{
+    --party-bg:var(--surface-2);
+    --party-label:var(--text-dim);
+    --party-ring-track:rgba(0,0,0,0.14);
+    --party-ring-bg:rgba(255,255,255,0.5);
+    background-color:var(--surface-2);
+  }
+  #screen-game .party-hud-block > span:first-child{color:var(--text-dim);}
+  #screen-game .party-hud-value,
+  #screen-game .party-hud-timer-value{color:var(--text);}
+  #screen-game.party-stage:has(#turn-play:not(.hidden)) .setup-header{display:none;}
+  #screen-game.party-stage:has(#turn-play:not(.hidden)) .tb-game-hud{
+    min-height:58px;
+  }
   html,body{
     /* flat solid fill — a multi-layer gradient here used to leave gaps of
        the raw background color showing on some viewports/scroll ranges */
@@ -88,7 +102,7 @@
   .team-box-chip.team-color-1{background:#c9525c; border-color:#c9525c; color:#fff;}
   .team-box-chip.team-color-2{background:#4fbf7a; border-color:#4fbf7a; color:#fff;}
   .team-box-chip.team-color-3{background:#f2c94c; border-color:#f2c94c; color:#333;}
-  .mini-score-pill.team-color-3, .team-turn-badge.team-color-3, .tb-word-pill.team-color-3{color:#3a2f00;}
+  .mini-score-pill.team-color-3, .tb-word-pill.team-color-3{color:#3a2f00;}
   .team-box.drag-over{border-color:var(--accent); background:var(--surface-2);}
   .team-box.team-color-0.drag-over{border-color:#5b8fe0; background:rgba(91,143,224,0.28);}
   .team-box.team-color-1.drag-over{border-color:#c9525c; background:rgba(201,82,92,0.28);}
@@ -143,35 +157,42 @@
     font-weight:800;
     font-size:0.72rem;
   }
-  .tb-cards-remaining{
-    display:flex;
-    align-items:center;
-    gap:5px;
-    font-family:var(--font-display);
-    font-weight:800;
-    font-size:0.95rem;
-    color:var(--text-dim);
-  }
-  .tb-cards-icon{font-size:1.1rem; line-height:1;}
-
-  .team-turn-badge{
-    display:inline-block;
-    margin:0 0 10px;
-    padding:6px 16px;
-    border-radius:999px;
-    border:2px solid rgba(255,255,255,0.85);
+  .tb-timer-wrap{margin:0;}
+  /* .team-color-N is reused from the team chips (which fill a background),
+     but here it should only tint the player's name text, not paint a box */
+  .tb-hud-player-name, .player-name{background:none;}
+  /* #screen-game prefix needed to outrank the #screen-game .party-hud-value
+     rule above, which otherwise always wins over a plain two-class selector */
+  #screen-game .tb-hud-player-name.team-color-0, .player-name.team-color-0{color:#5b8fe0;}
+  #screen-game .tb-hud-player-name.team-color-1, .player-name.team-color-1{color:#c9525c;}
+  #screen-game .tb-hud-player-name.team-color-2, .player-name.team-color-2{color:#4fbf7a;}
+  #screen-game .tb-hud-player-name.team-color-3, .player-name.team-color-3{color:#b08a00;}
+  .nav-primary-btn{
+    display:block;
+    flex:0 0 auto;
+    width:max-content;
+    max-width:100%;
+    margin:0 0 0 auto;
+    min-height:52px;
+    padding:10px 24px;
+    border-radius:11px;
+    background:var(--accent);
+    border:none;
     color:#fff;
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:0.9rem;
-    letter-spacing:0.5px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.3);
+    white-space:normal;
   }
-  .tb-timer-wrap{margin-bottom:2px; text-align:center;}
+  .tb-game-hud .party-hud-timer{
+    background:color-mix(in srgb, var(--accent2) 72%, #fffaf2);
+    border-color:var(--party-ring-track);
+    --party-ring-arc:var(--accent);
+    width:54px;
+    height:54px;
+  }
   .tb-timer{
     font-family:var(--font-display);
-    font-size:2.6rem;
     font-weight:800;
+    color:#3a1748;
+    font-size:0.95rem;
     font-variant-numeric:tabular-nums;
   }
   @keyframes tbTimerBlink{
@@ -190,10 +211,10 @@
   }
   .tb-word{
     font-family:var(--font-display);
-    font-size:clamp(2.5rem, 9vw, 3.8rem);
-    line-height:1.05;
+    font-size:clamp(1.35rem, 4vw, 2.1rem);
+    line-height:1.08;
     font-weight:800;
-    margin:16px 0 18px;
+    margin:0 auto 12px;
     min-height:1.1em;
     display:flex;
     align-items:center;
@@ -201,30 +222,47 @@
     word-break:break-word;
     text-align:center;
   }
-  .tb-play-card{
-    width:min(100%, 460px);
-    margin:0 auto;
-    padding:28px 24px 24px;
-    border:10px solid rgba(255,255,255,0.5);
-    border-radius:14px;
-    background:#fff;
-    box-shadow:0 10px 18px rgba(10,14,26,0.35);
-    text-align:center;
+  .tb-game-hud{margin:0 0 18px;}
+  /* narrower and taller than shared.css's default flip-card-stack so all
+     5 taboo words fit without cramping the word above them */
+  .taboo-card-stack{
+    width:min(48vw, calc(100vw - clamp(256px, 40vw, 540px) - 32px), 680px);
+    min-height:min(58vh, 460px);
   }
-  .tb-play-label{
-    margin:0;
-    color:var(--text-dim);
-    font-size:0.72rem;
-    font-weight:800;
-    letter-spacing:1.4px;
-    text-transform:uppercase;
+  /* pin content to the top of the card instead of shared.css's vertical
+     centering — that centering left dead space above the word and pushed
+     the 5th taboo item below the fold. overflow:hidden is a safety net so
+     a long word list is clipped by the rounded card edge instead of
+     spilling past it. */
+  .taboo-card-stack .flip-card-face{
+    align-items:flex-start;
+    padding:16px 20px;
+    overflow:hidden;
   }
-  .tb-play-card .tb-word{margin:10px 0 18px;}
-  .tb-taboo-list{
+  .taboo-card-stack .tb-word{margin:0 auto 12px;}
+  /* fills the card's full height so the taboo list below can flex/shrink
+     to whatever room is left instead of overflowing it */
+  .taboo-card-stack .flip-card-word-text{
     display:flex;
     flex-direction:column;
-    gap:8px;
-    margin:0;
+    width:100%;
+    height:100%;
+    min-height:0;
+  }
+  .taboo-card-stack .tb-word{flex:0 0 auto;}
+  .tb-taboo-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+    grid-auto-rows:1fr;
+    gap:6px 18px;
+    width:100%;
+    margin:0 auto;
+    justify-items:center;
+    align-items:center;
+    text-align:center;
+    flex:1 1 auto;
+    min-height:0;
+    overflow:hidden;
   }
   /* each turn phase fills the remaining card height: its own content grows
      in a scr-body, its action button/row stays pinned in a scr-dock */
@@ -242,29 +280,121 @@
   #turn-play .scr-body{
     display:flex;
     flex-direction:column;
+    justify-content:center;
     min-height:0;
-    overflow-y:auto;
     overflow-x:hidden;
   }
   .tb-taboo-item{
-    padding:8px 12px;
-    border-radius:8px;
-    background:rgba(156,63,71,0.1);
-    border:1px solid rgba(156,63,71,0.28);
-    color:#18202b;
-    font-size:1rem;
-    line-height:1.2;
-    font-weight:600;
+    width:100%;
+    color:#c53a45;
+    font-size:clamp(0.72rem, 2.1vw, 0.92rem);
+    line-height:1.15;
+    font-weight:800;
+    text-transform:uppercase;
+    overflow-wrap:anywhere;
+    text-align:center;
+    justify-self:center;
   }
-  #turn-play .icon-action-row{
-    flex-direction:column;
+  /* landscape: foul | card | correct, three columns side by side, rails
+     flush against the screen edges (matches Time's Up's turn-play-stage) */
+  .tb-play-stage{
+    display:grid;
+    grid-template-columns:clamp(78px, 18vw, 120px) 1fr clamp(78px, 18vw, 120px);
+    grid-template-areas:"foul card correct";
     align-items:stretch;
-    gap:10px;
-    max-width:460px;
-    margin:0 auto;
+    gap:12px;
+    height:100%;
+    padding:8px 0 12px;
   }
-  #turn-play .icon-action-btn{
-    min-height:58px;
+  .tb-play-card{
+    grid-area:card;
+    min-width:0;
+  }
+  #tb-foul-btn{grid-area:foul;}
+  #tb-correct-btn{grid-area:correct;}
+  /* same rail height cap as Time's Up's turn-play-stage, so both games'
+     side buttons look identical in landscape */
+  .tb-play-stage .icon-action-rail{
+    align-self:center;
+    height:min(100%, calc(46vh + 20px));
+    min-height:0;
+    margin:0;
+  }
+  /* reject button: solid red fill with a plain white X, matching the
+     accept button's solid-color treatment instead of the tinted glass
+     look shared.css's base .icon-action-error uses elsewhere */
+  .tb-play-stage .icon-action-rail.icon-action-error{
+    background:#dc4550;
+    border-color:transparent;
+  }
+  .tb-play-stage .icon-action-rail.icon-action-error:active{
+    background:#c53a45;
+  }
+  .tb-play-stage .icon-action-rail.icon-action-error .icon-action-icon{
+    background-color:#fff;
+    filter:none;
+  }
+  /* portrait: card on top, both buttons in a row underneath it */
+  @media (max-width: 640px), (orientation: portrait) {
+    .tb-play-stage{
+      grid-template-columns:1fr 1fr;
+      grid-template-areas:
+        "card card"
+        "foul correct";
+      /* without this, the grid's default row stretching gave the (now
+         short) card row all the leftover vertical space, leaving a big
+         empty gap between the card and the buttons below it */
+      align-content:start;
+      gap:10px;
+      padding:6px 0 10px;
+    }
+    .tb-play-card{
+      width:100%;
+    }
+    /* the landscape card is deliberately narrow (48vw) to look thinner
+       next to the side rails — in portrait that same fixed width left it
+       stranded in the middle of the full-width grid cell, starving
+       .tb-taboo-list of room to ever lay out more than one column */
+    .taboo-card-stack{
+      width:100%;
+      /* a real floor (not 0) so the card reads as a proper card instead of
+         shrink-wrapping to a single line — capped well under the old 58vh
+         so it never fights the buttons for space */
+      min-height:min(42vh, 360px);
+    }
+    .tb-taboo-list{
+      grid-auto-rows:auto;
+      align-content:start;
+    }
+    .tb-play-stage .icon-action-rail{
+      min-height:84px;
+      height:84px;
+      max-width:none;
+    }
+    /* same pill shape as the horizontal side rails, just no longer flush
+       against a screen edge — so both corners on each button round out
+       instead of the edge-hugging half-lens shape from shared.css */
+    .tb-play-stage .icon-action-rail:first-child,
+    .tb-play-stage .icon-action-rail:last-child{
+      border-radius:999px;
+      padding-left:12px;
+      padding-right:12px;
+      transform-origin:center;
+    }
+  }
+  .turn-player-label{
+    margin-bottom:2px;
+    color:var(--text-dim);
+    font-size:1rem;
+    font-weight:700;
+    text-align:center;
+  }
+  .turn-player-display{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    text-align:center;
   }
 
 
@@ -301,8 +431,43 @@
     font-size:0.78rem;
     font-weight:700;
   }
-  .tb-word-pill.turn-missed{background:var(--danger); opacity:.72; text-decoration:line-through;}
+  .tb-word-pill.turn-missed{
+    background:#5b6169 !important;
+    color:#fff !important;
+    opacity:1;
+    text-decoration:line-through;
+    text-decoration-thickness:1.5px;
+  }
   button.tb-word-pill{border:0; cursor:pointer; font:inherit;}
+  /* turn-end summary: mirror Time's Up's pill-shaped scoreboard (solid
+     team-color chips instead of boxed rows), and drop the empty icon slot */
+  #turn-end .end-icon{display:none;}
+  #turn-end-scoreboard{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:0 0 12px;
+  }
+  #turn-end-scoreboard .team-score-row{
+    flex:0 1 auto;
+    width:max-content;
+    margin-bottom:0;
+    padding:8px 16px;
+    gap:8px;
+    border:0;
+    border-radius:999px;
+    color:#fff;
+    box-shadow:none;
+  }
+  #turn-end-scoreboard .team-score-row.team-color-0{background:#5b8fe0;}
+  #turn-end-scoreboard .team-score-row.team-color-1{background:#c9525c;}
+  #turn-end-scoreboard .team-score-row.team-color-2{background:#4fbf7a;}
+  #turn-end-scoreboard .team-score-row.team-color-3{background:#f2c94c; color:#3a2f00;}
+  #turn-end-scoreboard .team-score-row .mini-score-pill{display:none;}
+  #turn-end-scoreboard .team-score-name{gap:0; color:inherit;}
+  #turn-end-scoreboard .team-score-value{color:inherit; font-size:0.95rem;}
 </style>
 </head>
 <body>
@@ -428,48 +593,52 @@
 
 
   <!-- GAME SCREEN: team turn, timer, correct/skip/foul -->
-  <div class="screen hidden" id="screen-game">
+  <div class="screen party-stage hidden" id="screen-game">
     <div class="card">
       <div class="setup-header">
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
           <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
-          <span class="back-btn" style="cursor:default;">Taboo</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
-          <div class="tb-cards-remaining" id="tb-cards-remaining"><span class="tb-cards-icon"></span><span id="tb-cards-remaining-value">x30</span></div>
+        </div>
+      </div>
+
+      <div class="party-game-hud tb-game-hud">
+        <div class="party-hud-block">
+          <span>Turno de</span>
+          <span class="party-hud-value tb-hud-player-name" id="tb-hud-player-name">Nombre</span>
+        </div>
+        <div class="party-hud-timer tb-timer-wrap" id="tb-timer-wrap">
+          <div class="party-hud-timer-value tb-timer" id="tb-timer">60</div>
+        </div>
+        <div class="party-hud-block">
+          <span>Aciertos</span>
+          <span class="party-hud-value" id="tb-hud-score">0</span>
         </div>
       </div>
 
       <!-- TURN INTRO: gate before the timer starts -->
       <div id="turn-intro">
         <div class="scr-body">
-          <div class="team-turn-badge" id="turn-team-badge">EQUIPO 1</div>
-          <div class="player-name" id="turn-player-name">Nombre</div>
-          <p class="pass-hint">Pasa el dispositivo a esta persona.</p>
+          <div class="turn-player-display">
+            <div class="turn-player-label">Turno de</div>
+            <div class="player-name" id="turn-player-name">Nombre</div>
+          </div>
         </div>
         <div class="scr-dock">
-          <button class="btn-main" id="turn-start-btn">Empezar mi turno ▶</button>
+          <button class="night-nav-btn nav-primary-btn" id="turn-start-btn">Empezar</button>
         </div>
       </div>
 
       <!-- ACTIVE PLAY: word + taboo list + timer + correct/skip/foul -->
       <div id="turn-play" class="hidden">
         <div class="scr-body">
-          <div class="tb-timer-wrap" id="tb-timer-wrap">
-            <div class="tb-timer" id="tb-timer">1:00</div>
-          </div>
-          <div class="tb-play-card">
-            <p class="tb-play-label">Adivina</p>
-            <div class="tb-word" id="tb-word">Palabra</div>
-            <div class="tb-taboo-list" id="tb-taboo-list"></div>
-          </div>
-        </div>
-        <div class="scr-dock">
-          <div class="icon-action-row">
-            <button type="button" class="icon-action-btn icon-action-error" id="tb-foul-btn" aria-label="Prohibida"><span class="icon-action-icon"></span></button>
-            <button type="button" class="icon-action-btn icon-action-correct" id="tb-correct-btn" aria-label="Acierto"><span class="icon-action-icon"></span></button>
+          <div class="tb-play-stage">
+            <button type="button" class="icon-action-btn icon-action-rail icon-action-error" id="tb-foul-btn" aria-label="Prohibida"><span class="icon-action-icon"></span></button>
+            <div class="tb-play-card" id="tb-card-stack"></div>
+            <button type="button" class="icon-action-btn icon-action-rail icon-action-correct" id="tb-correct-btn" aria-label="Acierto"><span class="icon-action-icon"></span></button>
           </div>
         </div>
       </div>
@@ -1004,13 +1173,15 @@
   }
 
   // ---------- scoreboard rows (reused by turn-end / final) ----------
-  function renderScoreboardRows(container, highlightWinner, showRank){
+  // pillStyle: turn-end reuses Time's Up's look — solid team-color pills
+  // instead of the boxed rows the final results screen keeps.
+  function renderScoreboardRows(container, highlightWinner, showRank, pillStyle){
     var scoresDesc = state.teams.map(function(t){ return t.score; }).sort(function(a, b){ return b - a; });
     var maxScore = scoresDesc[0];
     container.innerHTML = state.teams.map(function(team, t){
       var isTop = highlightWinner && team.score === maxScore;
       var pillLabel = showRank ? (scoresDesc.indexOf(team.score) + 1) + 'º' : (t + 1);
-      return '<div class="team-score-row' + (isTop ? ' winner' : '') + '">' +
+      return '<div class="team-score-row' + (pillStyle ? ' team-color-' + t : '') + (isTop ? ' winner' : '') + '">' +
         '<span class="team-score-name"><span class="mini-score-pill team-color-' + t + '">' + pillLabel + '</span>' + escapeHtml(TEAM_NAMES[t]) + '</span>' +
         '<span class="team-score-value">' + team.score + '</span>' +
       '</div>';
@@ -1018,15 +1189,20 @@
   }
 
   // ---------- game screen ----------
-  var cardsRemainingValueEl = document.getElementById('tb-cards-remaining-value');
   var turnIntroEl = document.getElementById('turn-intro');
-  var turnTeamBadgeEl = document.getElementById('turn-team-badge');
   var turnPlayerNameEl = document.getElementById('turn-player-name');
+  var tbHudScoreEl = document.getElementById('tb-hud-score');
+  var tbHudPlayerNameEl = document.getElementById('tb-hud-player-name');
   var turnStartBtn = document.getElementById('turn-start-btn');
   var turnPlayEl = document.getElementById('turn-play');
   var tbTimerWrapEl = document.getElementById('tb-timer-wrap');
   var tbTimerEl = document.getElementById('tb-timer');
-  var tbCardStack = createCardStack(document.querySelector('.tb-play-card'), { render: renderTabooCard });
+  var tbCardStack = createCardStack(document.getElementById('tb-card-stack'), function(content, card){
+    content.innerHTML = '<div class="tb-word">' + escapeHtml(card.palabra) + '</div>' +
+      '<div class="tb-taboo-list">' + card.prohibidas.map(function(word){
+        return '<div class="tb-taboo-item">' + escapeHtml(word) + '</div>';
+      }).join('') + '</div>';
+  });
   var tbCorrectBtn = document.getElementById('tb-correct-btn');
   var tbFoulBtn = document.getElementById('tb-foul-btn');
   var turnEndEl = document.getElementById('turn-end');
@@ -1034,20 +1210,6 @@
   var turnEndScoreboardEl = document.getElementById('turn-end-scoreboard');
   var turnEndWordsEl = document.getElementById('turn-end-words');
   var turnContinueBtn = document.getElementById('turn-continue-btn');
-
-  function renderCardsRemaining(){
-    cardsRemainingValueEl.textContent = 'x' + state.deck.length;
-  }
-
-  function renderTabooCard(content, card){
-    content.innerHTML = '<p class="tb-play-label">Adivina</p><div class="tb-word">' + escapeHtml(card.palabra) + '</div><div class="tb-taboo-list">' + card.prohibidas.map(function(w){
-      return '<div class="tb-taboo-item">' + escapeHtml(w) + '</div>';
-    }).join('') + '</div>';
-  }
-
-  function renderCurrentCard(){
-    tbCardStack.reveal(state.deck[0], Math.min(3, state.deck.length));
-  }
 
   function startTurn(){
     var teamIdx = state.turnTeamPointer;
@@ -1060,10 +1222,11 @@
     state.turnResults = [];
     state.timeRemaining = config.turnSeconds;
 
-    renderCardsRemaining();
-    turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
-    turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
+    tbHudScoreEl.textContent = state.teams[teamIdx].score;
     turnPlayerNameEl.textContent = state.playerNames[actorIdx];
+    turnPlayerNameEl.className = 'player-name team-color-' + teamIdx;
+    tbHudPlayerNameEl.textContent = state.playerNames[actorIdx];
+    tbHudPlayerNameEl.className = 'party-hud-value tb-hud-player-name team-color-' + teamIdx;
 
     turnIntroEl.classList.remove('hidden');
     turnPlayEl.classList.add('hidden');
@@ -1071,7 +1234,11 @@
   }
 
   // ---- countdown + alarm (same pattern as Time's Up/Impostor/Hombres Lobo) ----
-  function updateTimerDisplay(totalSeconds){ tbTimerEl.textContent = formatMMSS(totalSeconds); }
+  function updateTimerDisplay(totalSeconds){
+    tbTimerEl.textContent = totalSeconds;
+    var progress = config.turnSeconds > 0 ? clamp(totalSeconds / config.turnSeconds, 0, 1) : 0;
+    tbTimerWrapEl.style.setProperty('--progress', progress);
+  }
   function stopTimer(){ if (state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; } }
   function unlockAlarmAudio(){
     if (!state.audioCtx){
@@ -1134,7 +1301,7 @@
     turnIntroEl.classList.add('hidden');
     turnPlayEl.classList.remove('hidden');
     tbTimerWrapEl.classList.remove('time-up');
-    renderCurrentCard();
+    tbCardStack.reveal(state.deck[0], state.deck.length);
     updateTimerDisplay(state.timeRemaining);
     stopTimer();
     state.timerInterval = setInterval(function(){
@@ -1145,7 +1312,7 @@
   });
 
   tbCorrectBtn.addEventListener('click', function(){
-    if (state.deck.length === 0 || tbCardStack.isBusy()) return;
+    if (state.deck.length === 0) return;
     playCorrectSound();
     var teamIdx = state.turnTeamPointer;
     var card = state.deck.shift(); // guessed: gone from the deck for the rest of the match
@@ -1153,13 +1320,13 @@
     state.turnCorrect++;
     state.turnWords.push(card.palabra);
     state.turnResults.push({ word: card.palabra, correct: true });
-    renderCardsRemaining();
+    tbHudScoreEl.textContent = state.teams[teamIdx].score;
     if (state.deck.length === 0){ endTurn(true); return; }
-    tbCardStack.discard('right', state.deck[0], Math.min(3, state.deck.length));
+    tbCardStack.discard('right', state.deck[0], state.deck.length);
   });
 
   tbFoulBtn.addEventListener('click', function(){
-    if (state.deck.length === 0 || tbCardStack.isBusy()) return;
+    if (state.deck.length === 0) return;
     playFoulSound();
     var card = state.deck.shift();
     state.deck.push(card); // foul: no point for anyone, but back of the deck, resurfaces later this match
@@ -1170,7 +1337,7 @@
     void tbTimerEl.offsetWidth;
     tbTimerEl.classList.add('skip-pulse');
     if (state.timeRemaining <= 0){ endTurn(false, false); return; }
-    tbCardStack.discard('left', state.deck[0], Math.min(3, state.deck.length));
+    tbCardStack.discard('left', state.deck[0], state.deck.length);
   });
 
   function endTurn(deckExhausted, hasActiveWord){
@@ -1207,7 +1374,7 @@
     turnEndWordsEl.innerHTML = state.turnResults.map(function(result, index){
       return '<button type="button" class="tb-word-pill team-color-' + teamIdx + (result.correct ? '' : ' turn-missed') + '" data-index="' + index + '" aria-label="Marcar ' + escapeHtml(result.word) + (result.correct ? ' como no acertada' : ' como acertada') + '">' + escapeHtml(result.word) + '</button>';
     }).join('');
-    renderScoreboardRows(turnEndScoreboardEl, false, false);
+    renderScoreboardRows(turnEndScoreboardEl, false, false, true);
   }
 
   turnEndWordsEl.addEventListener('click', function(e){

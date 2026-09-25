@@ -250,7 +250,7 @@ function createDots(container){
 function initIngameHomeControls(){
   var screens = document.querySelectorAll('.screen');
   Array.prototype.forEach.call(screens, function(screen){
-    if (screen.id === 'screen-setup') return;
+    if (screen.id === 'screen-setup' || screen.id === 'screen-room') return;
     var card = screen.querySelector(':scope > .card');
     if (!card) return;
     var header = card.querySelector(':scope > .setup-header');

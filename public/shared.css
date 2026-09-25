@@ -1455,6 +1455,28 @@ input:focus-visible{
 #screen-setup .setup-header{
   margin-bottom:8px;
 }
+#screen-setup .card>.setup-header{
+  margin-left:0;
+  margin-right:0;
+  padding-left:0;
+  padding-right:0;
+}
+#screen-room .card>.setup-header{
+  margin-left:0;
+  margin-right:0;
+  padding-left:0;
+  padding-right:0;
+}
+#screen-setup .setup-header>h1{
+  position:absolute;
+  left:50%;
+  width:calc(100% - 108px);
+  margin-bottom:0;
+  transform:translateX(-50%);
+  font-size:clamp(1.35rem, 6.5vw, 2rem);
+  line-height:1.1;
+  overflow-wrap:anywhere;
+}
 #screen-setup .subtitle{
   max-width:34ch;
   margin-left:auto;
