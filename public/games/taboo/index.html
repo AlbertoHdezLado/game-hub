@@ -337,26 +337,29 @@
   /* portrait: card on top, both buttons in a row underneath it */
   @media (max-width: 640px), (orientation: portrait) {
     .tb-play-stage{
-      grid-template-columns:1fr 1fr;
+      grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
       grid-template-areas:
         "card card"
         "foul correct";
-      /* without this, the grid's default row stretching gave the (now
-         short) card row all the leftover vertical space, leaving a big
-         empty gap between the card and the buttons below it */
-      align-content:start;
-      gap:10px;
-      padding:6px 0 10px;
+      /* center the whole card+buttons block in the leftover space instead
+         of letting it stick to the top or edges */
+      align-content:center;
+      gap:18px;
+      padding:16px max(18px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
     }
     .tb-play-card{
       width:100%;
+      /* without this, .taboo-card-stack's fixed px width below still counts
+         toward this spanning item's max-content contribution, which blew
+         up column 1 and pushed the accept button off-screen in column 2 */
+      min-width:0;
     }
     /* the landscape card is deliberately narrow (48vw) to look thinner
-       next to the side rails — in portrait that same fixed width left it
-       stranded in the middle of the full-width grid cell, starving
-       .tb-taboo-list of room to ever lay out more than one column */
+       next to the side rails — in portrait it's centered with side margins
+       instead of flush against the screen edges */
     .taboo-card-stack{
       width:100%;
+      max-width:480px;
       /* a real floor (not 0) so the card reads as a proper card instead of
          shrink-wrapping to a single line — capped well under the old 58vh
          so it never fights the buttons for space */
@@ -366,9 +369,16 @@
       grid-auto-rows:auto;
       align-content:start;
     }
+    /* landscape's font-size scales off viewport width, tuned for a narrow
+       multi-column card — the portrait card is wide and single-column, so
+       that same size read as tiny relative to all the space around it */
+    .tb-taboo-item{
+      font-size:clamp(1rem, 4.2vw, 1.3rem);
+    }
     .tb-play-stage .icon-action-rail{
       min-height:84px;
       height:84px;
+      min-width:0;
       max-width:none;
     }
     /* same pill shape as the horizontal side rails, just no longer flush
