@@ -306,7 +306,10 @@
     height:100%;
     padding:8px 0 12px;
   }
-  .tb-play-card{
+  /* .tb-play-card is stripped by createCardStack() on init (it swaps in
+     .flip-card-stack/.taboo-card-stack), so grid placement has to hang off
+     the element's stable id instead or it's lost as soon as the card loads */
+  #tb-card-stack{
     grid-area:card;
     min-width:0;
   }
@@ -347,7 +350,7 @@
       gap:18px;
       padding:16px max(18px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
     }
-    .tb-play-card{
+    #tb-card-stack{
       width:100%;
       /* without this, .taboo-card-stack's fixed px width below still counts
          toward this spanning item's max-content contribution, which blew
