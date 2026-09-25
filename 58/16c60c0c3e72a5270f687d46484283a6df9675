@@ -1,0 +1,29 @@
+public/games/detective-club/index.html
+  s_802f24d1308ae7::t_9d7058d1293c53 31-71,208,214-224,226-233,235-236,240-247,335,514-541,602
+public/games/times-up/index.html
+  s_aec03d424d732f::t_a498098fba73d4 1727-1733,1738
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5816c60c0c3e72a5270f687d46484283a6df9675",
+  "prompts": {},
+  "sessions": {
+    "s_802f24d1308ae7": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "657fdda8-77d9-44ec-8dba-a3eca095292a",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    },
+    "s_aec03d424d732f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "bd9fbd73-8ff6-4c56-85e2-83b5cb461a96",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
