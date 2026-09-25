@@ -1,0 +1,20 @@
+public/games/most-likely/index.html
+  h_fed6a40af368f7 73-74
+public/games/what-would-you-do/index.html
+  h_fed6a40af368f7 71-72
+public/games/would-you-rather/index.html
+  h_fed6a40af368f7 33,35,38-66,68-90,114-115,131,152,201,221-225,230-231,235
+public/shared.css
+  h_fed6a40af368f7 199-205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0bd33c78190e8d70f97171d96bed275e092bc1bb",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
