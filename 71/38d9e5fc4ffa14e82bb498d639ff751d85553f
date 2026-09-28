@@ -1,0 +1,27 @@
+public/games/secret-code/index.html
+  s_373c2e6a0a728d::t_ba5afa8c901394 111,884,1437
+public/games/taboo/index.html
+  s_373c2e6a0a728d::t_f92ce5c3dca2a8 309,340,344-349,351,355-357
+public/games/times-up/index.html
+  s_373c2e6a0a728d::t_7e61b066dde05c 30-31
+public/shared.css
+  s_373c2e6a0a728d::t_7e5e921cd33b48 186,188,419,1584-1604,1616-1617,1626-1629
+public/shared.js
+  s_373c2e6a0a728d::t_606fcd31aca506 685-690,704
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7138d9e5fc4ffa14e82bb498d639ff751d85553f",
+  "prompts": {},
+  "sessions": {
+    "s_373c2e6a0a728d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "fb56cb6c-5764-4a63-90c4-47c9f9d46cdb",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
