@@ -331,12 +331,8 @@
             <button type="button" class="submode-btn" id="submode-custom-btn">Personalizada</button>
           </div>
 
-          <div id="custom-word-wrap">
-            <label for="word-input-imp"><span class="label-icon">🗣️</span>Palabra secreta</label>
-            <input type="text" id="word-input-imp" placeholder="Ej: Playa, Pizza, Batman..." maxlength="40">
-            <p class="count-info">🎲 La app asigna el impostor al azar entre los jugadores.</p>
-
-            <div id="custom-random-count-wrap" class="hidden">
+          <div id="custom-word-wrap" class="setup-options-grid">
+            <div id="custom-random-count-wrap" class="setup-option hidden">
               <label><span class="label-icon">🎭</span>Número de impostores</label>
               <div class="stepper">
                 <button type="button" id="custom-impostors-minus">−</button>
@@ -344,22 +340,31 @@
                 <button type="button" id="custom-impostors-plus">+</button>
               </div>
             </div>
+
+            <div class="setup-option">
+              <label for="word-input-imp"><span class="label-icon">🗣️</span>Palabra secreta</label>
+              <input type="text" id="word-input-imp" placeholder="Palabra secreta" maxlength="40">
+            </div>
           </div>
 
-          <div id="random-impostors-wrap" class="hidden">
-            <label><span class="label-icon">🎭</span>Número de impostores</label>
-            <div class="stepper">
-              <button type="button" id="random-impostors-minus">−</button>
-              <div class="value" id="random-impostors-value">1</div>
-              <button type="button" id="random-impostors-plus">+</button>
+          <div id="random-impostors-wrap" class="setup-options-grid hidden">
+            <div class="setup-option">
+              <label><span class="label-icon">🎭</span>Número de impostores</label>
+              <div class="stepper">
+                <button type="button" id="random-impostors-minus">−</button>
+                <div class="value" id="random-impostors-value">1</div>
+                <button type="button" id="random-impostors-plus">+</button>
+              </div>
             </div>
 
-            <label>Pista</label>
-            <div class="submode-toggle" id="impostor-hint-toggle">
-              <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
-              <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
+            <div class="setup-option">
+              <label>Pista</label>
+              <div class="submode-toggle" id="impostor-hint-toggle">
+                <button type="button" class="submode-btn" id="impostor-mode-none-btn">Sin pista</button>
+                <button type="button" class="submode-btn" id="impostor-mode-hint-btn">Con pista</button>
+              </div>
             </div>
-            <div id="impostor-blind-toggle-wrap">
+            <div id="impostor-blind-toggle-wrap" class="setup-option">
               <label>Impostor a ciegas</label>
               <div class="submode-toggle" id="impostor-blind-toggle">
                 <button type="button" class="submode-btn" id="impostor-mode-mrblanco-btn">No</button>
@@ -370,8 +375,8 @@
 
           <details class="setup-optional">
             <summary>Ajustes adicionales</summary>
-            <div class="setup-optional-content">
-              <div id="random-config-wrap" class="hidden">
+            <div class="setup-optional-content setup-options-grid">
+              <div id="random-config-wrap" class="setup-option hidden">
                 <label><span class="label-icon">📦</span>Paquetes</label>
                 <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
                   <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona paquetes</span>
@@ -383,17 +388,17 @@
                 </div>
               </div>
 
-              <label><span class="label-icon">⏱️</span>Tiempo para debatir</label>
-              <div class="stepper">
-                <button type="button" id="debate-minutes-minus">−</button>
-                <div class="value" id="debate-minutes-value">Sin límite</div>
-                <button type="button" id="debate-minutes-plus">+</button>
+              <div class="setup-option">
+                <label><span class="label-icon">⏱️</span>Tiempo para debatir</label>
+                <div class="stepper">
+                  <button type="button" id="debate-minutes-minus">−</button>
+                  <div class="value" id="debate-minutes-value">Sin límite</div>
+                  <button type="button" id="debate-minutes-plus">+</button>
+                </div>
               </div>
             </div>
           </details>
 
-          <div class="count-info" id="impostor-count-info"></div>
-          <div class="error-msg" id="impostor-setup-error"></div>
         </div>
       </div>
 
@@ -633,8 +638,6 @@
   var playersDraftInput = document.getElementById('impostor-players-draft');
   var playersAddBtn = document.getElementById('impostor-players-add');
   forceUppercaseInput(playersDraftInput);
-  var impostorCountInfo = document.getElementById('impostor-count-info');
-  var setupError = document.getElementById('impostor-setup-error');
   var playersErrorEl = document.getElementById('impostor-players-error');
   var startBtn = document.getElementById('impostor-start-btn');
   var setupStepPlayersEl = document.getElementById('setup-step-players');
@@ -800,7 +803,6 @@
     customRandomCountWrap.classList.toggle('hidden', !isCustom);
     randomConfigWrap.classList.toggle('hidden', isCustom);
     randomImpostorsWrap.classList.toggle('hidden', isCustom);
-    impostorCountInfo.classList.toggle('hidden', !isCustom);
     renderImpostorOptions();
     refreshRandomImpostorBounds();
     refreshCustomImpostorBounds();
@@ -964,22 +966,18 @@
     var players = effectivePlayerCount(rows);
     if (players < MIN_PLAYERS) playerMsgs.push("Necesitas al menos " + MIN_PLAYERS + " jugadores.");
 
-    var settingsMsgs = [];
+    var settingsValid = true;
     if (config.subMode === 'custom'){
       var word = impWordInput.value.trim();
-      if (!word) settingsMsgs.push("Escribe una palabra secreta.");
-      if (config.customImpostorCount >= players) settingsMsgs.push("Debe haber menos impostores que jugadores.");
-      impostorCountInfo.textContent = config.customImpostorCount + (config.customImpostorCount === 1 ? " impostor" : " impostores") + " al azar de " + players + " jugadores";
+      if (!word) settingsValid = false;
+      if (config.customImpostorCount >= players) settingsValid = false;
     } else {
-      if (!PACKAGES) settingsMsgs.push("Cargando paquetes…");
-      else if (config.selectedPackages.length === 0) settingsMsgs.push("Selecciona al menos un paquete.");
-      if (config.randomImpostors >= players) settingsMsgs.push("Debe haber menos impostores que jugadores.");
+      if (!PACKAGES || config.selectedPackages.length === 0) settingsValid = false;
+      if (config.randomImpostors >= players) settingsValid = false;
     }
 
     var playersValid = playerMsgs.length === 0;
-    var settingsValid = settingsMsgs.length === 0;
     playersErrorEl.textContent = playerMsgs[0] || "";
-    setupError.textContent = settingsMsgs[0] || "";
     setupNextBtn.disabled = setupStep === 0 && !playersValid;
     startBtn.disabled = !(playersValid && settingsValid);
     return playersValid && settingsValid;

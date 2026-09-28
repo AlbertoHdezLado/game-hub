@@ -495,36 +495,44 @@
         <div id="setup-step-settings" class="hidden">
           <details class="setup-optional">
             <summary>Ajustes adicionales</summary>
-            <div class="setup-optional-content">
-              <label>Categorías</label>
-              <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
-                <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
-                <span class="packages-dropdown-chevron">▾</span>
-              </button>
-              <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
-                <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
-                <div class="chip-list" id="package-list"></div>
+            <div class="setup-optional-content setup-options-grid">
+              <div class="setup-option">
+                <label>Categorías</label>
+                <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
+                  <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
+                  <span class="packages-dropdown-chevron">▾</span>
+                </button>
+                <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
+                  <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
+                  <div class="chip-list" id="package-list"></div>
+                </div>
               </div>
 
-              <label>Rondas por equipo</label>
-              <div class="stepper">
-                <button type="button" id="rounds-minus">−</button>
-                <div class="value" id="rounds-value">3</div>
-                <button type="button" id="rounds-plus">+</button>
+              <div class="setup-option">
+                <label>Rondas por equipo</label>
+                <div class="stepper">
+                  <button type="button" id="rounds-minus">−</button>
+                  <div class="value" id="rounds-value">3</div>
+                  <button type="button" id="rounds-plus">+</button>
+                </div>
               </div>
 
-              <label>Tiempo por turno</label>
-              <div class="stepper">
-                <button type="button" id="turn-seconds-minus">−</button>
-                <div class="value" id="turn-seconds-value">1:00</div>
-                <button type="button" id="turn-seconds-plus">+</button>
+              <div class="setup-option">
+                <label>Tiempo por turno</label>
+                <div class="stepper">
+                  <button type="button" id="turn-seconds-minus">−</button>
+                  <div class="value" id="turn-seconds-value">1:00</div>
+                  <button type="button" id="turn-seconds-plus">+</button>
+                </div>
               </div>
 
-              <label>Segundos que resta pasar</label>
-              <div class="stepper">
-                <button type="button" id="skip-seconds-minus">−</button>
-                <div class="value" id="skip-seconds-value">5</div>
-                <button type="button" id="skip-seconds-plus">+</button>
+              <div class="setup-option">
+                <label>Segundos que resta pasar</label>
+                <div class="stepper">
+                  <button type="button" id="skip-seconds-minus">−</button>
+                  <div class="value" id="skip-seconds-value">5</div>
+                  <button type="button" id="skip-seconds-plus">+</button>
+                </div>
               </div>
             </div>
           </details>
@@ -773,6 +781,45 @@
     timerInterval: null,
     audioCtx: null
   };
+  var GAME_STATE_STORAGE_KEY = 'gamehub.mimicaGameState';
+  var gamePhase = 'setup';
+
+  function persistGameState(){
+    if (gamePhase === 'setup') return;
+    try {
+      localStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify({
+        config: {
+          selectedPackages: config.selectedPackages,
+          numTeams: config.numTeams,
+          rounds: config.rounds,
+          turnSeconds: config.turnSeconds,
+          skipPenaltySeconds: config.skipPenaltySeconds,
+          rows: config.rows
+        },
+        state: {
+          playerNames: state.playerNames,
+          playerTeams: state.playerTeams,
+          playerScores: state.playerScores,
+          teams: state.teams,
+          turnOrder: state.turnOrder,
+          turnIdx: state.turnIdx,
+          currentActorIdx: state.currentActorIdx,
+          turnCorrect: state.turnCorrect,
+          turnWords: state.turnWords,
+          turnResults: state.turnResults,
+          wordDeck: state.wordDeck,
+          wordDeckIdx: state.wordDeckIdx,
+          currentWord: state.currentWord,
+          timeRemaining: state.timeRemaining
+        },
+        phase: gamePhase
+      }));
+    } catch (e) {}
+  }
+
+  function clearPersistedGameState(){
+    try { localStorage.removeItem(GAME_STATE_STORAGE_KEY); } catch (e) {}
+  }
 
   var screenSetup = document.getElementById('screen-setup');
   var screenGame = document.getElementById('screen-game');
@@ -1334,6 +1381,7 @@
   }
 
   function startTurn(){
+    gamePhase = 'turn-intro';
     var teamIdx = state.turnOrder[state.turnIdx];
     var team = state.teams[teamIdx];
     var actorIdx = team.memberIdxs[team.nextMemberPointer % team.memberIdxs.length];
@@ -1354,6 +1402,7 @@
     turnIntroEl.classList.remove('hidden');
     turnPlayEl.classList.add('hidden');
     turnEndEl.classList.add('hidden');
+    persistGameState();
   }
 
   // ---------- countdown + alarm (same pattern as Impostor/Hombres Lobo) ----------
@@ -1364,6 +1413,15 @@
   }
   function stopTimer(){
     if (state.timerInterval){ clearInterval(state.timerInterval); state.timerInterval = null; }
+  }
+  function startActiveTurnTimer(){
+    stopTimer();
+    state.timerInterval = setInterval(function(){
+      state.timeRemaining--;
+      updateTimerDisplay(state.timeRemaining);
+      persistGameState();
+      if (state.timeRemaining <= 0) endTurn();
+    }, 1000);
   }
   function unlockAlarmAudio(){
     if (!state.audioCtx){
@@ -1422,18 +1480,15 @@
 
   turnStartBtn.addEventListener('click', function(){
     unlockAlarmAudio();
+    gamePhase = 'turn-play';
     turnIntroEl.classList.add('hidden');
     turnPlayEl.classList.remove('hidden');
     mimicaTimerWrapEl.classList.remove('time-up');
     state.currentWord = drawNextWord();
     mimicaCardStack.reveal(state.currentWord, 3);
     updateTimerDisplay(state.timeRemaining);
-    stopTimer();
-    state.timerInterval = setInterval(function(){
-      state.timeRemaining--;
-      updateTimerDisplay(state.timeRemaining);
-      if (state.timeRemaining <= 0) endTurn();
-    }, 1000);
+    persistGameState();
+    startActiveTurnTimer();
   });
 
   mimicaCorrectBtn.addEventListener('click', function(){
@@ -1447,6 +1502,7 @@
     state.turnResults.push({ word: state.currentWord, correct: true });
     state.currentWord = drawNextWord();
     mimicaCardStack.discard('right', state.currentWord, 3);
+    persistGameState();
   });
   mimicaSkipBtn.addEventListener('click', function(){
     playSkipSound();
@@ -1459,9 +1515,11 @@
     if (state.timeRemaining <= 0){ endTurn(false); return; }
     state.currentWord = drawNextWord();
     mimicaCardStack.discard('left', state.currentWord, 3);
+    persistGameState();
   });
 
   function endTurn(hasActiveWord){
+    gamePhase = 'turn-end';
     stopTimer();
     mimicaTimerWrapEl.classList.add('time-up');
     playAlarmSound();
@@ -1476,6 +1534,7 @@
 
     var isLastTurn = state.turnIdx >= state.turnOrder.length - 1;
     turnContinueBtn.textContent = isLastTurn ? 'Ver resultados' : 'Continuar';
+    persistGameState();
   }
 
   function renderTurnResults(){
@@ -1497,6 +1556,7 @@
     state.playerScores[state.currentActorIdx] += scoreChange;
     state.turnCorrect += scoreChange;
     renderTurnResults();
+    persistGameState();
   });
 
   turnContinueBtn.addEventListener('click', function(){
@@ -1506,6 +1566,7 @@
   });
 
   function showGameEnd(){
+    gamePhase = 'game-end';
     var maxScore = Math.max.apply(null, state.teams.map(function(t){ return t.score; }));
     var winners = state.teams.map(function(t, i){ return i; }).filter(function(i){ return state.teams[i].score === maxScore; });
     endTitleEl.textContent = winners.length > 1 ? '¡EMPATE!' : '¡' + TEAM_NAMES[winners[0]].toUpperCase() + ' GANA!';
@@ -1515,6 +1576,7 @@
     renderScoreboardRows(endScoreboardEl, true, true);
     renderPlayerExtremes(endPlayerExtremesEl);
     switchScreen(screenEnd);
+    persistGameState();
   }
 
   startBtn.addEventListener('click', function(){
@@ -1538,11 +1600,16 @@
     state.wordDeck = shuffle(buildWordPool());
     state.wordDeckIdx = 0;
 
+    gamePhase = 'turn-intro';
+    persistGameState();
     switchScreen(screenGame);
     startTurn();
   });
 
-  newRoundBtn.addEventListener('click', enterSetup);
+  newRoundBtn.addEventListener('click', function(){
+    clearPersistedGameState();
+    enterSetup();
+  });
 
   // ---------- how-to-play guide ----------
   setupModal(
@@ -1552,9 +1619,82 @@
   );
 
   // ---------- back to setup ----------
-  initBackToSetupConfirm(function(){ stopTimer(); enterSetup(); });
+  initBackToSetupConfirm(function(){
+    stopTimer();
+    clearPersistedGameState();
+    enterSetup();
+  });
+
+  function restorePersistedGame(){
+    var saved;
+    try { saved = JSON.parse(localStorage.getItem(GAME_STATE_STORAGE_KEY) || 'null'); } catch (e){ saved = null; }
+    if (!saved || !saved.config || !saved.state || !saved.phase || saved.phase === 'setup') return;
+
+    config.selectedPackages = saved.config.selectedPackages || [];
+    config.numTeams = saved.config.numTeams || MIN_TEAMS;
+    config.rounds = saved.config.rounds || 3;
+    config.turnSeconds = saved.config.turnSeconds || 60;
+    config.skipPenaltySeconds = saved.config.skipPenaltySeconds || 0;
+    config.rows = saved.config.rows || [];
+
+    state.playerNames = saved.state.playerNames || [];
+    state.playerTeams = saved.state.playerTeams || [];
+    state.playerScores = saved.state.playerScores || [];
+    state.teams = saved.state.teams || [];
+    state.turnOrder = saved.state.turnOrder || [];
+    state.turnIdx = saved.state.turnIdx || 0;
+    state.currentActorIdx = saved.state.currentActorIdx;
+    state.turnCorrect = saved.state.turnCorrect || 0;
+    state.turnWords = saved.state.turnWords || [];
+    state.turnResults = saved.state.turnResults || [];
+    state.wordDeck = saved.state.wordDeck || [];
+    state.wordDeckIdx = saved.state.wordDeckIdx || 0;
+    state.currentWord = saved.state.currentWord || '';
+    state.timeRemaining = saved.state.timeRemaining;
+    state.timerInterval = null;
+    state.audioCtx = null;
+    gamePhase = saved.phase;
+
+    if (gamePhase === 'game-end'){
+      showGameEnd();
+      return;
+    }
+
+    var teamIdx = state.turnOrder[state.turnIdx];
+    turnTeamBadgeEl.textContent = TEAM_NAMES[teamIdx].toUpperCase();
+    turnTeamBadgeEl.className = 'team-turn-badge team-color-' + teamIdx;
+    turnPlayerNameEl.textContent = state.playerNames[state.currentActorIdx];
+    roundStatusEl.textContent = 'RONDA ' + (Math.floor(state.turnIdx / config.numTeams) + 1) + ' / ' + config.rounds;
+    hudPlayerEl.textContent = state.playerNames[state.currentActorIdx];
+    hudScoreEl.textContent = 'x' + state.turnCorrect;
+    updateTimerDisplay(state.timeRemaining);
+    switchScreen(screenGame);
+
+    if (gamePhase === 'turn-play'){
+      turnIntroEl.classList.add('hidden');
+      turnPlayEl.classList.remove('hidden');
+      turnEndEl.classList.add('hidden');
+      mimicaTimerWrapEl.classList.remove('time-up');
+      mimicaCardStack.reveal(state.currentWord, 3);
+      startActiveTurnTimer();
+    } else {
+      turnIntroEl.classList.remove('hidden');
+      turnPlayEl.classList.add('hidden');
+      turnEndEl.classList.add('hidden');
+    }
+    if (gamePhase === 'turn-end'){
+      turnIntroEl.classList.add('hidden');
+      turnEndEl.classList.remove('hidden');
+      mimicaTimerWrapEl.classList.add('time-up');
+      turnEndSubtitleEl.textContent = state.playerNames[state.currentActorIdx] + ' jugó para ' + TEAM_NAMES[teamIdx] +
+        ' y acertó ' + state.turnCorrect + (state.turnCorrect === 1 ? ' palabra.' : ' palabras.');
+      renderTurnResults();
+      turnContinueBtn.textContent = state.turnIdx >= state.turnOrder.length - 1 ? 'Ver resultados' : 'Continuar';
+    }
+  }
 
   // ---------- init ----------
+  restorePersistedGame();
   autoBalanceAllTeams();
   renderTeamCount();
   renderPlayerRows();

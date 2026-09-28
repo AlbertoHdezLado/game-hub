@@ -681,43 +681,53 @@
         <div id="setup-step-settings" class="hidden">
           <details class="setup-optional">
             <summary>Ajustes adicionales</summary>
-            <div class="setup-optional-content">
-              <label>Categorías</label>
-              <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
-                <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
-                <span class="packages-dropdown-chevron">▾</span>
-              </button>
-              <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
-                <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
-                <div class="chip-list" id="package-list"></div>
+            <div class="setup-optional-content setup-options-grid">
+              <div class="setup-option">
+                <label>Categorías</label>
+                <button type="button" class="packages-dropdown-btn" id="packages-dropdown-btn" aria-expanded="false">
+                  <span class="packages-dropdown-summary" id="packages-dropdown-summary">Selecciona categorías</span>
+                  <span class="packages-dropdown-chevron">▾</span>
+                </button>
+                <div class="packages-dropdown-panel hidden" id="packages-dropdown-panel">
+                  <button type="button" class="chip-toggle-all" id="package-toggle-all-btn">Seleccionar todas</button>
+                  <div class="chip-list" id="package-list"></div>
+                </div>
               </div>
 
-              <label>Duración de turno</label>
-              <div class="stepper">
-                <button type="button" id="turn-seconds-minus">−</button>
-                <div class="value" id="turn-seconds-value">1:00</div>
-                <button type="button" id="turn-seconds-plus">+</button>
+              <div class="setup-option">
+                <label>Duración de turno</label>
+                <div class="stepper">
+                  <button type="button" id="turn-seconds-minus">−</button>
+                  <div class="value" id="turn-seconds-value">1:00</div>
+                  <button type="button" id="turn-seconds-plus">+</button>
+                </div>
               </div>
 
-              <label>Segundos que resta pasar en Ronda I</label>
-              <div class="stepper">
-                <button type="button" id="skip-seconds-r1-minus">−</button>
-                <div class="value" id="skip-seconds-r1-value">5</div>
-                <button type="button" id="skip-seconds-r1-plus">+</button>
+              <div class="setup-option">
+                <label>Segundos que resta pasar en Ronda I</label>
+                <div class="stepper">
+                  <button type="button" id="skip-seconds-r1-minus">−</button>
+                  <div class="value" id="skip-seconds-r1-value">5</div>
+                  <button type="button" id="skip-seconds-r1-plus">+</button>
+                </div>
               </div>
 
-              <label>Segundos que resta pasar en Ronda II</label>
-              <div class="stepper">
-                <button type="button" id="skip-seconds-r2-minus">−</button>
-                <div class="value" id="skip-seconds-r2-value">0</div>
-                <button type="button" id="skip-seconds-r2-plus">+</button>
+              <div class="setup-option">
+                <label>Segundos que resta pasar en Ronda II</label>
+                <div class="stepper">
+                  <button type="button" id="skip-seconds-r2-minus">−</button>
+                  <div class="value" id="skip-seconds-r2-value">0</div>
+                  <button type="button" id="skip-seconds-r2-plus">+</button>
+                </div>
               </div>
 
-              <label>Segundos que resta pasar en Ronda III</label>
-              <div class="stepper">
-                <button type="button" id="skip-seconds-r3-minus">−</button>
-                <div class="value" id="skip-seconds-r3-value">0</div>
-                <button type="button" id="skip-seconds-r3-plus">+</button>
+              <div class="setup-option">
+                <label>Segundos que resta pasar en Ronda III</label>
+                <div class="stepper">
+                  <button type="button" id="skip-seconds-r3-minus">−</button>
+                  <div class="value" id="skip-seconds-r3-value">0</div>
+                  <button type="button" id="skip-seconds-r3-plus">+</button>
+                </div>
               </div>
             </div>
           </details>

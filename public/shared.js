@@ -320,6 +320,41 @@ function initIngameHomeControls(){
 }
 initIngameHomeControls();
 
+function buildModal(options){
+  var backdrop = document.createElement('div');
+  backdrop.className = 'guide-modal-backdrop hidden';
+  backdrop.id = options.id;
+  backdrop.innerHTML =
+    '<div class="guide-modal">' +
+      (options.help ? '<button type="button" class="guide-modal-help" aria-label="Ayuda">?</button>' : '') +
+      '<h2>' + options.title + '</h2>' +
+      '<button type="button" class="btn-main" id="' + options.id + '-cancel-btn" style="margin-top:14px;">Seguir jugando</button>' +
+      '<button type="button" class="night-nav-btn" id="' + options.id + '-exit-btn" style="width:100%; margin-top:10px;">' + options.exitLabel + '</button>' +
+    '</div>';
+  document.body.appendChild(backdrop);
+  backdrop.querySelector('#' + options.id + '-cancel-btn').addEventListener('click', function(){
+    backdrop.classList.add('hidden');
+  });
+  backdrop.querySelector('#' + options.id + '-exit-btn').addEventListener('click', function(){
+    options.onExit();
+  });
+  if (options.help){
+    backdrop.querySelector('.guide-modal-help').addEventListener('click', function(){
+      var screen = document.querySelector('.screen:not(.hidden)');
+      var help = screen && screen.querySelector('.ayuda-trigger');
+      backdrop.classList.add('hidden');
+      if (help) help.click();
+    });
+  }
+  backdrop.addEventListener('click', function(e){
+    if (e.target === backdrop) backdrop.classList.add('hidden');
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') backdrop.classList.add('hidden');
+  });
+  return backdrop;
+}
+
 /* "back to hub" needs confirmation while a match still has progress to lose.
    Setup and final-result screens navigate directly. */
 function initHomeExitConfirm(){
@@ -328,47 +363,23 @@ function initHomeExitConfirm(){
 
   var backdrop = null, pendingHref = 'index.html';
 
-  function buildModal(){
-    if (backdrop) return;
-    backdrop = document.createElement('div');
-    backdrop.className = 'guide-modal-backdrop hidden';
-    backdrop.id = 'home-confirm-backdrop';
-    backdrop.innerHTML =
-      '<div class="guide-modal">' +
-        '<button type="button" class="guide-modal-help" aria-label="Ayuda">?</button>' +
-        '<h2>¿Salir al inicio?</h2>' +
-        '<p>Se perderá el progreso de la partida actual.</p>' +
-        '<button type="button" class="btn-main" id="home-confirm-cancel-btn" style="margin-top:14px;">Seguir jugando</button>' +
-        '<button type="button" class="night-nav-btn" id="home-confirm-exit-btn" style="width:100%; margin-top:10px;">Salir al inicio</button>' +
-      '</div>';
-    document.body.appendChild(backdrop);
-    document.getElementById('home-confirm-cancel-btn').addEventListener('click', function(){
-      backdrop.classList.add('hidden');
-    });
-    document.getElementById('home-confirm-exit-btn').addEventListener('click', function(){
-      allowPageExit();
-      window.location.href = pendingHref;
-    });
-    backdrop.querySelector('.guide-modal-help').addEventListener('click', function(){
-      var screen = document.querySelector('.screen:not(.hidden)');
-      var help = screen && screen.querySelector('.ayuda-trigger');
-      backdrop.classList.add('hidden');
-      if (help) help.click();
-    });
-    backdrop.addEventListener('click', function(e){
-      if (e.target === backdrop) backdrop.classList.add('hidden');
-    });
-    document.addEventListener('keydown', function(e){
-      if (e.key === 'Escape') backdrop.classList.add('hidden');
-    });
-  }
-
   Array.prototype.forEach.call(links, function(link){
     var screen = link.closest('.screen');
     if (screen && screen.id === 'screen-setup') return;
     link.addEventListener('click', function(e){
       e.preventDefault();
-      buildModal();
+      if (!backdrop){
+        backdrop = buildModal({
+          id: 'home-confirm-backdrop',
+          title: '¿Salir al inicio?',
+          exitLabel: 'Salir al inicio',
+          help: true,
+          onExit: function(){
+            allowPageExit();
+            window.location.href = pendingHref;
+          }
+        });
+      }
       pendingHref = link.getAttribute('href') || 'index.html';
       backdrop.classList.remove('hidden');
     });
@@ -406,37 +417,19 @@ function initBackToSetupConfirm(returnToSetup){
 
   var backdrop = null;
 
-  function buildModal(){
-    if (backdrop) return;
-    backdrop = document.createElement('div');
-    backdrop.className = 'guide-modal-backdrop hidden';
-    backdrop.id = 'setup-confirm-backdrop';
-    backdrop.innerHTML =
-      '<div class="guide-modal">' +
-        '<h2>¿Volver a configuración?</h2>' +
-        '<p>Se perderá el progreso de la partida actual.</p>' +
-        '<button type="button" class="btn-main" id="setup-confirm-cancel-btn" style="margin-top:14px;">Seguir jugando</button>' +
-        '<button type="button" class="night-nav-btn" id="setup-confirm-exit-btn" style="width:100%; margin-top:10px;">Volver a configuración</button>' +
-      '</div>';
-    document.body.appendChild(backdrop);
-    document.getElementById('setup-confirm-cancel-btn').addEventListener('click', function(){
-      backdrop.classList.add('hidden');
-    });
-    document.getElementById('setup-confirm-exit-btn').addEventListener('click', function(){
-      backdrop.classList.add('hidden');
-      returnToSetup();
-    });
-    backdrop.addEventListener('click', function(e){
-      if (e.target === backdrop) backdrop.classList.add('hidden');
-    });
-    document.addEventListener('keydown', function(e){
-      if (e.key === 'Escape') backdrop.classList.add('hidden');
-    });
-  }
-
   Array.prototype.forEach.call(buttons, function(btn){
     btn.addEventListener('click', function(){
-      buildModal();
+      if (!backdrop){
+        backdrop = buildModal({
+          id: 'setup-confirm-backdrop',
+          title: '¿Volver a configuración?',
+          exitLabel: 'Volver a configuración',
+          onExit: function(){
+            backdrop.classList.add('hidden');
+            returnToSetup();
+          }
+        });
+      }
       backdrop.classList.remove('hidden');
     });
   });
