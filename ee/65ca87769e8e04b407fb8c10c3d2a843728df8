@@ -1,0 +1,19 @@
+public/data/most-likely.json
+  s_88bca4c0846498::t_4b65415e914078 10,15,33,38,43-47,57,82,85-86,89,93-94,103,109,117-118,120-122,124-131,140,158,167-168,170,172,174,177,179-345
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ee65ca87769e8e04b407fb8c10c3d2a843728df8",
+  "prompts": {},
+  "sessions": {
+    "s_88bca4c0846498": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "1d2110d4-fd73-43f1-874b-3f3a2203f18d",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
