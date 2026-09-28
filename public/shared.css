@@ -183,12 +183,9 @@ button{
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  scrollbar-width:thin;
-  scrollbar-color:var(--accent) transparent;
+  scrollbar-width:none;
 }
-.scr-body::-webkit-scrollbar{width:6px;}
-.scr-body::-webkit-scrollbar-track{background:transparent;}
-.scr-body::-webkit-scrollbar-thumb{background:var(--accent); border-radius:999px;}
+.scr-body::-webkit-scrollbar{display:none;}
 .screen .scr-body.card-stack-host{overflow:visible;}
 /* pinned action dock: the step's primary/contextual controls (start, next,
    correct/skip...) always stay on screen instead of scrolling away */
@@ -419,7 +416,7 @@ input[type="text"]::placeholder{color:var(--text-dim); opacity:0.7;}
   justify-content:space-between;
   gap:10px;
   min-height:64px;
-  margin:0 0 14px;
+  margin:0;
 }
 #screen-setup .setup-header > h1{
   position:absolute;
@@ -1452,9 +1449,6 @@ input:focus-visible{
   position:relative;
   overflow:hidden;
 }
-#screen-setup .setup-header{
-  margin-bottom:8px;
-}
 #screen-setup .card>.setup-header{
   margin-left:0;
   margin-right:0;
@@ -1587,7 +1581,27 @@ input:focus-visible{
   filter:brightness(1.08);
 }
 #screen-setup .scr-dock{
-  padding-top:10px;
+  position:fixed;
+  left:50%;
+  bottom:max(12px, env(safe-area-inset-bottom));
+  width:min(calc(100% - 36px), 864px);
+  padding-top:0;
+  transform:translateX(-50%);
+  z-index:20;
+  pointer-events:none;
+}
+#screen-setup .scr-dock .night-nav,
+#screen-setup .scr-dock .final-nav{
+  pointer-events:none;
+}
+#screen-setup .scr-dock button{
+  pointer-events:auto;
+}
+#screen-setup .scr-body::after{
+  content:"";
+  display:block;
+  height:46px;
+  flex:0 0 46px;
 }
 #screen-setup .final-nav{
   margin-top:0;
@@ -1599,8 +1613,8 @@ input:focus-visible{
   flex:0 0 auto;
   width:auto;
   margin-top:0;
-  min-height:52px;
-  padding:10px 24px;
+  min-height:46px;
+  padding:6px 20px;
   border-radius:11px;
   background:var(--accent);
   border:none;
@@ -1608,6 +1622,10 @@ input:focus-visible{
 }
 #screen-setup .btn-main:hover{
   filter:brightness(1.08);
+}
+#screen-setup .night-nav-btn{
+  min-height:46px;
+  padding:6px 20px;
 }
 #screen-setup .count-info{
   line-height:1.45;

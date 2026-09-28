@@ -682,6 +682,12 @@ function createCardStack(rootEl, options){
     busy = true;
     if (timer){ clearTimeout(timer); timer = null; }
     var outgoing = slots[0];
+    var next = slots[1];
+    if (next && remaining > 1){
+      next.classList.add('flip-card-promoting');
+      next.classList.remove('flip-card-depth-1');
+      next.classList.add('flip-card-depth-0');
+    }
     outgoing.classList.add(direction === 'left' ? 'flip-card-exit-left' : 'flip-card-exit-right');
     timer = window.setTimeout(function(){
       outgoing.classList.remove('flip-card-exit-left', 'flip-card-exit-right');
@@ -695,6 +701,7 @@ function createCardStack(rootEl, options){
       }
       slots.shift();
       slots.push(outgoing); // snaps straight to the back of the stack, no transition
+      if (next) next.classList.remove('flip-card-promoting');
       reveal(word, remaining);
       if (outgoingInner){
         window.requestAnimationFrame(function(){
