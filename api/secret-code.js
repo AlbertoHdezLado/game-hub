@@ -156,7 +156,9 @@ function publicState(room, viewerId) {
       winner_team: room.game.winnerTeam,
       end_reason: room.game.endReason
     } : null,
-    keys: room.game && viewer && viewer.isLeader ? { game_id: room.game.id, roles: room.game.roles } : null
+    keys: room.game && viewer && room.game.leaderIds && room.game.leaderIds.includes(viewer.id)
+      ? { game_id: room.game.id, roles: room.game.roles }
+      : null
   };
 }
 
@@ -246,7 +248,24 @@ async function startGame(body) {
   if (!readyTeams(room)) throw new Error('teams_not_ready');
   if (!Array.isArray(body.board_words) || body.board_words.length !== 25 || !Array.isArray(body.board_roles) || body.board_roles.length !== 25) throw new Error('invalid_board');
   const now = new Date().toISOString();
-  room.game = { id: newId(), status: 'playing', words: body.board_words, roles: body.board_roles, revealedIndices: [], revealedRoles: [], startingTeam: Number(body.first_team), activeTeam: Number(body.first_team), turnStartedAt: now, timeLimitSeconds: body.turn_seconds ? Number(body.turn_seconds) : null, winnerTeam: null, endReason: null };
+  room.game = {
+    id: newId(),
+    status: 'playing',
+    words: body.board_words,
+    roles: body.board_roles,
+    leaderIds: Array.from({ length: room.teamCount }, (_, teamIndex) => {
+      const leader = room.players.find((member) => member.teamIndex === teamIndex && member.isLeader);
+      return leader ? leader.id : null;
+    }),
+    revealedIndices: [],
+    revealedRoles: [],
+    startingTeam: Number(body.first_team),
+    activeTeam: Number(body.first_team),
+    turnStartedAt: now,
+    timeLimitSeconds: body.turn_seconds ? Number(body.turn_seconds) : null,
+    winnerTeam: null,
+    endReason: null
+  };
   await saveRoom(room);
   return publicState(room, body.player_id);
 }
@@ -256,7 +275,7 @@ async function selectWord(body) {
   if (!room || !room.game) throw new Error('game_not_found');
   const player = requirePlayer(room, body.player_id);
   const index = Number(body.word_index) - 1;
-  if (player.isLeader || player.teamIndex !== room.game.activeTeam || index < 0 || index >= 25 || room.game.revealedIndices.includes(index)) throw new Error('not_allowed_to_select');
+  if ((room.game.leaderIds && room.game.leaderIds.includes(player.id)) || player.teamIndex !== room.game.activeTeam || index < 0 || index >= 25 || room.game.revealedIndices.includes(index)) throw new Error('not_allowed_to_select');
   const role = room.game.roles[index];
   room.game.revealedIndices.push(index);
   room.game.revealedRoles.push(role);

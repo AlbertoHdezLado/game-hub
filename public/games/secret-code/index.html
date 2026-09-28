@@ -882,7 +882,9 @@
       var oldGame = roomSession.state && roomSession.state.game;
       roomSession.state = data;
       var currentRoomPlayer = data.players.filter(function(player){ return player.user_id === roomSession.userId; })[0];
-      isBoardLeader = Boolean(data.keys || (currentRoomPlayer && currentRoomPlayer.is_leader));
+      isBoardLeader = data.game
+        ? Boolean(data.keys)
+        : Boolean(currentRoomPlayer && currentRoomPlayer.is_leader);
       if (data.room.config && data.room.config.timeLimitSeconds != null){
         config.timeLimitSeconds = Number(data.room.config.timeLimitSeconds);
       }
@@ -1435,7 +1437,7 @@
     var player = currentPlayer();
     var game = roomSession.state && roomSession.state.game;
     var index = Number(cell.dataset.index);
-    if (!player || !game || game.status !== 'playing' || player.is_leader || player.team_index !== game.active_team || game.revealed_indices.indexOf(index) !== -1) return;
+    if (!player || !game || game.status !== 'playing' || isBoardLeader || player.team_index !== game.active_team || game.revealed_indices.indexOf(index) !== -1) return;
     pendingReveal = { cell: cell, gameId: game.id, wordIndex: index + 1 };
     revealConfirmWord.textContent = cell.textContent;
     revealConfirmBackdrop.classList.remove('hidden');
