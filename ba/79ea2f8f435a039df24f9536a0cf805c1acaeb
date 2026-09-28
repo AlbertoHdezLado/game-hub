@@ -1,0 +1,27 @@
+public/games/charades/index.html
+  s_190bd9f1b1e69b::t_89c204df4184bb 498-508,511-517,520-526,529-535,784-822,1384,1405,1417-1425,1483,1490-1491,1505,1518,1522,1537,1559,1569,1579,1603-1604,1609-1612,1622-1694,1697
+public/games/impostor/index.html
+  s_190bd9f1b1e69b::t_44dedcb8f9f6ea 334-335,343-347,350-357,360-365,367,378-379,391-397,969,972-973,975-976
+public/games/werewolf/index.html
+  s_190bd9f1b1e69b::t_13f4abaa0cbaea 893-900
+public/shared.css
+  s_190bd9f1b1e69b::t_f4370845bb8b3c 1513-1514,1520,1533-1534,1675-1720
+public/shared.js
+  s_190bd9f1b1e69b::t_d0138b8dcffb6e 323-341,349-364,371-382,422-432
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ba79ea2f8f435a039df24f9536a0cf805c1acaeb",
+  "prompts": {},
+  "sessions": {
+    "s_190bd9f1b1e69b": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "251f9cc4-0ac6-486e-a64c-8ef1eb8df34f",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
