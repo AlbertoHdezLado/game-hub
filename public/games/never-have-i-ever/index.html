@@ -65,7 +65,7 @@
         <div class="error-msg" id="setup-error"></div>
       </div>
 
-      <div class="scr-dock">
+      <div class="scr-dock scr-dock--right">
         <button class="btn-main" id="start-btn">Iniciar partida</button>
       </div>
     </div>
@@ -85,7 +85,7 @@
         <li>Elige las categorías que queráis usar y pulsa "Iniciar partida".</li>
         <li>Lee cada frase en voz alta para todo el grupo.</li>
         <li>Quien SÍ haya hecho lo que dice la frase, baja un dedo. A quien se le acaben los dedos, queda fuera de esa ronda de manos (o simplemente sigue jugando por diversión — la app no lo controla).</li>
-        <li>Pulsa "Siguiente" para pasar a la próxima frase.</li>
+        <li>Toca la pantalla para pasar a la próxima frase.</li>
       </ol>
 
       <h3>Honestidad</h3>
@@ -116,9 +116,6 @@
         </div>
       </div>
 
-      <div class="scr-dock">
-        <button class="btn-main" id="next-btn">Siguiente</button>
-      </div>
     </div>
   </div>
 
@@ -260,7 +257,6 @@
 
   // ---------- prompt screen (infinite: reshuffles and keeps going, no round count) ----------
   var phraseEl = document.querySelector('.prompt-card .flip-card-word-text') || document.getElementById('yn-phrase');
-  var nextBtn = document.getElementById('next-btn');
   var cardStack = createCardStack(document.querySelector('.prompt-card'), { render: renderPromptCard });
 
   function renderPromptCard(content, phrase){
@@ -273,7 +269,7 @@
     else cardStack.reveal(state.deck[i], 3);
   }
 
-  nextBtn.addEventListener('click', function(){
+  function showNextRound(){
     if (cardStack.isBusy()) return;
     state.index++;
     if (state.index >= state.deck.length){
@@ -281,6 +277,11 @@
       state.index = 0;
     }
     showRound(state.index, true);
+  }
+
+  screenGame.addEventListener('click', function(e){
+    if (e.target.closest('a, button')) return;
+    showNextRound();
   });
 
   startBtn.addEventListener('click', function(){
