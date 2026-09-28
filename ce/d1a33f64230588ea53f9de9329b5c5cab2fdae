@@ -1,0 +1,14 @@
+public/games/picolo/index.html
+  h_fed6a40af368f7 75,98,387,389,396-400
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ced1a33f64230588ea53f9de9329b5c5cab2fdae",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
