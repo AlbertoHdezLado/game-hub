@@ -72,7 +72,7 @@
         <div class="error-msg" id="players-error"></div>
       </div>
 
-      <div class="scr-dock">
+      <div class="scr-dock scr-dock--right">
         <button class="btn-main" id="start-btn">Iniciar partida</button>
       </div>
     </div>
@@ -95,7 +95,7 @@
       <ol>
         <li>Añade a los jugadores por su nombre.</li>
         <li>Pulsa "Iniciar partida" y lee cada carta en voz alta para todo el grupo.</li>
-        <li>Pulsa "Siguiente carta" para pasar a la próxima. No hay rondas ni final: jugad tanto como queráis y parad cuando queráis.</li>
+        <li>Toca la pantalla para pasar a la próxima. No hay rondas ni final: jugad tanto como queráis y parad cuando queráis.</li>
       </ol>
 
       <h3>Tipos de carta</h3>
@@ -137,7 +137,6 @@
 
       <div class="scr-dock">
         <button class="btn-main hidden" id="reveal-decision-btn">👀 Revelar quién bebe</button>
-        <button class="btn-main" id="next-btn">🥃 Siguiente carta</button>
       </div>
     </div>
   </div>
@@ -308,7 +307,6 @@
 
   // ---------- card screen (infinite: reshuffles and keeps going, no round count) ----------
   var revealWrap = document.getElementById('reveal-wrap');
-  var nextBtn = document.getElementById('next-btn');
   var revealDecisionBtn = document.getElementById('reveal-decision-btn');
   var picoloStack = createCardStack(revealWrap, { render: renderPicoloCard });
 
@@ -355,11 +353,9 @@
     if (card.tipo === 'decision'){
       picoloTextEl.textContent = card.prompt;
       revealDecisionBtn.classList.remove('hidden');
-      nextBtn.classList.add('hidden');
     } else {
       picoloTextEl.textContent = fillTemplate(card.texto, state.playerNames);
       revealDecisionBtn.classList.add('hidden');
-      nextBtn.classList.remove('hidden');
     }
 
     fitRevealText(content);
@@ -380,7 +376,6 @@
     picoloTextEl.classList.add('pulse');
     fitRevealText();
     revealDecisionBtn.classList.add('hidden');
-    nextBtn.classList.remove('hidden');
   });
 
   var revealResizeTimer = null;
@@ -389,14 +384,20 @@
     revealResizeTimer = setTimeout(function(){ fitRevealText(); }, 150);
   });
 
-  nextBtn.addEventListener('click', function(){
+  function showNextRound(){
     if (picoloStack.isBusy()) return;
+    if (!revealDecisionBtn.classList.contains('hidden')) return; // decision card awaiting reveal — tap the reveal button first
     state.index++;
     if (state.index >= state.deck.length){
       state.deck = buildDeck(); // reshuffle and keep going — the deck never runs out
       state.index = 0;
     }
     showRound(state.index, true);
+  }
+
+  screenGame.addEventListener('click', function(e){
+    if (e.target.closest('a, button')) return;
+    showNextRound();
   });
 
   startBtn.addEventListener('click', function(){
