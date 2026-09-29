@@ -14,9 +14,10 @@ export type GameSlug =
   | 'what-would-you-do'
   | 'would-you-rather'
   | 'detective-club'
-  | 'hitster';
+  | 'hitster'
+  | 'shitty-friends';
 
-export type ThemeName = 'red' | 'violet' | 'steel' | 'green' | 'teal' | 'amber' | 'flame' | 'gold' | 'orange' | 'lime' | 'purple' | 'yellow' | 'indigo' | 'cyan' | 'blue' | 'rose';
+export type ThemeName = 'red' | 'violet' | 'steel' | 'green' | 'teal' | 'amber' | 'flame' | 'gold' | 'orange' | 'lime' | 'purple' | 'yellow' | 'indigo' | 'cyan' | 'blue' | 'rose' | 'black';
 
 export interface GameDefinition {
   slug: GameSlug;

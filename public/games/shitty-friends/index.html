@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="/analytics.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ececec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Amigos de Mierda · Game Hub</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="78" font-size="72" text-anchor="middle">%F0%9F%92%A9</text></svg>'>
+<link rel="stylesheet" href="/shared.css">
+<style>
+  :root{
+    --accent:#24242a;
+    --accent2:#6e6e76;
+    --reveal-b:#c7c7cc;
+  }
+  html,body{
+    /* flat solid fill — a multi-layer gradient here used to leave gaps of
+       the raw background color showing on some viewports/scroll ranges */
+    background-color:var(--bg2);
+  }
+
+  .sf-phrase{
+    text-align:center;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.35rem;
+    line-height:1.35;
+    margin:8px 0 16px;
+    max-height:30vh;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    word-break:break-word;
+  }
+  #screen-game .scr-body{
+    display:flex;
+    flex-direction:column;
+  }
+  .sf-selector-title{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:0.85rem;
+    font-weight:700;
+    margin:4px 0 10px;
+  }
+  #sf-players-list{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  #sf-players-list .roster-row{
+    justify-content:center;
+    text-align:center;
+    margin-bottom:0;
+  }
+  #sf-players-list .roster-row:active{transform:scale(0.98);}
+  #sf-players-list .roster-row.selected{
+    background:linear-gradient(135deg, var(--accent), var(--accent2));
+    border-color:transparent;
+    color:#fff;
+  }
+  .sf-nav{
+    display:flex;
+    align-items:stretch;
+    gap:10px;
+    margin-top:10px;
+  }
+  .sf-nav button{
+    flex:1;
+    padding:16px;
+    border:none;
+    border-radius:16px;
+    font-size:1.02rem;
+    font-weight:700;
+    letter-spacing:0.3px;
+    cursor:pointer;
+    color:#fff;
+    box-shadow:0 4px 0 var(--shadow);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .sf-nav button:active{transform:translateY(1px) scale(0.99);}
+  .sf-end-btn{background:var(--danger);}
+  .sf-next-btn{background:#2f9e56;}
+
+  .sf-rank-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border-radius:14px;
+    background:var(--surface);
+    border:1px solid var(--glass-border);
+    margin-bottom:8px;
+    text-align:left;
+  }
+  .sf-rank-row.sf-rank-top{
+    border-color:var(--accent);
+    background:var(--surface-2);
+  }
+  .sf-rank-number{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:1.1rem;
+    color:var(--accent2);
+    min-width:26px;
+  }
+  .sf-rank-info{flex:1; min-width:0;}
+  .sf-rank-name{font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .sf-rank-title{color:var(--text-dim); font-size:0.82rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .sf-rank-points{font-family:var(--font-display); font-weight:800; font-size:1.05rem;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SETUP: players + categories -->
+  <div class="screen" id="screen-setup">
+    <div class="card">
+      <div class="setup-header">
+        <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+        <h1>AMIGOS DE MIERDA</h1>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+
+      <div class="scr-body">
+        <label class="players-label">Jugadores</label>
+        <div class="player-chips-list" id="sf-players-chips"></div>
+        <div class="player-input-row">
+          <input type="text" class="player-name-input" id="sf-players-draft" placeholder="Nombre del jugador..." maxlength="20">
+          <button type="button" class="player-add-btn" id="sf-players-add" aria-label="Añadir jugador">+</button>
+        </div>
+        <div class="error-msg" id="sf-players-error"></div>
+
+        <details class="setup-optional">
+          <summary>Ajustes adicionales</summary>
+          <div class="setup-optional-content setup-options-grid">
+            <div class="setup-option">
+              <label>Categorías</label>
+              <button type="button" class="chip-toggle-all" id="category-toggle-all-btn">Seleccionar todas</button>
+              <div class="chip-list" id="category-list"></div>
+            </div>
+          </div>
+        </details>
+
+        <div class="error-msg" id="setup-error"></div>
+      </div>
+
+      <div class="scr-dock scr-dock--right">
+        <button class="btn-main" id="start-btn">Empezar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY GUIDE -->
+  <div class="guide-modal-backdrop hidden" id="guide-modal-backdrop">
+    <div class="guide-modal">
+      <button type="button" class="guide-modal-close" id="guide-modal-close">✕</button>
+      <h2>Cómo se juega</h2>
+
+      <h3>Objetivo</h3>
+      <ul>
+        <li>Añade a los jugadores y elige las categorías que queráis usar.</li>
+        <li>En cada tarjeta aparece una pregunta tipo "¿Quién de nosotros...?".</li>
+        <li>Leedla en voz alta, debatid y elegid abajo a la persona a la que señala el grupo — se lleva un punto.</li>
+      </ul>
+
+      <h3>Usar la app</h3>
+      <ol>
+        <li>Toca a la persona elegida en la lista y pulsa "Siguiente" para sacar otra tarjeta.</li>
+        <li>Si nadie se pone de acuerdo, puedes pasar de tarjeta sin elegir a nadie.</li>
+        <li>Cuando queráis terminar la partida, pulsa el botón rojo "Terminar" para ver el ranking final.</li>
+      </ol>
+
+      <h3>Ranking final</h3>
+      <p>Cada jugador recibe un título según cuántas veces fue señalado: desde "El Amigo de Mierda" (el más votado) hasta "El Amigo Ejemplar" (el menos votado).</p>
+    </div>
+  </div>
+
+  <!-- PROMPT + VOTE SCREEN -->
+  <div class="screen hidden" id="screen-game">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <div class="scr-body">
+        <div class="prompt-card">
+          <div class="sf-phrase" id="sf-phrase"></div>
+        </div>
+        <p class="sf-selector-title">¿A quién señala el grupo?</p>
+        <div id="sf-players-list"></div>
+      </div>
+
+      <div class="sf-nav">
+        <button type="button" class="sf-end-btn" id="sf-end-btn">Terminar</button>
+        <button type="button" class="sf-next-btn" id="sf-next-btn">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- END SCREEN: final ranking -->
+  <div class="screen hidden" id="screen-end">
+    <div class="card">
+      <div class="setup-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="/" class="guide-btn" aria-label="Inicio"><span class="home-icon"></span></a>
+          <button type="button" class="guide-btn back-to-setup-btn" aria-label="Volver a configuración"><span class="back-icon"></span></button>
+        </div>
+        <button type="button" class="guide-btn ayuda-trigger" aria-label="Ayuda">?</button>
+      </div>
+      <div class="scr-body">
+        <div class="end-icon">💩</div>
+        <h1 style="font-size:1.5rem;">RANKING FINAL</h1>
+        <p class="subtitle">De el más amigo de mierda al más ejemplar.</p>
+        <div id="sf-ranking-list"></div>
+      </div>
+      <div class="scr-dock">
+        <button class="btn-main" id="sf-new-game-btn">Nueva partida</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/shared.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var MIN_PLAYERS = 3, MAX_PLAYERS = 20;
+
+  // ranks descend from "peor amigo" (most votes) to "amigo ejemplar" (menos votos) —
+  // the last two entries are always reserved for the bottom two ranks (see assignTitles);
+  // everything before that is handed out top-down as far as the group size reaches.
+  var TITLES = [
+    "El Amigo de Mierda 💩",
+    "Vicepresidente de Cacapital",
+    "Bronzurulo Supremo",
+    "Ministro de Asuntos Fecales",
+    "El Traidor de Confianza",
+    "Su Majestad el Cuñado",
+    "El que Nunca Paga la Cuenta",
+    "Comisario de la Excusa Barata",
+    "La Garrapata del Grupo",
+    "Embajador del Drama",
+    "El que Siempre Llega Tarde",
+    "Duque del Ghosting",
+    "El Aguafiestas Oficial",
+    "Presidente del Club de los Impuntuales",
+    "Sanguijuela Certificada",
+    "Barón del Cotilleo",
+    "El que Pide Dinero y no lo Devuelve",
+    "Conde del Bajón",
+    "El Fantasma del Grupo",
+    "El Amigo Ejemplar 🏆"
+  ];
+
+  var config = {
+    rows: loadSavedPlayerNames().slice(0, MAX_PLAYERS).map(function(n){ return { name: n }; }),
+    selectedCategories: []
+  };
+
+  function persistPlayers(){
+    savePlayerNames(config.rows.map(function(r){ return r.name.trim(); }).filter(function(n){ return n !== ""; }));
+  }
+
+  var CATEGORIAS = null;
+  var CATEGORIAS_FALLBACK = [
+    { "id": "clasicas", "nombre": "Clásicas", "icono": "💩", "frases": ["¿Quién se pide lo más caro de la carta y se hace el tonto para dividir la cuenta entre todos?", "¿Quién mea en la piscina?", "¿Quién de nosotros pide dinero prestado sabiendo que nunca lo va a devolver?", "¿Quién se cagó?", "Jamás tocaría la ropa interior de...", "¿Quién de nosotros se cree mejor que todos los demás?", "¿A quién no querrías jamás como jefe?", "¿Quién de nosotros odia su vida?", "Solo vas a poder abrazar a uno de nosotros por el resto de tu vida. ¿A quién?", "¿Quién de nosotros es secretamente un supervillano?"] }
+  ];
+
+  function loadCategories(){
+    return fetch('/data/shitty-friends.json')
+      .then(function(r){ if (!r.ok) throw new Error('bad response'); return r.json(); })
+      .then(function(data){ CATEGORIAS = data.categorias; })
+      .catch(function(){ CATEGORIAS = CATEGORIAS_FALLBACK; })
+      .then(function(){
+        if (config.selectedCategories.length === 0){
+          // +18 categories start unselected — picking one goes through the confirm modal
+          config.selectedCategories = CATEGORIAS.filter(function(c){ return !isAdultContent(c); }).map(function(c){ return c.id; });
+        }
+        renderCategoryList();
+        validateSetup();
+      });
+  }
+
+  var state = {
+    deck: [],
+    index: 0,
+    scores: [],
+    selectedIdx: null
+  };
+
+  var screenSetup = document.getElementById('screen-setup');
+  var screenGame = document.getElementById('screen-game');
+  var screenEnd = document.getElementById('screen-end');
+  var ALL_SCREENS = [screenSetup, screenGame, screenEnd];
+
+  function switchScreen(target){
+    ALL_SCREENS.forEach(function(s){ s.classList.add('hidden'); });
+    target.classList.remove('hidden');
+  }
+
+  // ---------- players ----------
+  var playersChipsList = document.getElementById('sf-players-chips');
+  var playersDraftInput = document.getElementById('sf-players-draft');
+  var playersAddBtn = document.getElementById('sf-players-add');
+  forceUppercaseInput(playersDraftInput);
+  var playersErrorEl = document.getElementById('sf-players-error');
+
+  function renderRows(){
+    var rows = config.rows;
+    playersChipsList.innerHTML = rows.map(function(row, idx){
+      return (
+        '<div class="player-chip">' +
+          '<span class="player-chip-name">' + escapeHtml(row.name) + '</span>' +
+          '<button type="button" class="player-chip-remove" data-index="' + idx + '"' +
+            (rows.length <= MIN_PLAYERS ? ' disabled' : '') + '>✕</button>' +
+        '</div>'
+      );
+    }).join('');
+    playersDraftInput.disabled = rows.length >= MAX_PLAYERS;
+    playersDraftInput.placeholder = rows.length >= MAX_PLAYERS ? ('Máximo alcanzado (' + MAX_PLAYERS + ')') : 'Nombre del jugador...';
+  }
+
+  function addPlayerFromDraft(){
+    var trimmed = playersDraftInput.value.trim();
+    if (!trimmed || config.rows.length >= MAX_PLAYERS) return;
+    config.rows.push({ name: trimmed });
+    playersDraftInput.value = '';
+    renderRows();
+    persistPlayers();
+    validateSetup();
+    playersDraftInput.focus();
+  }
+
+  playersDraftInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); addPlayerFromDraft(); }
+  });
+  playersAddBtn.addEventListener('click', addPlayerFromDraft);
+  playersDraftInput.addEventListener('focus', function(){
+    playersDraftInput.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  });
+
+  playersChipsList.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.player-chip-remove');
+    if (removeBtn && !removeBtn.disabled){
+      var rIdx = parseInt(removeBtn.getAttribute('data-index'), 10);
+      config.rows.splice(rIdx, 1);
+      renderRows();
+      persistPlayers();
+      validateSetup();
+    }
+  });
+
+  // ---------- categories (multiple choice) ----------
+  var categoryListEl = document.getElementById('category-list');
+  var categoryToggleAllBtn = document.getElementById('category-toggle-all-btn');
+  var setupError = document.getElementById('setup-error');
+  var startBtn = document.getElementById('start-btn');
+
+  function renderToggleAllLabel(){
+    if (!CATEGORIAS){ categoryToggleAllBtn.textContent = 'Seleccionar todas'; return; }
+    categoryToggleAllBtn.textContent = config.selectedCategories.length === CATEGORIAS.length ? 'Quitar todas' : 'Seleccionar todas';
+  }
+
+  function renderCategoryList(){
+    if (!CATEGORIAS || CATEGORIAS.length === 0){
+      categoryListEl.innerHTML = '<p class="chip-loading">Cargando categorías…</p>';
+      renderToggleAllLabel();
+      return;
+    }
+    categoryListEl.innerHTML = CATEGORIAS.map(function(c){
+      var selected = config.selectedCategories.indexOf(c.id) !== -1;
+      return '<button type="button" class="chip' + (selected ? ' selected' : '') + '" data-category-id="' + c.id + '">' +
+        '<span class="chip-icon">' + escapeHtml(c.icono || '') + '</span>' +
+        '<span class="chip-name">' + escapeHtml(c.nombre) + '</span>' +
+      '</button>';
+    }).join('');
+    renderToggleAllLabel();
+  }
+
+  function addCategory(id){
+    config.selectedCategories.push(id);
+    renderCategoryList();
+    validateSetup();
+  }
+
+  categoryListEl.addEventListener('click', function(e){
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    var id = chip.getAttribute('data-category-id');
+    var idx = config.selectedCategories.indexOf(id);
+    if (idx !== -1){
+      config.selectedCategories.splice(idx, 1);
+      renderCategoryList();
+      validateSetup();
+      return;
+    }
+    var cat = CATEGORIAS.filter(function(c){ return c.id === id; })[0];
+    if (isAdultContent(cat)) confirmAdultContent(function(){ addCategory(id); });
+    else addCategory(id);
+  });
+
+  categoryToggleAllBtn.addEventListener('click', function(){
+    if (!CATEGORIAS) return;
+    if (config.selectedCategories.length === CATEGORIAS.length){
+      config.selectedCategories = [];
+      renderCategoryList();
+      validateSetup();
+      return;
+    }
+    function selectAll(){
+      config.selectedCategories = CATEGORIAS.map(function(c){ return c.id; });
+      renderCategoryList();
+      validateSetup();
+    }
+    var hasUnselectedAdult = CATEGORIAS.some(function(c){
+      return isAdultContent(c) && config.selectedCategories.indexOf(c.id) === -1;
+    });
+    if (hasUnselectedAdult) confirmAdultContent(selectAll);
+    else selectAll();
+  });
+
+  function buildDeck(){
+    return buildShuffledCategoryPool(CATEGORIAS.filter(function(c){
+      return config.selectedCategories.indexOf(c.id) !== -1;
+    }).map(function(c){ return c.frases; }));
+  }
+
+  function validateSetup(){
+    var msgs = [];
+    if (config.rows.length < MIN_PLAYERS) msgs.push("Añade al menos " + MIN_PLAYERS + " jugadores.");
+    else if (hasDuplicatePlayerNames(config.rows)) msgs.push("Hay nombres repetidos.");
+    playersErrorEl.textContent = msgs[0] || "";
+
+    var catMsgs = [];
+    if (!CATEGORIAS) catMsgs.push("Cargando categorías…");
+    else if (config.selectedCategories.length === 0) catMsgs.push("Selecciona al menos una categoría.");
+    setupError.textContent = catMsgs[0] || "";
+
+    startBtn.disabled = msgs.length !== 0 || catMsgs.length !== 0;
+    return msgs.length === 0 && catMsgs.length === 0;
+  }
+
+  function enterSetup(){
+    renderRows();
+    renderCategoryList();
+    validateSetup();
+    switchScreen(screenSetup);
+  }
+
+  // ---------- prompt + vote screen ----------
+  var cardStack = createCardStack(document.querySelector('.prompt-card'), { render: renderPromptCard });
+  var sfPlayersListEl = document.getElementById('sf-players-list');
+  var sfEndBtn = document.getElementById('sf-end-btn');
+  var sfNextBtn = document.getElementById('sf-next-btn');
+
+  function fitPhraseText(target){
+    var maxSize = 1.35, minSize = 0.8, step = 0.05;
+    var size = maxSize;
+    target.style.fontSize = size + 'rem';
+    while (size > minSize && target.scrollHeight > target.clientHeight + 1){
+      size -= step;
+      target.style.fontSize = size + 'rem';
+    }
+  }
+
+  function renderPromptCard(content, phrase){
+    content.className = 'flip-card-word-text sf-phrase';
+    content.textContent = phrase;
+    fitPhraseText(content);
+  }
+
+  function renderPlayersSelector(){
+    sfPlayersListEl.innerHTML = config.rows.map(function(row, idx){
+      return '<div class="roster-row' + (state.selectedIdx === idx ? ' selected' : '') + '" data-index="' + idx + '">' +
+        '<span class="roster-row-name">' + escapeHtml(row.name) + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  sfPlayersListEl.addEventListener('click', function(e){
+    var row = e.target.closest('.roster-row');
+    if (!row) return;
+    var idx = parseInt(row.getAttribute('data-index'), 10);
+    state.selectedIdx = state.selectedIdx === idx ? null : idx;
+    renderPlayersSelector();
+  });
+
+  function showRound(i, animate){
+    state.selectedIdx = null;
+    renderPlayersSelector();
+    if (animate) cardStack.discard('right', state.deck[i], 3);
+    else cardStack.reveal(state.deck[i], 3);
+  }
+
+  var phraseResizeTimer = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(phraseResizeTimer);
+    phraseResizeTimer = setTimeout(function(){
+      var el = document.querySelector('.prompt-card .flip-card-word-text');
+      if (el) fitPhraseText(el);
+    }, 150);
+  });
+
+  function showNextRound(){
+    if (cardStack.isBusy()) return;
+    if (state.selectedIdx !== null) state.scores[state.selectedIdx]++;
+    state.index++;
+    if (state.index >= state.deck.length){
+      state.deck = buildDeck(); // reshuffle and keep going — the deck never runs out
+      state.index = 0;
+    }
+    showRound(state.index, true);
+  }
+
+  sfNextBtn.addEventListener('click', showNextRound);
+
+  // ---------- ranking (titles handed out from most to least votes) ----------
+  // players tied on points share the same rank number (1,2,2,2,5…, "standard
+  // competition ranking") and the same title — grouping by distinct point
+  // value first means the last/second-to-last titles always land on the
+  // actual bottom scores, not on however many players happen to be tied.
+  function assignTitles(){
+    var order = config.rows.map(function(row, idx){ return { name: row.name, points: state.scores[idx], idx: idx }; });
+    order.sort(function(a, b){ return b.points - a.points || a.idx - b.idx; });
+
+    var groups = [];
+    order.forEach(function(entry){
+      var lastGroup = groups[groups.length - 1];
+      if (lastGroup && lastGroup.points === entry.points) lastGroup.entries.push(entry);
+      else groups.push({ points: entry.points, entries: [entry] });
+    });
+
+    var result = [];
+    var rank = 1;
+    groups.forEach(function(group, i){
+      var fromBottom = groups.length - 1 - i;
+      var title;
+      if (fromBottom === 0) title = TITLES[TITLES.length - 1];
+      else if (fromBottom === 1 && groups.length >= 3) title = TITLES[TITLES.length - 2];
+      else title = TITLES[Math.min(i, TITLES.length - 3)];
+      group.entries.forEach(function(entry){
+        result.push({ name: entry.name, points: entry.points, title: title, rank: rank });
+      });
+      rank += group.entries.length;
+    });
+    return result;
+  }
+
+  function renderRanking(){
+    var ranking = assignTitles();
+    var rankingListEl = document.getElementById('sf-ranking-list');
+    rankingListEl.innerHTML = ranking.map(function(entry){
+      return '<div class="sf-rank-row' + (entry.rank === 1 ? ' sf-rank-top' : '') + '">' +
+        '<span class="sf-rank-number">' + entry.rank + 'º</span>' +
+        '<span class="sf-rank-info">' +
+          '<div class="sf-rank-name">' + escapeHtml(entry.name) + '</div>' +
+          '<div class="sf-rank-title">' + escapeHtml(entry.title) + '</div>' +
+        '</span>' +
+        '<span class="sf-rank-points">' + entry.points + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  sfEndBtn.addEventListener('click', function(){
+    renderRanking();
+    switchScreen(screenEnd);
+  });
+
+  document.getElementById('sf-new-game-btn').addEventListener('click', function(){
+    enterSetup();
+  });
+
+  startBtn.addEventListener('click', function(){
+    if (!validateSetup()) return;
+
+    state.scores = config.rows.map(function(){ return 0; });
+    state.deck = buildDeck();
+    state.index = 0;
+
+    showRound(0, false);
+    switchScreen(screenGame);
+  });
+
+  // ---------- how-to-play guide ----------
+  setupModal(
+    document.querySelectorAll('.ayuda-trigger'),
+    document.getElementById('guide-modal-backdrop'),
+    document.getElementById('guide-modal-close')
+  );
+
+  // ---------- back to setup ----------
+  initBackToSetupConfirm(enterSetup);
+
+  // ---------- init ----------
+  renderRows();
+  loadCategories();
+})();
+</script>
+</body>
+</html>

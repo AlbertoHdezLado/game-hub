@@ -1,6 +1,6 @@
 # Catálogo de juegos
 
-16 juegos en el hub React (`/`). Todos activos salvo **Hitster**, deshabilitado con badge "Próximamente" (ver `.claude/HITSTER.md`). Los juegos se sirven desde `public/games/<english-slug>/index.html` y se enlazan como `/games/<english-slug>/`.
+17 juegos en el hub React (`/`). Todos activos salvo **Hitster**, deshabilitado con badge "Próximamente" (ver `.claude/HITSTER.md`). Los juegos se sirven desde `public/games/<english-slug>/index.html` y se enlazan como `/games/<english-slug>/`.
 
 | # | Juego | HTML | Tema | Fichero de datos | Esquema* | Paquetes/categorías hoy |
 |---|-------|------|------|-------------------|----------|--------------------------|
@@ -20,6 +20,7 @@
 | 14 | Patata Caliente | `public/games/hot-potato/index.html` | flame | `public/data/hot-potato.json` | B | 10 categorías |
 | 15 | Detective Club | `public/games/detective-club/index.html` | blue | — (sin JSON) | — | la palabra la escribe el jugador activo cada ronda, basada en una carta Dixit física; no hay banco de contenido que editar |
 | 16 | Hitster | `public/games/hitster/index.html` | rose | `public/data/music-timeline.json` | I | 2 ediciones · 19-20 canciones cada una (contenido MUY escaso — por eso está deshabilitado) |
+| 17 | Amigos de Mierda | `public/games/shitty-friends/index.html` | black | `public/data/shitty-friends.json` | B | 2 categorías (clásicas/+18) |
 
 \* Letra de esquema = sección correspondiente en `.claude/ADDING_CONTENT.md`.
 
@@ -31,3 +32,4 @@
 - **Detective Club** no tiene fichero de datos: usa cartas Dixit físicas + palabra que teclea el jugador activo. No hay "contenido" que ampliar aquí.
 - **Hitster** es el único juego completamente funcional en código pero deshabilitado en el hub — el bloqueo es puramente de contenido (pocas canciones). Ver guía dedicada.
 - Cada juego con JSON propio tiene también un array `..._FALLBACK` embebido en su `<script>` (ver `.claude/PROJECT.md` § Contenido dirigido por datos) — no hace falta tocarlo al añadir contenido normal.
+- **Amigos de Mierda** añade jugadores (como Impostor) y lleva puntuación: cada pregunta se cierra eligiendo abajo a la persona señalada, que suma un punto. Al pulsar "Terminar" se reparte un título a cada jugador según su posición en el ranking (más votado → "El Amigo de Mierda", penúltimo → "El Fantasma del Grupo", último → "El Amigo Ejemplar"). La lista `TITLES` (20 títulos) está fija en el `<script>` del juego, no en el JSON — el JSON solo contiene las preguntas (`categorias[].frases`).
