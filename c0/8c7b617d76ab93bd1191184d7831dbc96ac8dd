@@ -1,0 +1,19 @@
+public/resources/images/hub/shitty-friends-logo.svg
+  s_bcafca6168957b::t_f8c37bb4ac024c 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c08c7b617d76ab93bd1191184d7831dbc96ac8dd",
+  "prompts": {},
+  "sessions": {
+    "s_bcafca6168957b": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "239764da-2da9-4242-bac2-12aad9fba5d2",
+        "model": "unknown"
+      },
+      "human_author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
