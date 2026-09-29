@@ -41,27 +41,71 @@
     display:flex;
     flex-direction:column;
   }
-  .sf-selector-title{
-    text-align:center;
-    color:var(--text-dim);
-    font-size:0.85rem;
-    font-weight:700;
-    margin:4px 0 10px;
+  .sf-vote-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:1100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    background:rgba(0,0,0,0.92);
+    animation:fadeIn .18s ease;
   }
+  .sf-vote-modal{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    max-width:900px;
+    max-height:90vh;
+    max-height:90dvh;
+    overflow:hidden;
+    padding:0;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+  }
+  .sf-vote-modal h2{
+    flex-shrink:0;
+    margin:0 0 14px;
+    text-align:center;
+    font-size:1.2rem;
+    color:#fff;
+  }
+  #sf-vote-confirm{background:#2f9e56;}
   #sf-players-list{
     display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
+    grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+    align-content:start;
+    gap:10px;
+    flex:1 1 auto;
+    width:100%;
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+    scrollbar-color:var(--accent2) rgba(255,255,255,0.14);
   }
+  #sf-players-list::-webkit-scrollbar{width:8px;}
+  #sf-players-list::-webkit-scrollbar-track{background:rgba(255,255,255,0.14); border-radius:999px;}
+  #sf-players-list::-webkit-scrollbar-thumb{background:var(--accent2); border-radius:999px;}
+  #sf-players-list::-webkit-scrollbar-thumb:hover{background:var(--accent);}
   #sf-players-list .roster-row{
+    min-width:0;
+    margin:0;
     justify-content:center;
     text-align:center;
-    margin-bottom:0;
+  }
+  #sf-players-list .roster-row-name{
+    flex:initial;
+    width:100%;
   }
   #sf-players-list .roster-row:active{transform:scale(0.98);}
   #sf-players-list .roster-row.selected{
-    background:linear-gradient(135deg, var(--accent), var(--accent2));
-    border-color:transparent;
+    background:var(--accent);
+    border-color:var(--accent);
     color:#fff;
   }
   .sf-nav{
@@ -166,13 +210,13 @@
       <ul>
         <li>Añade a los jugadores y elige las categorías que queráis usar.</li>
         <li>En cada tarjeta aparece una pregunta tipo "¿Quién de nosotros...?".</li>
-        <li>Leedla en voz alta, debatid y elegid abajo a la persona a la que señala el grupo — se lleva un punto.</li>
+        <li>Leedla en voz alta, debatid y votad a las personas señaladas por el grupo — cada una suma un punto.</li>
       </ul>
 
       <h3>Usar la app</h3>
       <ol>
-        <li>Toca a la persona elegida en la lista y pulsa "Siguiente" para sacar otra tarjeta.</li>
-        <li>Si nadie se pone de acuerdo, puedes pasar de tarjeta sin elegir a nadie.</li>
+        <li>Pulsa "Votar", selecciona a una o varias personas y confirma los votos para sacar otra tarjeta.</li>
+        <li>Si nadie recibe votos, confirma sin seleccionar a nadie para pasar de tarjeta.</li>
         <li>Cuando queráis terminar la partida, pulsa el botón rojo "Terminar" para ver el ranking final.</li>
       </ol>
 
@@ -195,15 +239,23 @@
         <div class="prompt-card">
           <div class="sf-phrase" id="sf-phrase"></div>
         </div>
-        <p class="sf-selector-title">¿A quién señala el grupo?</p>
-        <div id="sf-players-list"></div>
       </div>
 
       <div class="sf-nav">
         <button type="button" class="sf-end-btn" id="sf-end-btn">Terminar</button>
-        <button type="button" class="sf-next-btn" id="sf-next-btn">Siguiente</button>
+        <button type="button" class="sf-next-btn" id="sf-next-btn">Votar</button>
       </div>
     </div>
+  </div>
+
+  <div class="sf-vote-backdrop hidden" id="sf-vote-backdrop">
+    <section class="sf-vote-modal" role="dialog" aria-modal="true" aria-labelledby="sf-vote-title">
+      <h2 id="sf-vote-title">¿A quién votáis?</h2>
+      <div id="sf-players-list"></div>
+      <div class="scr-dock scr-dock--right">
+        <button type="button" class="btn-main" id="sf-vote-confirm">Confirmar</button>
+      </div>
+    </section>
   </div>
 
   <!-- END SCREEN: final ranking -->
@@ -296,7 +348,7 @@
     deck: [],
     index: 0,
     scores: [],
-    selectedIdx: null
+    selectedIndices: []
   };
 
   var screenSetup = document.getElementById('screen-setup');
@@ -463,6 +515,8 @@
   var sfPlayersListEl = document.getElementById('sf-players-list');
   var sfEndBtn = document.getElementById('sf-end-btn');
   var sfNextBtn = document.getElementById('sf-next-btn');
+  var sfVoteBackdrop = document.getElementById('sf-vote-backdrop');
+  var sfVoteConfirmBtn = document.getElementById('sf-vote-confirm');
 
   function fitPhraseText(target){
     var maxSize = 1.35, minSize = 0.8, step = 0.05;
@@ -482,7 +536,7 @@
 
   function renderPlayersSelector(){
     sfPlayersListEl.innerHTML = config.rows.map(function(row, idx){
-      return '<div class="roster-row' + (state.selectedIdx === idx ? ' selected' : '') + '" data-index="' + idx + '">' +
+      return '<div class="roster-row' + (state.selectedIndices.indexOf(idx) !== -1 ? ' selected' : '') + '" data-index="' + idx + '">' +
         '<span class="roster-row-name">' + escapeHtml(row.name) + '</span>' +
       '</div>';
     }).join('');
@@ -492,15 +546,28 @@
     var row = e.target.closest('.roster-row');
     if (!row) return;
     var idx = parseInt(row.getAttribute('data-index'), 10);
-    state.selectedIdx = state.selectedIdx === idx ? null : idx;
+    var selectedPosition = state.selectedIndices.indexOf(idx);
+    if (selectedPosition === -1) state.selectedIndices.push(idx);
+    else state.selectedIndices.splice(selectedPosition, 1);
     renderPlayersSelector();
   });
 
   function showRound(i, animate){
-    state.selectedIdx = null;
+    state.selectedIndices = [];
     renderPlayersSelector();
     if (animate) cardStack.discard('right', state.deck[i], 3);
     else cardStack.reveal(state.deck[i], 3);
+  }
+
+  function openVoteModal(){
+    renderPlayersSelector();
+    sfVoteBackdrop.classList.remove('hidden');
+    sfVoteConfirmBtn.focus();
+  }
+
+  function closeVoteModal(){
+    sfVoteBackdrop.classList.add('hidden');
+    sfNextBtn.focus();
   }
 
   var phraseResizeTimer = null;
@@ -514,7 +581,8 @@
 
   function showNextRound(){
     if (cardStack.isBusy()) return;
-    if (state.selectedIdx !== null) state.scores[state.selectedIdx]++;
+    state.selectedIndices.forEach(function(idx){ state.scores[idx]++; });
+    closeVoteModal();
     state.index++;
     if (state.index >= state.deck.length){
       state.deck = buildDeck(); // reshuffle and keep going — the deck never runs out
@@ -523,7 +591,8 @@
     showRound(state.index, true);
   }
 
-  sfNextBtn.addEventListener('click', showNextRound);
+  sfNextBtn.addEventListener('click', openVoteModal);
+  sfVoteConfirmBtn.addEventListener('click', showNextRound);
 
   // ---------- ranking (titles handed out from most to least votes) ----------
   // players tied on points share the same rank number (1,2,2,2,5…, "standard
