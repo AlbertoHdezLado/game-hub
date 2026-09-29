@@ -1,0 +1,14 @@
+public/data/what-would-you-do.json
+  h_fed6a40af368f7 9,12,16-17,29,32-33,38,50-51,54-55,58-65,82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f8cafab49b55d1d89035043c6b0656ed0b78d2c3",
+  "prompts": {},
+  "humans": {
+    "h_fed6a40af368f7": {
+      "author": "Alberto Hernández Lado <albertohljob@gmail.com>"
+    }
+  }
+}
